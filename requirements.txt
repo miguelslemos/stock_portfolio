@@ -1,0 +1,2 @@
+pytest==8.0.0
+python-bcb==0.1.0 
