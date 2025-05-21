@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
 from models import PortfolioSnapshot
-from transaction import SellTransaction
+from operation import SellOperation
 
 def parse_date(date_str: str) -> datetime:
     """Parse a date string in MM/DD/YYYY, MM/DD/YY and MM-DD-YYYY format."""
@@ -30,8 +30,8 @@ def print_portfolio_history(history: List[PortfolioSnapshot]) -> None:
     print("\n==== Portfolio History ====")
     for snapshot in history:
         print(
-            f"Date: {format_date(snapshot.transaction.date)} | "
-            f"Quantity: {'-' if isinstance(snapshot.transaction, SellTransaction) else '+'}{snapshot.transaction.quantity} | "
+            f"Date: {format_date(snapshot.operation.date)} | "
+            f"Quantity: {'-' if isinstance(snapshot.operation, SellOperation) else '+'}{snapshot.operation.quantity} | "
             f"Total Cost USD: {format_currency(snapshot.total_cost_usd, 'USD')} | "
             f"Average Price USD: {format_currency(snapshot.average_price_usd, 'USD')} | "
             f"Total Cost BRL: {format_currency(snapshot.total_cost_brl, 'BRL')} | "
@@ -41,8 +41,9 @@ def print_portfolio_history(history: List[PortfolioSnapshot]) -> None:
 
 def print_current_position(snapshot: PortfolioSnapshot) -> None:
     """Print the current portfolio position."""
-    print("\n==== Current Position ====")
-    print(f"Date: {format_date(snapshot.transaction.date)}")
+    year = snapshot.operation.date.year
+    print(f"\n==== (Portfolio Year: {year}) ====")
+    print(f"Date: {format_date(snapshot.operation.date)}")
     print(f"Quantity in portfolio: {snapshot.total_quantity}")
     print(f"Total Cost USD: {format_currency(snapshot.total_cost_usd, 'USD')}")
     print(f"Average Price USD: {format_currency(snapshot.average_price_usd, 'USD')}")

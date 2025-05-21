@@ -1,3 +1,3 @@
-from transaction import SellTransaction, Transaction
+from operation import SellOperation, Operation
 from currency_service import CurrencyService
 from portfolio_snapshot import PortfolioSnapshot

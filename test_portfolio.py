@@ -4,41 +4,41 @@ from datetime import datetime
 from data_provider import StaticDataProvider
 from initial_state import InitialState
 from year_portfolio import YearPortfolio
-from transaction import BuyTransaction, SellTransaction
+from operation import VestingOperation, SellOperation
 from utils import parse_date
 
 
 class PortfolioTest(unittest.TestCase):
     def test_init_empty(self):
         with self.assertRaises(ValueError):
-            portfolio = YearPortfolio(transactions=[])
+            portfolio = YearPortfolio(operations=[])
             portfolio.get_current_position()
 
     def test_protifolio_with_buy_and_sell(self):
-        transactions = [
-            SellTransaction(
+        operations = [
+            SellOperation(
                 date=parse_date("02/26/2023"),
                 quantity=50,
                 price=12
             ),
-            SellTransaction(
+            SellOperation(
                 date=parse_date("02/27/2023"),
                 quantity=30,
                 price=10
             ),             
-            BuyTransaction(
+            VestingOperation(
                 date=parse_date("07/01/2023"),
                 quantity=100,
                 price=20
             ),
-            BuyTransaction(
+            VestingOperation(
                 date=parse_date("03/27/2023"),
                 quantity=50,
                 price=15
             ),      
         ]
         
-        portfolio = YearPortfolio(transactions=transactions,
+        portfolio = YearPortfolio(operations=operations,
                               initial_state=InitialState(
                                   quantity=100,
                                   total_cost_usd=1000,
@@ -63,7 +63,7 @@ class PortfolioTest(unittest.TestCase):
         #     mock_get_rates.return_value = {'2023-01-01': 5.0, '2023-01-02': 5.1, '2023-01-03': 5.2}
         #     mock_get_price.side_effect = [5.0, 5.1, 5.2]
             
-        #     portfolio = Portfolio(transactions)
+        #     portfolio = Portfolio(operations)
             
         #     assert portfolio.quantity == 7  # 10 + 5 - 8
         #     assert portfolio.total_cost == 700.0  # (10 * 100 + 5 * 110 - 8 * 100)
@@ -71,6 +71,6 @@ class PortfolioTest(unittest.TestCase):
         #     assert len(portfolio.history) == 3
         #     assert len(portfolio.proccess_parameter) == 3
     def test_get_current_position_empty(self):
-        portfolio = YearPortfolio(transactions=[])
+        portfolio = YearPortfolio(operations=[])
         with self.assertRaises(ValueError):
             portfolio.get_current_position() 

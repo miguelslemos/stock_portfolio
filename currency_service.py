@@ -5,8 +5,8 @@ DAYS_BACK = 7
 INDEX_ASK = ("USD", "ask")
 class CurrencyService:
     @staticmethod
-    def get_ask_price(transaction_date: datetime, x) -> float:
-        current_date = transaction_date
+    def get_ask_price(operation_date: datetime, x) -> float:
+        current_date = operation_date
         for _ in range(DAYS_BACK):  # Try up to 7 days back
             date_str = current_date.strftime("%Y-%m-%d")
             if (date_str) in x.index:

@@ -1,9 +1,9 @@
 from dataclasses import dataclass
-from transaction import Transaction
+from operation import Operation
 
 @dataclass
 class PortfolioSnapshot:
-    transaction: Transaction
+    operation: Operation
     total_quantity: int
     total_cost_usd: float
     average_price_usd: float

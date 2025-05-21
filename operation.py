@@ -8,18 +8,18 @@ class ProcessResult:
     total_cost: float
     total_cost_brl: float
 
-class Transaction(ABC):
+class Operation(ABC):
     date: datetime
     quantity: int
     price: float
 
     @abstractmethod
     def process(self, quantity: int, total_cost: float, total_cost_brl: float, usd_brl_ptax: float) -> ProcessResult:
-        """Returns the new (quantity, total_cost) after applying this transaction."""
+        """Returns the new (quantity, total_cost) after applying this operation."""
         pass
 
 @dataclass(frozen=True)
-class BuyTransaction(Transaction):
+class VestingOperation(Operation):
     date: datetime
     quantity: int
     price: float
@@ -28,13 +28,13 @@ class BuyTransaction(Transaction):
         new_total_cost = total_cost + self.quantity * self.price
         new_total_cost_brl = round(total_cost_brl + (self.quantity * self.price * usd_brl_ptax), 4)
         new_quantity = quantity + self.quantity
-        # print(f"[DEBUG] BuyTransaction.process: Adding {self.quantity} units at {self.price} USD each (ptax={usd_brl_ptax})")
+        # print(f"[DEBUG] VestingOperation.process: Adding {self.quantity} units at {self.price} USD each (ptax={usd_brl_ptax})")
         # print(f"[DEBUG] Previous: quantity={quantity}, total_cost={total_cost}, total_cost_brl={total_cost_brl}")
         # print(f"[DEBUG] New: quantity={new_quantity}, total_cost={new_total_cost}, total_cost_brl={new_total_cost_brl}")
         return ProcessResult(quantity=new_quantity, total_cost=new_total_cost, total_cost_brl=new_total_cost_brl)
 
 @dataclass(frozen=True)
-class SellTransaction(Transaction):
+class SellOperation(Operation):
     date: datetime
     quantity: int
     price: float
@@ -47,7 +47,7 @@ class SellTransaction(Transaction):
         new_total_cost = total_cost - total_cost * fraction
         new_total_cost_brl = total_cost_brl - total_cost_brl * fraction
         new_quantity = quantity - self.quantity
-        # print(f"[DEBUG] SellTransaction.process: Selling {self.quantity} units at {self.price} USD each")
+        # print(f"[DEBUG] SellOperation.process: Selling {self.quantity} units at {self.price} USD each")
         # print(f"[DEBUG] Previous: quantity={quantity}, total_cost={total_cost}, total_cost_brl={total_cost_brl}")
         # print(f"[DEBUG] Fraction of position sold: {fraction}")
         # print(f"[DEBUG] New: quantity={new_quantity}, total_cost={new_total_cost}, total_cost_brl={new_total_cost_brl}")

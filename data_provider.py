@@ -5,51 +5,51 @@ from typing import List
 
 from pypdf import PdfReader
 
-from transaction import BuyTransaction, SellTransaction, Transaction
+from operation import VestingOperation, SellOperation, Operation
 from utils import parse_date
 
 
 class DataProvider(ABC):
     @abstractmethod
-    def get_transactions(self) -> List[Transaction]:
+    def get_operations(self) -> List[Operation]:
         pass
 
 
 class StaticDataProvider(DataProvider):
-    def __init__(self, transactions: List[Transaction]):
-        self.transactions = transactions
+    def __init__(self, operations: List[Operation]):
+        self.operations = operations
 
-    def get_transactions(self) -> List[Transaction]:
-        return self.transactions
+    def get_operations(self) -> List[Operation]:
+        return self.operations
 
 
 class MultDataProvider(DataProvider):
     def __init__(self, providers: List[DataProvider]):
         self.providers = providers
 
-    def get_transactions(self) -> List[Transaction]:
-        transactions = []
+    def get_operations(self) -> List[Operation]:
+        operations = []
         for provider in self.providers:
-            transactions.extend(provider.get_transactions())
-        # Optionally, sort by date if all transactions have a 'date' attribute
-        transactions.sort(key=lambda t: getattr(t, "date", None))
-        return transactions
+            operations.extend(provider.get_operations())
+        # Optionally, sort by date if all operations have a 'date' attribute
+        operations.sort(key=lambda t: getattr(t, "date", None))
+        return operations
 
 
 class PDFDataProvider(DataProvider):
     def __init__(self, trade_confirmations_path: str = "trade_confirmations/", release_confirmations_path: str = "release_confirmations/"):
-        self.transactions = []
+        self.operations = []
         self._process_trade_confirmations(trade_confirmations_path)
         self._process_release_confirmations(release_confirmations_path)
 
     def _process_trade_confirmations(self, trade_confirmation_path: str) -> None:
-        """Process trade confirmation PDFs and extract sell transactions."""
+        """Process trade confirmation PDFs and extract sell operations."""
         trade_confirmation_files = self._get_pdf_files(trade_confirmation_path)
         for pdf in trade_confirmation_files:
             self._parse_trade_confirmation(pdf)
 
     def _process_release_confirmations(self, release_confirmation_path: str) -> None:
-        """Process release confirmation PDFs and extract buy transactions."""
+        """Process release confirmation PDFs and extract buy operations."""
         release_confirmation_files = self._get_pdf_files(release_confirmation_path)
         for pdf in release_confirmation_files:
             self._parse_release_confirmation(pdf)
@@ -68,7 +68,7 @@ class PDFDataProvider(DataProvider):
         return pdf_files
 
     def _parse_trade_confirmation(self, pdf_path: str) -> None:
-        """Parse a trade confirmation PDF and extract sell transaction details."""
+        """Parse a trade confirmation PDF and extract sell operation details."""
         reader = PdfReader(pdf_path)
         page = reader.pages[0]
         text = page.extract_text()
@@ -86,13 +86,13 @@ class PDFDataProvider(DataProvider):
             trade_date = match.group(1).strip()
             quantity = int(float(match.group(2).strip().replace(",", "")))
             price = float(match.group(3).replace("$", "").strip())
-            self.transactions.append(SellTransaction(date=parse_date(trade_date), quantity=quantity, price=round(price, 4)))
+            self.operations.append(SellOperation(date=parse_date(trade_date), quantity=quantity, price=round(price, 4)))
 
     def is_legacy_pdf_format(self, text):
         return text.startswith("E*TRADE Securities LLC")
 
     def _parse_release_confirmation(self, pdf_path: str) -> None:
-        """Parse a release confirmation PDF and extract buy transaction details."""
+        """Parse a release confirmation PDF and extract buy operation details."""
         reader = PdfReader(pdf_path)
         page = reader.pages[0]
         text = page.extract_text()
@@ -105,9 +105,9 @@ class PDFDataProvider(DataProvider):
             end = text.find(end_of_line, start)
             info = text[start+str_len+1:end].replace("$", "").replace(",", "").replace("(", "-").replace(")", "")
             data_dict[p] = info
-        self.transactions.append(BuyTransaction(date=parse_date(data_dict["Release Date"]), quantity=int(float(data_dict["Shares Issued"])), price=float(data_dict["Market Value Per Share"])))
+        self.operations.append(VestingOperation(date=parse_date(data_dict["Release Date"]), quantity=int(float(data_dict["Shares Issued"])), price=float(data_dict["Market Value Per Share"])))
 
-    def get_transactions(self) -> List[Transaction]:
-        return self.transactions
+    def get_operations(self) -> List[Operation]:
+        return self.operations
         
             

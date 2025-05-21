@@ -625,7 +625,7 @@ FodyWeavers.xsd
 
 
 # ignore all files in the trade_confirmations folder
-trade-confirmations/*
+trade_confirmations/*
 
 # ignore all files in the release-confirmations folder
-release-confirmations/*
+release_confirmations/*

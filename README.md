@@ -4,26 +4,26 @@
 
 > **Disclaimer:** We emphasize project are merely auxiliary and do not replace the need for individual analysis. The proper use of this program is the responsibility of each individual, and it is always recommended to consult a personal accountant.
 
-A Python tool to automate the tracking of stock transactions and generate reports for Brazilian tax declaration (IRPF).
+A Python tool to automate the tracking of stock operations and generate reports for Brazilian tax declaration (IRPF).
 
 ## Overview
 
 This project simplifies the process of tracking stock information required for IRPF (Brazilian Income Tax Return) by:
 
-- Processing stock transaction data from PDF confirmations(E-trade)
+- Processing stock operation data from PDF confirmations(E-trade)
 - Calculating average purchase prices in USD and BRL
-- Tracking profit/loss for each transaction
+- Tracking profit/loss for each operation
 - Total cost in the last day of the year in USD and BRL
 - Generating yearly reports of portfolio performance
 - Supporting multiple data sources (PDF confirmations, manual entries)
 
 ## Features
 
-- **Multi-source Data Support**: Import transactions from PDF confirmations or manual entries
+- **Multi-source Data Support**: Import operations from PDF confirmations or manual entries
 - **Currency Conversion**: Automatic USD/BRL conversion using PTAX rates(bacen API)
-- **Yearly Portfolio Tracking**: Separate tracking of transactions by year
+- **Yearly Portfolio Tracking**: Separate tracking of operations by year
 - **Detailed Reports**: Generate comprehensive reports including:
-  - Transaction history
+  - operation history
   - Current position
   - Average purchase prices
   - Profit/loss calculations
@@ -74,46 +74,46 @@ PS: The PDFs are searched recursively.
 Unfortunatelly, We dont provide yet way to read from manual entries from configuration file. So for now, you need to manually create entries in the python code.
 
 - Open the `main.py` file
-- Create a list of transactions, using the following format:
+- Create a list of operations, using the following format:
 ```python
 
-transactions = [
-  SellTransaction(
+operations = [
+  SellOperation(
       date=parse_date("02/26/2023"),
       quantity=50,
       price=12
   ),
-  SellTransaction(
+  SellOperation(
       date=parse_date("02/27/2023"),
       quantity=30,
       price=10
   ),             
-  BuyTransaction(
+  VestingOperation(
       date=parse_date("07/01/2023"),
       quantity=100,
       price=20
   ),
-  BuyTransaction(
+  VestingOperation(
       date=parse_date("03/27/2023"),
       quantity=50,
       price=15
   ),      
 ]
 ```
-- Create a `StaticDataProvider` with the transactions and pass it to the `BenefitHistory` constructor.
+- Create a `StaticDataProvider` with the operations and pass it to the `BenefitHistory` constructor.
 
 ```python
-provider = StaticDataProvider(transactions=transactions)
+provider = StaticDataProvider(operations=operations)
 benefit_history = BenefitHistory(data_provider=provider)
 ```
 
 ### PDFs Provider + Manual Entries
 
-You can also use both providers together. Is good approach if you want to track your transactions from E-Trade and also have some manual entries like old carta statements.
+You can also use both providers together. Is good approach if you want to track your operations from E-Trade and also have some manual entries like old carta statements.
 ```python
 provider = MultDataProvider(providers=[
     PDFDataProvider(),
-    StaticDataProvider(transactions=custom_transactions)
+    StaticDataProvider(operations=custom_operations)
 ])
 benefit_history = BenefitHistory(data_provider=provider)
 ```
@@ -126,7 +126,7 @@ python main.py
 ```
 
 The script will:
-1. Process all transactions from PDF confirmations
+1. Process all operations from PDF confirmations
 2. Calculate portfolio metrics
 3. Generate yearly reports
 4. Display current position and profit/loss information
@@ -137,8 +137,12 @@ The script will:
 - `benefit_history.py`: Handles yearly portfolio tracking
 - `year_portfolio.py`: Manages portfolio calculations and state
 - `data_provider.py`: Handles data import from different sources
-- `transaction.py`: Defines transaction types and processing logic
+- `operation.py`: Defines operation types and processing logic
 - `currency_service.py`: Manages currency conversion using PTAX rates
+
+## Result Example
+
+![result](./docs/img/output.png)
 
 ## Contributing
 
