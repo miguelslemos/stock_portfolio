@@ -53,13 +53,22 @@ Place your release confirmations PDFs in the `release_confirmations` directory
 - Download the release confirmations PDFs for the years you want to track
 - Place the PDFs in the `release_confirmations` directory
 
-Place your trade confirmations PDFs in the `trade_confirmations` directory
+![release](./docs/gif/download-release-confirmation.gif)
+
 
 #### How to get the trade confirmations PDFs
 
 - Go to https://us.etrade.com/etx/pxy/accountdocs-statements#/documents
 - Download the trade confirmations PDFs for the years you want to track
 - Place the PDFs in the `trade_confirmations` directory
+
+![trade](./docs/gif/download-trade-confirmation.gif)
+
+At the end you should have directories like that:
+
+![folders](./docs/img/folders.png)
+
+PS: The PDFs are searched recursively.
 
 ### Reading from manual entries
 Unfortunatelly, We dont provide yet way to read from manual entries from configuration file. So for now, you need to manually create entries in the python code.
