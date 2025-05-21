@@ -33,7 +33,7 @@ This project simplifies the process of tracking stock information required for I
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/miguelslemosstock_portfolio.git
+git clone https://github.com/miguelslemos/stock_portfolio.git
 cd stock_portfolio
 ```
 
