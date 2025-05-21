@@ -37,10 +37,10 @@ class MultDataProvider(DataProvider):
 
 
 class PDFDataProvider(DataProvider):
-    def __init__(self, trade_confirmation_path: str = "trade-confirmations/", release_confirmation_path: str = "stock-plan-confirmations/"):
+    def __init__(self, trade_confirmations_path: str = "trade_confirmations/", release_confirmations_path: str = "release_confirmations/"):
         self.transactions = []
-        self._process_trade_confirmations(trade_confirmation_path)
-        self._process_release_confirmations(release_confirmation_path)
+        self._process_trade_confirmations(trade_confirmations_path)
+        self._process_release_confirmations(release_confirmations_path)
 
     def _process_trade_confirmations(self, trade_confirmation_path: str) -> None:
         """Process trade confirmation PDFs and extract sell transactions."""
