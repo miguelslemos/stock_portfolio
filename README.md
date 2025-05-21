@@ -33,7 +33,7 @@ This project simplifies the process of tracking stock information required for I
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/miguelslemosstock_portfolio.git
+git clone https://github.com/miguelslemos/stock_portfolio.git
 cd stock_portfolio
 ```
 
@@ -149,6 +149,12 @@ The script will:
 
 ![result](./docs/img/output.png)
 
+
+## Testing
+
+There's almost no testing for this project yet. But we compared the output of this program with the output of the shared spreadsheet template from Grant Thornton and they match.
+
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
@@ -167,9 +173,3 @@ Here are some ideas for future improvements and features:
 
 
 Feel free to suggest more features or contribute to the development!
-
-## Testing
-
-There's almost no testing for this project yet. But we compared the output of this program with the output of the shared spreadsheet from E-Trade and they match. 
-
-
