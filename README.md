@@ -68,7 +68,7 @@ At the end you should have directories like that:
 
 ![folders](./docs/img/folders.png)
 
-PS: The PDFs are searched recursively.
+PS: The PDFs are searched recursively in the directories.
 
 ### Reading from manual entries
 Unfortunatelly, We dont provide yet way to read from manual entries from configuration file. So for now, you need to manually create entries in the python code.
@@ -125,6 +125,13 @@ benefit_history = BenefitHistory(data_provider=provider)
 
 ## Usage
 
+### Running through Google Colab
+
+- Make a copy of the [notebook](https://colab.research.google.com/drive/1XCkyP3vs808G27BasGQ9tp4QK14vG37d?authuser=1#scrollTo=SUgqsiI9xxHm)
+- Update the cell with your operations
+- Run the notebook
+
+### Running the program locally
 Run the main script:
 ```bash
 python main.py
@@ -149,12 +156,6 @@ The script will:
 
 ![result](./docs/img/output.png)
 
-
-## Testing
-
-There's almost no testing for this project yet. But we compared the output of this program with the output of the shared spreadsheet template from Grant Thornton and they match.
-
-
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
@@ -173,3 +174,9 @@ Here are some ideas for future improvements and features:
 
 
 Feel free to suggest more features or contribute to the development!
+
+## Testing
+
+There's almost no testing for this project yet. But we compared the output of this program with the output of the shared spreadsheet from E-Trade and they match. 
+
+

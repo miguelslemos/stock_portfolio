@@ -16,7 +16,7 @@ def main():
                     date=parse_date("01/06/2023"),
                     quantity=100,
                     price=15
-                ),    
+                ),
                 SellOperation(
                     date=parse_date("02/26/2023"),
                     quantity=50,
@@ -26,7 +26,7 @@ def main():
                     date=parse_date("02/27/2023"),
                     quantity=30,
                     price=10
-                ),             
+                ),     
                 VestingOperation(
                     date=parse_date("07/01/2023"),
                     quantity=100,
