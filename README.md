@@ -78,6 +78,11 @@ Unfortunatelly, We dont provide yet way to read from manual entries from configu
 ```python
 
 operations = [
+   VestingOperation(
+      date=parse_date("01/06/2023"),
+      quantity=100,
+      price=15
+  ),    
   SellOperation(
       date=parse_date("02/26/2023"),
       quantity=50,
@@ -97,7 +102,7 @@ operations = [
       date=parse_date("03/27/2023"),
       quantity=50,
       price=15
-  ),      
+  )
 ]
 ```
 - Create a `StaticDataProvider` with the operations and pass it to the `BenefitHistory` constructor.
