@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-@dataclass
+@dataclass(frozen=True)
 class ProcessResult:
     quantity: int
     total_cost: float

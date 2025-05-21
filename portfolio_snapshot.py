@@ -1,11 +1,12 @@
 from dataclasses import dataclass
-from datetime import datetime
+from transaction import Transaction
 
 @dataclass
 class PortfolioSnapshot:
-    date: datetime
-    quantity: int
-    total_cost: float
-    average_price: float
+    transaction: Transaction
+    total_quantity: int
+    total_cost_usd: float
+    average_price_usd: float
     total_cost_brl: float
     average_price_brl: float
+    gross_profit_brl: float

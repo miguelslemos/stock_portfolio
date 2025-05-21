@@ -9,8 +9,6 @@ class CurrencyService:
         current_date = transaction_date
         for _ in range(DAYS_BACK):  # Try up to 7 days back
             date_str = current_date.strftime("%Y-%m-%d")
-            if (date_str in ("2024-01-01", "2024-01-02")):
-                return 3.3333
             if (date_str) in x.index:
                 return x.loc[date_str, INDEX_ASK]
             current_date -= timedelta(days=1)

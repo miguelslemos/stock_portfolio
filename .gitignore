@@ -622,3 +622,10 @@ FodyWeavers.xsd
 # Additional files built by Visual Studio
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio,python,macos,venv,virtualenv
+
+
+# ignore all files in the trade_confirmations folder
+trade-confirmations/*
+
+# ignore all files in the stock-plan-confirmations folder
+stock-plan-confirmations/*

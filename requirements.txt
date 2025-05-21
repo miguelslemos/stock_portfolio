@@ -1,2 +1,3 @@
 pytest==8.0.0
-python-bcb==0.1.0 
+python-bcb==0.3.3
+pypdf==5.5.0
