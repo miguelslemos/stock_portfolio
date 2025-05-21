@@ -107,6 +107,17 @@ provider = StaticDataProvider(transactions=transactions)
 benefit_history = BenefitHistory(data_provider=provider)
 ```
 
+### PDFs Provider + Manual Entries
+
+You can also use both providers together. Is good approach if you want to track your transactions from E-Trade and also have some manual entries like old carta statements.
+```python
+provider = MultDataProvider(providers=[
+    PDFDataProvider(),
+    StaticDataProvider(transactions=custom_transactions)
+])
+benefit_history = BenefitHistory(data_provider=provider)
+```
+
 ## Usage
 
 Run the main script:
