@@ -165,6 +165,6 @@ Feel free to suggest more features or contribute to the development!
 
 ## Testing
 
-There's almost no testing for this project yet. But we compared the output of this program with the output of the shared spreadsheet from E-Trade and they match. 
+There's almost no testing for this project yet. But we compared the output of this program with the output of the shared spreadsheet template from Grant Thornton and they match.
 
 
