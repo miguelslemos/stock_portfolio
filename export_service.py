@@ -15,7 +15,7 @@ def export_to_excel(history: List[PortfolioSnapshot], yearly_summaries: List, fi
     portfolio_sheet.title = 'Portfolio History'
     
     portfolio_headers = [
-        'Date', 'Quantity', 'Stocks Received', 'Stock Price at Date', 'USD Quote At Date',
+        'Date', 'Operation', 'Quantity', 'Stock Price at Date', 'USD Quote At Date',
         'Total Cost USD', 'Average Price USD', 'Total Cost BRL', 'Average Price BRL'
     ]
     
@@ -26,10 +26,15 @@ def export_to_excel(history: List[PortfolioSnapshot], yearly_summaries: List, fi
     # Write portfolio history data
     for row, snapshot in enumerate(history, start=2):
         portfolio_sheet.cell(row=row, column=1, value=format_date(snapshot.operation.date))
-        portfolio_sheet.cell(row=row, column=2, value=snapshot.total_quantity)
         
-        stocks_received = snapshot.operation.quantity if not isinstance(snapshot.operation, SellOperation) else 0
-        portfolio_sheet.cell(row=row, column=3, value=stocks_received)
+        # Operation type
+        operation_type = "Sell" if isinstance(snapshot.operation, SellOperation) else "Vesting"
+        portfolio_sheet.cell(row=row, column=2, value=operation_type)
+        
+        # Quantity - transaction amount (positive for vesting, negative for sell)
+        transaction_quantity = -snapshot.operation.quantity if isinstance(snapshot.operation, SellOperation) else snapshot.operation.quantity
+        portfolio_sheet.cell(row=row, column=3, value=transaction_quantity)
+        
         portfolio_sheet.cell(row=row, column=4, value=snapshot.operation.price)
         portfolio_sheet.cell(row=row, column=5, value=snapshot.usd_brl_rate)
         portfolio_sheet.cell(row=row, column=6, value=snapshot.total_cost_usd)
