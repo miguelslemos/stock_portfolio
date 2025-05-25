@@ -30,7 +30,8 @@ class YearPortfolio:
                 average_price_usd=initial_state.average_price_usd if initial_state else 0.0,
                 total_cost_brl=self._total_cost_brl,
                 average_price_brl=initial_state.average_price_brl if initial_state else 0.0,
-                gross_profit_brl=0)
+                gross_profit_brl=0,
+                usd_brl_rate=0.0)
             self.history.append(snapshot)
             
             currrency = CurrencyService.get_usd_rates(min_date, max_date)
@@ -47,9 +48,9 @@ class YearPortfolio:
                 # print(f"[DEBUG] Portfolio state after operation: quantity={self._quantity}, total_cost_usd={self._total_cost_usd}, total_cost_brl={self._total_cost_brl}")
                 if isinstance(operation, SellOperation):
                     self._gross_profit_brl += round(operation.quantity * (operation.price * usd_brl_ptax - average_price_brl), 4)
-                self._record_snapshot(operation, average_price_usd, average_price_brl)
+                self._record_snapshot(operation, average_price_usd, average_price_brl, usd_brl_ptax)
 
-    def _record_snapshot(self, operation: Operation, average_price_usd: float, average_price_brl: float) -> None:
+    def _record_snapshot(self, operation: Operation, average_price_usd: float, average_price_brl: float, usd_brl_rate: float) -> None:
         
         # print(f"[DEBUG] Recording snapshot for date: {operation.date.strftime('%Y-%m-%d')}")
         # print(f"[DEBUG] Snapshot state: quantity={self._quantity}, total_cost_usd={self._total_cost_usd}, average_price_usd={average_price_usd}, total_cost_brl={self._total_cost_brl}, average_price_brl={average_price_brl}")
@@ -60,7 +61,8 @@ class YearPortfolio:
             average_price_usd=average_price_usd,
             total_cost_brl=self._total_cost_brl,
             average_price_brl=average_price_brl,
-            gross_profit_brl=self._gross_profit_brl,  
+            gross_profit_brl=self._gross_profit_brl,
+            usd_brl_rate=usd_brl_rate
         )  
         self.history.append(snapshot)
 
