@@ -16,6 +16,7 @@ This project simplifies the process of tracking stock information required for I
 - Total cost in the last day of the year in USD and BRL
 - Generating yearly reports of portfolio performance
 - Supporting multiple data sources (PDF confirmations, manual entries)
+- Exporting data to an Excel file so you can keep a record of your operations
 
 ## Features
 
@@ -28,16 +29,19 @@ This project simplifies the process of tracking stock information required for I
   - Average purchase prices
   - Profit/loss calculations
   - Currency conversions
+- **Excel Export**: Export the data to an Excel file
 
 ## Setup
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/miguelslemos/stock_portfolio.git
 cd stock_portfolio
 ```
 
 2. Install dependencies:
+
 ```bash
 pip install -r requirements.txt
 ```
@@ -45,22 +49,23 @@ pip install -r requirements.txt
 ## Data Gathering
 
 ### Reading from E-trade confirmations PDFs
+
 Place your release confirmations PDFs in the `release_confirmations` directory
 
 #### How to get the release confirmations PDFs
 
-- Go to https://us.etrade.com/etx/sp/stockplan/#/myAccount/stockPlanConfirmations
+- Go to <https://us.etrade.com/etx/sp/stockplan/#/myAccount/stockPlanConfirmations>
 - Download the release confirmations PDFs for the years you want to track
 - Place the PDFs in the `release_confirmations` directory
 
 ![release](./docs/gif/download-release-confirmation.gif)
 
-
 #### How to get the trade confirmations PDFs
 
-- Go to https://us.etrade.com/etx/pxy/accountdocs-statements#/documents
+- Go to <https://us.etrade.com/etx/pxy/accountdocs-statements#/documents>
 - Download the trade confirmations PDFs for the years you want to track
 - Place the PDFs in the `trade_confirmations` directory
+- If you do not have trade confirmations PDFs, remember to create an empty `trade_confirmations` directory
 
 ![trade](./docs/gif/download-trade-confirmation.gif)
 
@@ -71,10 +76,12 @@ At the end you should have directories like that:
 PS: The PDFs are searched recursively in the directories.
 
 ### Reading from manual entries
+
 Unfortunatelly, We dont provide yet way to read from manual entries from configuration file. So for now, you need to manually create entries in the python code.
 
 - Open the `main.py` file
 - Create a list of operations, using the following format:
+
 ```python
 
 operations = [
@@ -105,6 +112,7 @@ operations = [
   )
 ]
 ```
+
 - Create a `StaticDataProvider` with the operations and pass it to the `BenefitHistory` constructor.
 
 ```python
@@ -115,6 +123,7 @@ benefit_history = BenefitHistory(data_provider=provider)
 ### PDFs Provider + Manual Entries
 
 You can also use both providers together. Is good approach if you want to track your operations from E-Trade and also have some manual entries like old carta statements.
+
 ```python
 provider = MultDataProvider(providers=[
     PDFDataProvider(),
@@ -132,16 +141,20 @@ benefit_history = BenefitHistory(data_provider=provider)
 - Run the notebook
 
 ### Running the program locally
+
 Run the main script:
+
 ```bash
 python main.py
 ```
 
 The script will:
+
 1. Process all operations from PDF confirmations
 2. Calculate portfolio metrics
 3. Generate yearly reports
 4. Display current position and profit/loss information
+5. Export the data to an Excel file
 
 ## Project Structure
 
@@ -162,8 +175,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details. 
-
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Future Feature Ideas
 
@@ -172,11 +184,8 @@ Here are some ideas for future improvements and features:
 - [ ] **Customize the data provider via configuration file**: Allow the user to customize the data provider and entries via a configuration file.
 - [ ] **Automacatilly Download E-Trade PDFs**: Automatically download the PDFs from E-Trade.
 
-
 Feel free to suggest more features or contribute to the development!
 
 ## Testing
 
-There's almost no testing for this project yet. But we compared the output of this program with the output of the shared spreadsheet from E-Trade and they match. 
-
-
+There's almost no testing for this project yet. But we compared the output of this program with the output of the shared spreadsheet from E-Trade and they match.
