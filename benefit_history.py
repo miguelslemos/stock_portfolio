@@ -5,7 +5,6 @@ from data_provider import DataProvider
 from initial_state import InitialState
 from operation import Operation
 from utils import print_current_position, print_portfolio_history
-from export_service import export_to_excel
 from yearly_summary import YearlySummary
 
 class BenefitHistory:
@@ -50,12 +49,11 @@ class BenefitHistory:
                 average_price_brl=current_position.average_price_brl
             )
 
-    def export_to_excel(self, filename: str = "portfolio_export.xlsx") -> None:
-        """Export all portfolio data to Excel file."""
-        if not self._transaction_snapshots:
-            print("No portfolio data to export.")
-            return
-        export_to_excel(self._transaction_snapshots, self._yearly_summaries, filename)
+    def get_transaction_snapshots(self):
+        return self._transaction_snapshots
+
+    def get_yearly_summaries(self):
+        return self._yearly_summaries
 
     def _group_operations_by_year(self, operations: List[Operation]) -> dict:
         """

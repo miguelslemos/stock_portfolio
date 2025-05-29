@@ -17,6 +17,13 @@ class Operation(ABC):
     def process(self, quantity: int, total_cost: float, total_cost_brl: float, usd_brl_ptax: float) -> ProcessResult:
         """Returns the new (quantity, total_cost) after applying this operation."""
         pass
+    
+    @abstractmethod
+    def get_operation_type(self) -> str:
+        pass
+    @abstractmethod
+    def get_symbol_type(self) -> str:
+        pass
 
 @dataclass(frozen=True)
 class VestingOperation(Operation):
@@ -32,6 +39,12 @@ class VestingOperation(Operation):
         # print(f"[DEBUG] Previous: quantity={quantity}, total_cost={total_cost}, total_cost_brl={total_cost_brl}")
         # print(f"[DEBUG] New: quantity={new_quantity}, total_cost={new_total_cost}, total_cost_brl={new_total_cost_brl}")
         return ProcessResult(quantity=new_quantity, total_cost=new_total_cost, total_cost_brl=new_total_cost_brl)
+    
+    def get_operation_type(self) -> str:
+        return "Vesting"
+    
+    def get_symbol_type(self) -> str:
+        return "+"
 
 @dataclass(frozen=True)
 class SellOperation(Operation):
@@ -51,4 +64,10 @@ class SellOperation(Operation):
         # print(f"[DEBUG] Previous: quantity={quantity}, total_cost={total_cost}, total_cost_brl={total_cost_brl}")
         # print(f"[DEBUG] Fraction of position sold: {fraction}")
         # print(f"[DEBUG] New: quantity={new_quantity}, total_cost={new_total_cost}, total_cost_brl={new_total_cost_brl}")
-        return ProcessResult(quantity=new_quantity, total_cost=new_total_cost, total_cost_brl=new_total_cost_brl) 
+        return ProcessResult(quantity=new_quantity, total_cost=new_total_cost, total_cost_brl=new_total_cost_brl)
+    
+    def get_operation_type(self) -> str:
+        return "Sell"    
+    
+    def get_symbol_type(self) -> str:
+        return "-"
