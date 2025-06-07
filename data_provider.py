@@ -5,7 +5,7 @@ from typing import List
 
 from pypdf import PdfReader
 
-from operation import VestingOperation, SellOperation, Operation
+from operation import VestingOperation, TradeOperation, Operation
 from date_utils import parse_date
 
 
@@ -48,7 +48,7 @@ class PDFDataProvider(DataProvider):
 
 
     def _process_trade_confirmations(self, trade_confirmation_files: str) -> None:
-        """Process trade confirmation PDFs and extract sell operations."""
+        """Process trade confirmation PDFs and extract trade operations."""
         for pdf in trade_confirmation_files:
             self._parse_trade_confirmation(pdf)
 
@@ -71,7 +71,7 @@ class PDFDataProvider(DataProvider):
         return pdf_files
 
     def _parse_trade_confirmation(self, pdf_path: str) -> None:
-        """Parse a trade confirmation PDF and extract sell operation details."""
+        """Parse a trade confirmation PDF and extract trade operation details."""
         reader = PdfReader(pdf_path)
         page = reader.pages[0]
         text = page.extract_text()
@@ -89,7 +89,7 @@ class PDFDataProvider(DataProvider):
             trade_date = match.group(1).strip()
             quantity = int(float(match.group(2).strip().replace(",", "")))
             price = float(match.group(3).replace("$", "").strip())
-            self.operations.append(SellOperation(date=parse_date(trade_date), quantity=quantity, price=round(price, 4)))
+            self.operations.append(TradeOperation(date=parse_date(trade_date), quantity=quantity, price=round(price, 4)))
 
     def is_legacy_pdf_format(self, text):
         return text.startswith("E*TRADE Securities LLC")

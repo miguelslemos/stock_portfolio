@@ -89,12 +89,12 @@ operations = [
       quantity=100,
       price=15
   ),    
-  SellOperation(
+  TradeOperation(
       date=parse_date("02/26/2023"),
       quantity=50,
       price=12
   ),
-  SellOperation(
+  TradeOperation(
       date=parse_date("02/27/2023"),
       quantity=30,
       price=10
@@ -200,7 +200,7 @@ You can provide operations data through a JSON file. This is useful for manual e
     "price": 15.0
   },
   {
-    "type": "sell",
+    "type": "trade",
     "date": "02/26/2023",
     "quantity": 50,
     "price": 12.0
@@ -216,8 +216,8 @@ You can provide operations data through a JSON file. This is useful for manual e
    - `quantity`: Number of shares
    - `price`: Price per share in USD
 
-2. **Sell Operation**
-   - `type`: Must be "sell"
+2. **Trade Operation**
+   - `type`: Must be "trade"
    - `date`: Date in MM/DD/YYYY format
    - `quantity`: Number of shares
    - `price`: Price per share in USD
@@ -235,13 +235,13 @@ Here's a complete example of a JSON file with multiple operations:
     "price": 15.0
   },
   {
-    "type": "sell",
+    "type": "trade",
     "date": "02/26/2023",
     "quantity": 50,
     "price": 12.0
   },
   {
-    "type": "sell",
+    "type": "trade",
     "date": "02/27/2023",
     "quantity": 30,
     "price": 10.0
