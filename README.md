@@ -154,16 +154,117 @@ The script will:
 3. Generate yearly reports
 4. Display current position and profit/loss information
 
-### Exporting Data
+### Program Arguments
 
-You can export the data to CSV or XLSX format using the `--export` flag:
+The program supports several command-line arguments to customize its behavior:
+
+#### Data Source Arguments
+- `--pdf`: Process data from PDF confirmations
+- `--json`: Path to JSON file containing operations data
+
+Note: At least one data source (`--pdf` or `--json`) must be provided.
+
+#### PDF Processing Options
+- `--trade-confirmations`: Directory containing trade confirmation PDFs (default: `trade_confirmations/`)
+- `--release-confirmations`: Directory containing release confirmation PDFs (default: `release_confirmations/`)
+
+#### Export Options
+- `--export`: Export format (choices: `csv` or `xlsx`, default: `none`)
+
+#### Examples
 
 ```bash
-# Export to CSV
-python main.py --export csv
+# Process PDF confirmations and export to CSV
+python main.py --pdf --export csv
 
-# Export to XLSX
-python main.py --export xlsx
+# Process PDF confirmations with custom directories
+python main.py --pdf --trade-confirmations custom_trades/ --release-confirmations custom_releases/
+
+# Process JSON file and export to XLSX
+python main.py --json operations.json --export xlsx
+
+# Process both PDF and JSON data
+python main.py --pdf --json operations.json --export csv
+```
+
+### JSON Data Format
+
+You can provide operations data through a JSON file. This is useful for manual entries or when you don't have PDF confirmations. The JSON file should contain an array of operations, where each operation has the following format:
+
+```json
+[
+  {
+    "type": "vesting",
+    "date": "01/06/2023",
+    "quantity": 100,
+    "price": 15.0
+  },
+  {
+    "type": "sell",
+    "date": "02/26/2023",
+    "quantity": 50,
+    "price": 12.0
+  }
+]
+```
+
+#### Operation Types
+
+1. **Vesting Operation**
+   - `type`: Must be "vesting"
+   - `date`: Date in MM/DD/YYYY format
+   - `quantity`: Number of shares
+   - `price`: Price per share in USD
+
+2. **Sell Operation**
+   - `type`: Must be "sell"
+   - `date`: Date in MM/DD/YYYY format
+   - `quantity`: Number of shares
+   - `price`: Price per share in USD
+
+#### Example JSON File
+
+Here's a complete example of a JSON file with multiple operations:
+
+```json
+[
+  {
+    "type": "vesting",
+    "date": "01/06/2023",
+    "quantity": 100,
+    "price": 15.0
+  },
+  {
+    "type": "sell",
+    "date": "02/26/2023",
+    "quantity": 50,
+    "price": 12.0
+  },
+  {
+    "type": "sell",
+    "date": "02/27/2023",
+    "quantity": 30,
+    "price": 10.0
+  },
+  {
+    "type": "vesting",
+    "date": "07/01/2023",
+    "quantity": 100,
+    "price": 20.0
+  },
+  {
+    "type": "vesting",
+    "date": "03/27/2023",
+    "quantity": 50,
+    "price": 15.0
+  }
+]
+```
+
+Save this file as `operations.json` and use it with the `--json` argument:
+
+```bash
+python main.py --json operations.json --export csv
 ```
 
 ## Project Structure
@@ -191,7 +292,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 Here are some ideas for future improvements and features:
 
-- [ ] **Customize the data provider via configuration file**: Allow the user to customize the data provider and entries via a configuration file.
 - [ ] **Automacatilly Download E-Trade PDFs**: Automatically download the PDFs from E-Trade.
 
 Feel free to suggest more features or contribute to the development!

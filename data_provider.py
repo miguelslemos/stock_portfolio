@@ -6,7 +6,7 @@ from typing import List
 from pypdf import PdfReader
 
 from operation import VestingOperation, SellOperation, Operation
-from utils import parse_date
+from date_utils import parse_date
 
 
 class DataProvider(ABC):

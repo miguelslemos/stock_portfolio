@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 from datetime import datetime
 from abc import ABC, abstractmethod
+import json
+from typing import Dict, List
+from date_utils import parse_date
 
 @dataclass(frozen=True)
 class ProcessResult:
@@ -12,6 +15,23 @@ class Operation(ABC):
     date: datetime
     quantity: int
     price: float
+    
+    @classmethod
+    def create(cls, operations_data: Dict) -> 'Operation':
+        if operations_data['type'] == 'vesting':
+            return VestingOperation(
+                date=parse_date(operations_data['date']),
+                quantity=operations_data['quantity'],
+                price=operations_data['price']
+            )
+        elif operations_data['type'] == 'sell':
+            return SellOperation(
+                date=parse_date(operations_data['date']),
+                quantity=operations_data['quantity'],
+                price=operations_data['price']
+            )
+        else:
+            raise ValueError(f"Unsupported operation type: {operations_data['type']}")
 
     @abstractmethod
     def process(self, quantity: int, total_cost: float, total_cost_brl: float, usd_brl_ptax: float) -> ProcessResult:
@@ -71,3 +91,17 @@ class SellOperation(Operation):
     
     def get_symbol_type(self) -> str:
         return "-"
+
+
+def load_operations(operation_filepath: str) -> List['Operation']:
+    try:
+        with open(operation_filepath, 'r') as f:
+            operations_data = json.load(f)
+            operations = []
+            for op in operations_data:
+                operations.append(Operation.create(op))
+        return operations
+    except FileNotFoundError as e:
+        raise ValueError(f"Error: {e}")
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Error parsing JSON file: {e}")

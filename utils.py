@@ -1,20 +1,6 @@
-from datetime import datetime
 from typing import List
-from models import PortfolioSnapshot
-from operation import SellOperation
-
-def parse_date(date_str: str) -> datetime:
-    """Parse a date string in MM/DD/YYYY, MM/DD/YY and MM-DD-YYYY format."""
-    for fmt in ("%m/%d/%Y", "%m/%d/%y", "%m-%d-%Y"):
-        try:
-            return datetime.strptime(date_str, fmt)
-        except ValueError:
-            continue
-    raise ValueError("Invalid date! Please use MM/DD/YYYY, MM/DD/YY or MM-DD-YYYY format.")
-
-def format_date(date: datetime) -> str:
-    """Format a datetime object to DD/MM/YYYY string."""
-    return date.strftime("%d/%m/%Y")
+from date_utils import format_date
+from portfolio_snapshot import PortfolioSnapshot
 
 def format_currency(value: float, currency: str = "BRL") -> str:
     """Format a float value as currency string for BRL or USD."""
@@ -31,7 +17,7 @@ def print_portfolio_history(history: List[PortfolioSnapshot]) -> None:
     for snapshot in history:
         print(
             f"Date: {format_date(snapshot.operation.date)} | "
-            f"Quantity: {'-' if isinstance(snapshot.operation, SellOperation) else '+'}{snapshot.operation.quantity} | "
+            f"Quantity: {snapshot.operation.get_symbol_type()}{snapshot.operation.quantity} | "
             f"Total Cost USD: {format_currency(snapshot.total_cost_usd, 'USD')} | "
             f"Average Price USD: {format_currency(snapshot.average_price_usd, 'USD')} | "
             f"Total Cost BRL: {format_currency(snapshot.total_cost_brl, 'BRL')} | "
