@@ -2,7 +2,7 @@ from typing import List
 from datetime import datetime
 
 from initial_state import InitialState
-from operation import VestingOperation, SellOperation, Operation
+from operation import VestingOperation, TradeOperation, Operation
 from portfolio_snapshot import PortfolioSnapshot
 from currency_service import CurrencyService
 
@@ -45,7 +45,7 @@ class YearPortfolio:
                 # print(f"[DEBUG] Processing operation: {operation}")
                 # print(f"[DEBUG] USD/BRL PTAX rate for {operation.date.strftime('%Y-%m-%d')}: {usd_brl_ptax}")
                 # print(f"[DEBUG] Portfolio state after operation: quantity={self._quantity}, total_cost_usd={self._total_cost_usd}, total_cost_brl={self._total_cost_brl}")
-                if isinstance(operation, SellOperation):
+                if isinstance(operation, TradeOperation):
                     self._gross_profit_brl += round(operation.quantity * (operation.price * usd_brl_ptax - average_price_brl), 4)
                 self._record_snapshot(operation, average_price_usd, average_price_brl)
 

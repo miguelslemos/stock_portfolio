@@ -24,8 +24,8 @@ class Operation(ABC):
                 quantity=operations_data['quantity'],
                 price=operations_data['price']
             )
-        elif operations_data['type'] == 'sell':
-            return SellOperation(
+        elif operations_data['type'] == 'trade':
+            return TradeOperation(
                 date=parse_date(operations_data['date']),
                 quantity=operations_data['quantity'],
                 price=operations_data['price']
@@ -67,27 +67,27 @@ class VestingOperation(Operation):
         return "+"
 
 @dataclass(frozen=True)
-class SellOperation(Operation):
+class TradeOperation(Operation):
     date: datetime
     quantity: int
     price: float
     def process(self, quantity: int, total_cost: float, total_cost_brl: float, _: float) -> ProcessResult:
         if self.quantity > quantity:
             raise ValueError(
-                f"Attempted to sell {self.quantity} shares but only have {quantity} available"
+                f"Attempted to trade {self.quantity} shares but only have {quantity} available"
             )
         fraction = self.quantity / quantity
         new_total_cost = total_cost - total_cost * fraction
         new_total_cost_brl = total_cost_brl - total_cost_brl * fraction
         new_quantity = quantity - self.quantity
-        # print(f"[DEBUG] SellOperation.process: Selling {self.quantity} units at {self.price} USD each")
+        # print(f"[DEBUG] TradeOperation.process: Tradeing {self.quantity} units at {self.price} USD each")
         # print(f"[DEBUG] Previous: quantity={quantity}, total_cost={total_cost}, total_cost_brl={total_cost_brl}")
         # print(f"[DEBUG] Fraction of position sold: {fraction}")
         # print(f"[DEBUG] New: quantity={new_quantity}, total_cost={new_total_cost}, total_cost_brl={new_total_cost_brl}")
         return ProcessResult(quantity=new_quantity, total_cost=new_total_cost, total_cost_brl=new_total_cost_brl)
     
     def get_operation_type(self) -> str:
-        return "Sell"    
+        return "Trade"    
     
     def get_symbol_type(self) -> str:
         return "-"

@@ -1,7 +1,7 @@
 import unittest
 from initial_state import InitialState
 from year_portfolio import YearPortfolio
-from operation import VestingOperation, SellOperation
+from operation import VestingOperation, TradeOperation
 from utils import parse_date
 
 
@@ -11,14 +11,14 @@ class PortfolioTest(unittest.TestCase):
             portfolio = YearPortfolio(operations=[])
             portfolio.get_current_position()
 
-    def test_protifolio_with_buy_and_sell(self):
+    def test_protifolio_with_vesting_and_trading(self):
         operations = [
-            SellOperation(
+            TradeOperation(
                 date=parse_date("02/26/2023"),
                 quantity=50,
                 price=12
             ),
-            SellOperation(
+            TradeOperation(
                 date=parse_date("02/27/2023"),
                 quantity=30,
                 price=10
