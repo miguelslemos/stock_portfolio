@@ -74,69 +74,11 @@ At the end you should have directories like that:
 
 PS: The PDFs are searched recursively in the directories.
 
-### Reading from manual entries
-
-Unfortunatelly, We dont provide yet way to read from manual entries from configuration file. So for now, you need to manually create entries in the python code.
-
-- Open the `main.py` file
-- Create a list of operations, using the following format:
-
-```python
-
-operations = [
-   VestingOperation(
-      date=parse_date("01/06/2023"),
-      quantity=100,
-      price=15
-  ),    
-  TradeOperation(
-      date=parse_date("02/26/2023"),
-      quantity=50,
-      price=12
-  ),
-  TradeOperation(
-      date=parse_date("02/27/2023"),
-      quantity=30,
-      price=10
-  ),             
-  VestingOperation(
-      date=parse_date("07/01/2023"),
-      quantity=100,
-      price=20
-  ),
-  VestingOperation(
-      date=parse_date("03/27/2023"),
-      quantity=50,
-      price=15
-  )
-]
-```
-
-- Create a `StaticDataProvider` with the operations and pass it to the `BenefitHistory` constructor.
-
-```python
-provider = StaticDataProvider(operations=operations)
-benefit_history = BenefitHistory(data_provider=provider)
-```
-
-### PDFs Provider + Manual Entries
-
-You can also use both providers together. Is good approach if you want to track your operations from E-Trade and also have some manual entries like old carta statements.
-
-```python
-provider = MultDataProvider(providers=[
-    PDFDataProvider(),
-    StaticDataProvider(operations=custom_operations)
-])
-benefit_history = BenefitHistory(data_provider=provider)
-```
-
 ## Usage
 
 ### Running through Google Colab
 
 - Make a copy of the [notebook](https://colab.research.google.com/drive/1XCkyP3vs808G27BasGQ9tp4QK14vG37d?authuser=1#scrollTo=SUgqsiI9xxHm)
-- Update the cell with your operations
 - Run the notebook
 
 ### Running the program locally
@@ -144,7 +86,7 @@ benefit_history = BenefitHistory(data_provider=provider)
 Run the main script:
 
 ```bash
-python main.py
+python main.py --pdf
 ```
 
 The script will:
