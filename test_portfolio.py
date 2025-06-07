@@ -1,7 +1,4 @@
 import unittest
-from datetime import datetime
-
-from data_provider import StaticDataProvider
 from initial_state import InitialState
 from year_portfolio import YearPortfolio
 from operation import VestingOperation, SellOperation
