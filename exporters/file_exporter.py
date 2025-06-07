@@ -1,7 +1,6 @@
 from abc import abstractmethod
 from exporters.base_exporter import BaseExporter
 from utils import format_date
-import unittest
 
 
 class FileExporter(BaseExporter):
