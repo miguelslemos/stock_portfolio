@@ -630,5 +630,6 @@ trade_confirmations/*
 # ignore all files in the release_confirmations folder
 release_confirmations/*
 
-# ignore all files with the .xlsx extension
+# ignore all files with the .xlsx and .csv extension
 *.xlsx
+*.csv

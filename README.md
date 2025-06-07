@@ -16,8 +16,7 @@ This project simplifies the process of tracking stock information required for I
 - Total cost in the last day of the year in USD and BRL
 - Generating yearly reports of portfolio performance
 - Supporting multiple data sources (PDF confirmations, manual entries)
-- Exporting data to an Excel file so you can keep a record of your operations
-
+- Exporting data to CSV or XLSX files
 ## Features
 
 - **Multi-source Data Support**: Import operations from PDF confirmations or manual entries
@@ -29,7 +28,7 @@ This project simplifies the process of tracking stock information required for I
   - Average purchase prices
   - Profit/loss calculations
   - Currency conversions
-- **Excel Export**: Export the data to an Excel file
+- **Exporting Data**: Export the information to CSV or XLSX files
 
 ## Setup
 
@@ -154,7 +153,18 @@ The script will:
 2. Calculate portfolio metrics
 3. Generate yearly reports
 4. Display current position and profit/loss information
-5. Export the data to an Excel file
+
+### Exporting Data
+
+You can export the data to CSV or XLSX format using the `--export` flag:
+
+```bash
+# Export to CSV
+python main.py --export csv
+
+# Export to XLSX
+python main.py --export xlsx
+```
 
 ## Project Structure
 

@@ -39,18 +39,21 @@ class MultDataProvider(DataProvider):
 class PDFDataProvider(DataProvider):
     def __init__(self, trade_confirmations_path: str = "trade_confirmations/", release_confirmations_path: str = "release_confirmations/"):
         self.operations = []
-        self._process_trade_confirmations(trade_confirmations_path)
-        self._process_release_confirmations(release_confirmations_path)
+        trade_confirmation_files = self._get_pdf_files(trade_confirmations_path)
+        release_confirmation_files = self._get_pdf_files(release_confirmations_path)
+        print(f"[DEBUG] Found {len(release_confirmation_files)} release confirmation PDFs")
+        print(f"[DEBUG] Found {len(trade_confirmation_files)} trade confirmation PDFs")
+        self._process_trade_confirmations(trade_confirmation_files)
+        self._process_release_confirmations(release_confirmation_files)
 
-    def _process_trade_confirmations(self, trade_confirmation_path: str) -> None:
+
+    def _process_trade_confirmations(self, trade_confirmation_files: str) -> None:
         """Process trade confirmation PDFs and extract sell operations."""
-        trade_confirmation_files = self._get_pdf_files(trade_confirmation_path)
         for pdf in trade_confirmation_files:
             self._parse_trade_confirmation(pdf)
 
-    def _process_release_confirmations(self, release_confirmation_path: str) -> None:
+    def _process_release_confirmations(self, release_confirmation_files: str) -> None:
         """Process release confirmation PDFs and extract buy operations."""
-        release_confirmation_files = self._get_pdf_files(release_confirmation_path)
         for pdf in release_confirmation_files:
             self._parse_release_confirmation(pdf)
 
