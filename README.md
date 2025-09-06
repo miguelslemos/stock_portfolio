@@ -1,10 +1,10 @@
-# Stock Portfolio Tracker
+# Stock Portfolio Management System
 
 > **Disclaimer:** This project is under active development. Features, usage, and outputs may change. Use at your own risk.
 
 > **Disclaimer:** We emphasize project are merely auxiliary and do not replace the need for individual analysis. The proper use of this program is the responsibility of each individual, and it is always recommended to consult a personal accountant.
 
-A Python tool to automate the tracking of stock operations and generate reports for Brazilian tax declaration (IRPF).
+A professional-grade stock portfolio management system built with Clean Architecture principles. Automate the tracking of stock operations and generate comprehensive reports for Brazilian tax declaration (IRPF).
 
 ## Overview
 
@@ -19,16 +19,20 @@ This project simplifies the process of tracking stock information required for I
 - Exporting data to CSV or XLSX files
 ## Features
 
-- **Multi-source Data Support**: Import operations from PDF confirmations or manual entries
-- **Currency Conversion**: Automatic USD/BRL conversion using PTAX rates(bacen API)
+- **Clean Architecture**: Modular design following SOLID principles for maximum maintainability
+- **Multi-source Data Support**: Import operations from PDF confirmations or JSON files
+- **Currency Conversion**: Automatic USD/BRL conversion using PTAX rates (BCB API)
 - **Yearly Portfolio Tracking**: Separate tracking of operations by year
 - **Detailed Reports**: Generate comprehensive reports including:
-  - operation history
+  - Operation history
   - Current position
   - Average purchase prices
   - Profit/loss calculations
   - Currency conversions
-- **Exporting Data**: Export the information to CSV or XLSX files
+- **Export Options**: Export data to CSV or XLSX formats
+- **Extensive Testing**: Unit and integration tests ensuring reliability
+- **Type Safety**: Full type annotations for better IDE support and error prevention
+- **Professional Code Quality**: Enterprise-level code following best practices
 
 ## Setup
 
@@ -242,8 +246,44 @@ Feel free to suggest more features or contribute to the development!
 
 There's almost no testing for this project yet. But we compared the output of this program with the output of the shared spreadsheet from E-Trade and they match.
 
+## Architecture & Development
+
+### Clean Architecture
+This project follows Clean Architecture principles with clear separation of concerns:
+
+- **Domain Layer**: Core business logic and entities
+- **Application Layer**: Use cases and application services  
+- **Infrastructure Layer**: External dependencies and adapters
+
+For detailed architecture documentation, see: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+
+### Running Tests
+
+Execute the full test suite:
+
+```bash
+# Run all tests
+pytest
+
+# Run only unit tests
+pytest tests/test_domain_*.py
+
+# Run integration tests
+pytest tests/test_integration.py
+
+# Run with coverage
+pytest --cov=src
+```
+
+### Code Quality
+- Full type annotations
+- SOLID principles implementation
+- Comprehensive test coverage
+- Detailed documentation
+- Clean, maintainable code structure
+
 ## Documentação em Português
 
 Para entender todas as regras de negócio (preço médio, custo, lucro, câmbio, etc.), veja o guia completo:
 
-- docs/guia_negocio.md
+- [docs/guia_negocio.md](docs/guia_negocio.md)
