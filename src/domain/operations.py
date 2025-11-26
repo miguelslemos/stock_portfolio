@@ -144,13 +144,20 @@ class TradeOperation(PortfolioOperation):
         new_avg_price_brl = current_position.average_price_brl
 
         # Calculate profit/loss in BRL
+        # Sale price uses ask rate (venda)
         sale_price_brl = exchange_rate.convert(
-            Money(self.price_per_share_usd.amount * self.quantity.value, 'USD')
+            Money(self.price_per_share_usd.amount * self.quantity.value, 'USD'),
+            use_bid=False
         )
-        cost_basis_brl = Money(
-            current_position.average_price_brl.amount * self.quantity.value,
-            'BRL'
+        
+        # Cost basis: recalculate using bid rate (compra) for more accurate profit calculation
+        # The original cost was in USD, so we convert it using bid rate
+        cost_basis_usd = Money(
+            current_position.average_price_usd.amount * self.quantity.value,
+            'USD'
         )
+        cost_basis_brl = exchange_rate.convert(cost_basis_usd, use_bid=True)
+        
         profit_loss_brl = ProfitLoss(sale_price_brl.amount - cost_basis_brl.amount, 'BRL')
         
         new_gross_profit_brl = ProfitLoss(
