@@ -21,6 +21,9 @@ from ..application.use_cases import OperationRepository
 
 logger = logging.getLogger(__name__)
 
+# Suppress pypdf warnings about advanced encoding
+logging.getLogger('pypdf._cmap').setLevel(logging.CRITICAL)
+
 
 class JSONOperationRepository(OperationRepository):
     """Repository for loading operations from JSON files."""
@@ -160,7 +163,8 @@ class PDFOperationRepository(OperationRepository):
             
             # Try modern format first
             pattern = (
-                r'Trade Date\s+Settlement Date\s+Quantity\s+Price\s+Settlement Amount\n'
+                r'Trade Date\s+Settlement Date\s+Quantity\s+Price\s+Settlement Amount'
+                r'.*?'  # Allow any content between header and data
                 r'[\d/]+\s+([\d/]+)\s+([\d,.]+)\s+([\d,.]+)'
             )
             
@@ -170,8 +174,8 @@ class PDFOperationRepository(OperationRepository):
                     r'TRADE\s+DATE\s+SETL\s+DATE\s+MKT\s+/\s+CPT\s+SYMBOL\s+/\s+CUSIP\s+BUY\s+/\s+SELL\s+QUANTITY\s+PRICE\s+ACCT\s+TYPE\n'
                     r'[\d/]+\s([\d/]+)\s+[\d,\w,\s]+\s+([\d,.]+)\s+([\d,.,$]+)'
                 )
-            
-            match = re.search(pattern, text)
+            logger.info(f"Loading pdf file: {pdf_path}")
+            match = re.search(pattern, text, re.DOTALL)
             if match:
                 date_str = match.group(1).strip()
                 quantity_str = match.group(2).strip().replace(",", "")
@@ -180,14 +184,17 @@ class PDFOperationRepository(OperationRepository):
                 date = self._parse_date(date_str)
                 quantity = StockQuantity(int(float(quantity_str)))
                 price = Money(Decimal(price_str), 'USD')
-                
-                return TradeOperation(
+
+                trade_op = TradeOperation(
                     date=date,
                     quantity=quantity,
                     price_per_share_usd=price
                 )
-            
-            logger.warning(f"Could not extract trade data from {pdf_path}")
+
+                logger.debug(
+                    f"Date={trade_op.date}, Quantity={trade_op.quantity}, Price/Share={trade_op.price_per_share_usd}"
+                )
+                return trade_op
             return None
             
         except Exception as e:
