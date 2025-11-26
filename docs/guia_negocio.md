@@ -6,7 +6,7 @@ Este projeto processa operações de ações (grants/vestings e trades/vendas), 
 ## Moedas e Câmbio
 - A moeda base das operações é USD. Também calculamos métricas em BRL.
 - A cotação USD/BRL (PTAX) é obtida via serviço do Banco Central do Brasil (python-bcb) usando o preço de compra/venda (ask).
-  - Tenta a cotação na data exata da operação.
+  - Tenta a cotação na data exata da liquidação da operação(Settlement Date).
   - Caso não exista (feriado/fim de semana), busca retroativamente até 7 dias para trás.
 
 ## Tipos de Operação

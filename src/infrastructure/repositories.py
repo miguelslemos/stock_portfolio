@@ -161,14 +161,14 @@ class PDFOperationRepository(OperationRepository):
             # Try modern format first
             pattern = (
                 r'Trade Date\s+Settlement Date\s+Quantity\s+Price\s+Settlement Amount\n'
-                r'([\d/]+)\s+[\d/]+\s+([\d,.]+)\s+([\d,.]+)'
+                r'[\d/]+\s+([\d/]+)\s+([\d,.]+)\s+([\d,.]+)'
             )
             
             # Check for legacy format
             if self._is_legacy_pdf_format(text):
                 pattern = (
                     r'TRADE\s+DATE\s+SETL\s+DATE\s+MKT\s+/\s+CPT\s+SYMBOL\s+/\s+CUSIP\s+BUY\s+/\s+SELL\s+QUANTITY\s+PRICE\s+ACCT\s+TYPE\n'
-                    r'([\d/]+)\s[\d/]+\s+[\d,\w,\s]+\s+([\d,.]+)\s+([\d,.,$]+)'
+                    r'[\d/]+\s([\d/]+)\s+[\d,\w,\s]+\s+([\d,.]+)\s+([\d,.,$]+)'
                 )
             
             match = re.search(pattern, text)
