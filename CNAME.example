@@ -1,0 +1,15 @@
+# Exemplo de arquivo CNAME para domínio customizado
+# Renomeie este arquivo para 'CNAME' (sem extensão) e adicione seu domínio
+
+# Para domínio raiz:
+# seu-dominio.com
+
+# Para subdomínio:
+# app.seu-dominio.com
+
+# Instruções:
+# 1. Remova os comentários (#)
+# 2. Substitua pelo seu domínio
+# 3. Renomeie o arquivo para 'CNAME'
+# 4. Configure o DNS conforme o guia DEPLOY_GITHUB_PAGES.md
+
