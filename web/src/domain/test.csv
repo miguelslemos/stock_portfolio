@@ -1,0 +1,2 @@
+tipo_operacao,tipo_ativo,emissor,tipo_titulo,indexador,taxa_cdi,forma,valor_bruto,data_compra,liquidez_diaria,data_vencimento
+Compra,FixedIncome,Banco XP,CDB,CDI,105,POST,10000,2024-01-15,false,2026-01-15

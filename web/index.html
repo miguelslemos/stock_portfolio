@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" 
+          content="default-src 'self'; 
+                   script-src 'self' 'wasm-unsafe-eval'; 
+                   style-src 'self' 'unsafe-inline'; 
+                   connect-src 'self' https://olinda.bcb.gov.br; 
+                   img-src 'self' data: blob:; 
+                   font-src 'self'; 
+                   object-src 'none'; 
+                   base-uri 'self'; 
+                   form-action 'self';" />
+    <meta name="description" content="Sistema profissional de gestão de portfólio de ações com cálculo automático de impostos e relatórios detalhados" />
+    <meta name="keywords" content="portfólio, ações, investimentos, imposto de renda, gestão financeira" />
+    <title>Gestão Profissional de Portfólio de Ações | Stock Portfolio Manager</title>
+    <link rel="stylesheet" href="/src/presentation/styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>📈 Stock Portfolio Management</h1>
+        <p>Acompanhe suas operações de ações da NU e gere relatórios de imposto automaticamente</p>
+        <div class="privacy-notice">
+          <span class="privacy-icon">🔒</span>
+          <span class="privacy-text">
+            <strong>100% Privado e Seguro:</strong> Todos os PDFs são processados localmente no seu navegador. 
+            Apenas cotações PTAX são consultadas externamente. Seus dados nunca são enviados ou armazenados.
+          </span>
+        </div>
+      </header>
+
+      <main>
+        <section class="upload-section" id="upload-section">
+          <h2>📁 Carregar Dados do Portfólio</h2>
+
+          <div class="upload-group">
+            <label for="release-pdfs">
+              📈 PDFs de Confirmação de Vesting
+              <span class="label-hint">Arquivos individuais ou pasta completa</span>
+            </label>
+            <div class="file-input-wrapper">
+              <input 
+                type="file" 
+                id="release-pdfs" 
+                accept=".pdf" 
+                multiple 
+                webkitdirectory 
+                directory 
+                class="hidden-input" 
+                aria-label="Selecionar PDFs de confirmação de vesting" 
+              />
+              <button 
+                type="button" 
+                id="release-btn" 
+                class="file-select-btn" 
+                aria-label="Escolher arquivos ou pasta de vesting"
+              >
+                📄 Escolher Arquivos ou Pasta
+              </button>
+              <span id="release-count" class="file-count" role="status" aria-live="polite"></span>
+            </div>
+            <small>
+              💡 <strong>Dica:</strong> Selecione a pasta que contém todos os PDFs de vesting. 
+              O sistema processará automaticamente todos os arquivos, incluindo subpastas.
+            </small>
+          </div>
+
+          <div class="upload-group">
+            <label for="trade-pdfs">
+              📉 PDFs de Confirmação de Venda (Trade)
+              <span class="label-hint">Arquivos individuais ou pasta completa</span>
+            </label>
+            <div class="file-input-wrapper">
+              <input 
+                type="file" 
+                id="trade-pdfs" 
+                accept=".pdf" 
+                multiple 
+                webkitdirectory 
+                directory 
+                class="hidden-input" 
+                aria-label="Selecionar PDFs de confirmação de venda" 
+              />
+              <button 
+                type="button" 
+                id="trade-btn" 
+                class="file-select-btn" 
+                aria-label="Escolher arquivos ou pasta de vendas"
+              >
+                📄 Escolher Arquivos ou Pasta
+              </button>
+              <span id="trade-count" class="file-count" role="status" aria-live="polite"></span>
+            </div>
+            <small>
+              💡 <strong>Dica:</strong> Selecione a pasta que contém todos os PDFs de vendas. 
+              Todas as subpastas serão processadas recursivamente.
+            </small>
+          </div>
+
+          <div class="upload-group">
+            <label for="json-file">
+              📝 Arquivo JSON de Operações
+              <span class="label-hint">Opcional - Para operações manuais</span>
+            </label>
+            <input 
+              type="file" 
+              id="json-file" 
+              accept=".json" 
+              aria-label="Selecionar arquivo JSON de operações" 
+            />
+            <small>
+              ℹ️ Use este campo para adicionar operações manualmente via JSON. 
+              Útil para importar dados de outras fontes ou fazer ajustes.
+            </small>
+          </div>
+
+          <div class="button-group">
+            <button 
+              id="process-btn" 
+              class="primary" 
+              disabled 
+              aria-label="Processar dados do portfólio"
+            >
+              ⚡ Processar Portfólio
+            </button>
+            <button 
+              id="export-btn" 
+              class="primary" 
+              disabled 
+              aria-label="Processar portfólio e exportar para CSV"
+            >
+              📊 Processar e Exportar CSV
+            </button>
+            <button 
+              id="clear-btn" 
+              class="secondary" 
+              aria-label="Limpar todos os dados carregados"
+            >
+              🗑️ Limpar Tudo
+            </button>
+          </div>
+        </section>
+
+        <section class="reset-section" id="reset-section" style="display: none;">
+          <button id="reset-btn" class="reset-button">
+            <span class="reset-icon">🔄</span>
+            <span class="reset-text">
+              <strong>Processar Novos Dados</strong>
+              <small>Limpar resultados atuais e recomeçar</small>
+            </span>
+          </button>
+        </section>
+
+        <section 
+          id="results" 
+          role="region" 
+          aria-live="polite" 
+          aria-label="Resultados do processamento"
+        ></section>
+      </main>
+
+      <footer style="text-align: center; padding: 24px; color: #6b7280; font-size: 0.875rem; border-top: 1px solid #e5e7eb;">
+        <p>
+          <strong>Stock Portfolio Manager</strong> • 
+          Sistema de código aberto para gestão profissional de investimentos
+        </p>
+        <p style="margin-top: 8px; opacity: 0.8;">
+          Desenvolvido com ❤️ para investidores brasileiros
+        </p>
+      </footer>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
