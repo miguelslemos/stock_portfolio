@@ -18,7 +18,7 @@ class TestVestingOperation:
     
     def create_sample_exchange_rate(self):
         """Create a sample exchange rate for testing."""
-        return ExchangeRate('USD', 'BRL', Decimal('5.0'), datetime(2024, 1, 1))
+        return ExchangeRate('USD', 'BRL', datetime(2024, 1, 1), ask_rate=Decimal('5.0'), bid_rate=Decimal('5.0'))
     
     def create_empty_position(self):
         """Create an empty portfolio position."""
@@ -129,7 +129,7 @@ class TestTradeOperation:
     
     def create_sample_exchange_rate(self):
         """Create a sample exchange rate for testing."""
-        return ExchangeRate('USD', 'BRL', Decimal('5.0'), datetime(2024, 1, 1))
+        return ExchangeRate('USD', 'BRL', datetime(2024, 1, 1), ask_rate=Decimal('5.0'), bid_rate=Decimal('5.0'))
     
     def create_sample_position(self):
         """Create a sample portfolio position with holdings."""
@@ -147,11 +147,14 @@ class TestTradeOperation:
         """Test creating valid trade operation."""
         operation = TradeOperation(
             date=datetime(2024, 1, 15),
+            _settlement_date=datetime(2024, 1, 17),
             quantity=StockQuantity(50),
             price_per_share_usd=Money(Decimal('12.50'), 'USD')
         )
         
         assert operation.get_date() == datetime(2024, 1, 15)
+        assert operation.date == datetime(2024, 1, 15)
+        assert operation.settlement_date == datetime(2024, 1, 17)
         assert operation.quantity.value == 50
         assert operation.price_per_share_usd.amount == Decimal('12.50')
     
@@ -160,6 +163,7 @@ class TestTradeOperation:
         with pytest.raises(ValueError, match="Trade price must be in USD"):
             TradeOperation(
                 date=datetime(2024, 1, 15),
+                _settlement_date=datetime(2024, 1, 17),
                 quantity=StockQuantity(50),
                 price_per_share_usd=Money(Decimal('12.50'), 'BRL')
             )
@@ -168,6 +172,7 @@ class TestTradeOperation:
         """Test trade operation description."""
         operation = TradeOperation(
             date=datetime(2024, 1, 15),
+            _settlement_date=datetime(2024, 1, 17),
             quantity=StockQuantity(50),
             price_per_share_usd=Money(Decimal('12.50'), 'USD')
         )
@@ -181,6 +186,7 @@ class TestTradeOperation:
         
         operation = TradeOperation(
             date=datetime(2024, 1, 15),
+            _settlement_date=datetime(2024, 1, 17),
             quantity=StockQuantity(30),  # Sell 30 out of 100
             price_per_share_usd=Money(Decimal('12'), 'USD')
         )
@@ -216,6 +222,7 @@ class TestTradeOperation:
         
         operation = TradeOperation(
             date=datetime(2024, 1, 15),
+            _settlement_date=datetime(2024, 1, 17),
             quantity=StockQuantity(100),  # Sell all 100
             price_per_share_usd=Money(Decimal('11'), 'USD')
         )
@@ -242,6 +249,7 @@ class TestTradeOperation:
         
         operation = TradeOperation(
             date=datetime(2024, 1, 15),
+            _settlement_date=datetime(2024, 1, 17),
             quantity=StockQuantity(150),  # Try to sell 150
             price_per_share_usd=Money(Decimal('12'), 'USD')
         )
@@ -265,6 +273,7 @@ class TestTradeOperation:
         
         operation = TradeOperation(
             date=datetime(2024, 1, 15),
+            _settlement_date=datetime(2024, 1, 17),
             quantity=StockQuantity(10),
             price_per_share_usd=Money(Decimal('12'), 'USD')
         )

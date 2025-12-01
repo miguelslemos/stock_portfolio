@@ -59,19 +59,40 @@ class ExchangeRate:
     """Value object representing an exchange rate between currencies."""
     from_currency: str
     to_currency: str
-    rate: Decimal
     date: datetime
+    bid_rate: Optional[Decimal] = None  # Buy rate (taxa de compra)
+    ask_rate: Optional[Decimal] = None  # Sell rate (taxa de venda)
 
     def __post_init__(self):
-        if self.rate <= 0:
-            raise ValueError("Exchange rate must be positive")
+        if self.bid_rate is not None and self.bid_rate <= 0:
+            raise ValueError("Bid rate must be positive")
+        if self.ask_rate is not None and self.ask_rate <= 0:
+            raise ValueError("Ask rate must be positive")
+        if self.bid_rate is None and self.ask_rate is None:
+            raise ValueError("At least one of bid_rate or ask_rate must be provided")
 
-    def convert(self, amount: Money) -> Money:
-        """Convert money from one currency to another."""
+    def convert(self, amount: Money, use_bid: bool = False) -> Money:
+        """
+        Convert money from one currency to another.
+        
+        Args:
+            amount: Amount to convert
+            use_bid: If True, use bid_rate (buy rate). If False, use ask_rate (sell rate).
+        """
         if amount.currency != self.from_currency:
             raise ValueError(f"Cannot convert {amount.currency} using {self.from_currency}/{self.to_currency} rate")
         
-        converted_amount = amount.amount * self.rate
+        # Choose the appropriate rate
+        if use_bid:
+            if self.bid_rate is None:
+                raise ValueError("Bid rate is not available")
+            conversion_rate = self.bid_rate
+        else:
+            if self.ask_rate is None:
+                raise ValueError("Ask rate is not available")
+            conversion_rate = self.ask_rate
+        
+        converted_amount = amount.amount * conversion_rate
         return Money(converted_amount, self.to_currency)
 
 

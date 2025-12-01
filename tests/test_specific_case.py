@@ -74,12 +74,14 @@ class TestBusinessScenarios:
         # Create operations
         trade1 = TradeOperation(
             date=datetime(2024, 1, 15),
+            _settlement_date=datetime(2024, 1, 15),
             quantity=StockQuantity(3),
             price_per_share_usd=Money(Decimal('15'), 'USD')
         )
         
         trade2 = TradeOperation(
             date=datetime(2024, 1, 15),  # Same day
+            _settlement_date=datetime(2024, 1, 15),
             quantity=StockQuantity(4),
             price_per_share_usd=Money(Decimal('20'), 'USD')
         )
@@ -152,11 +154,13 @@ class TestBusinessScenarios:
         operations = [
             TradeOperation(
                 date=datetime(2024, 1, 15),
+                _settlement_date=datetime(2024, 1, 15),
                 quantity=StockQuantity(3),
                 price_per_share_usd=Money(Decimal('15'), 'USD')
             ),
             TradeOperation(
                 date=datetime(2024, 1, 15),
+                _settlement_date=datetime(2024, 1, 15),
                 quantity=StockQuantity(4),
                 price_per_share_usd=Money(Decimal('20'), 'USD')
             )
@@ -200,11 +204,13 @@ class TestBusinessScenarios:
         operations = [
             TradeOperation(
                 date=datetime(2024, 1, 15),
+                _settlement_date=datetime(2024, 1, 15),
                 quantity=StockQuantity(3),
                 price_per_share_usd=Money(Decimal('15'), 'USD')
             ),
             TradeOperation(
                 date=datetime(2024, 1, 15),
+                _settlement_date=datetime(2024, 1, 15),
                 quantity=StockQuantity(4),
                 price_per_share_usd=Money(Decimal('20'), 'USD')
             )
@@ -252,6 +258,7 @@ class TestBusinessScenarios:
         
         trade = TradeOperation(
             date=same_date,
+            _settlement_date=same_date,
             quantity=StockQuantity(25),
             price_per_share_usd=Money(Decimal('18'), 'USD')
         )
@@ -316,12 +323,14 @@ class TestBusinessScenarios:
         
         trade1 = TradeOperation(
             date=same_date,
+            _settlement_date=same_date,
             quantity=StockQuantity(20),
             price_per_share_usd=Money(Decimal('22'), 'USD')
         )
         
         trade2 = TradeOperation(
             date=same_date,
+            _settlement_date=same_date,
             quantity=StockQuantity(10),
             price_per_share_usd=Money(Decimal('25'), 'USD')
         )

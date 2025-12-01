@@ -16,7 +16,7 @@ from .application.use_cases import (
     ProcessPortfolioRequest
 )
 from .domain.services import PortfolioCalculationService, PortfolioAnalyticsService
-from .infrastructure.exchange_rate import BCBExchangeRateService, CachedExchangeRateService
+from .infrastructure.exchange_rate import CachedExchangeRateService
 from .infrastructure.repositories import (
     JSONOperationRepository, 
     PDFOperationRepository, 
@@ -47,7 +47,16 @@ class PortfolioApplication:
     def __init__(self):
         """Initialize the application with default dependencies."""
         # Initialize core services
-        exchange_rate_service = CachedExchangeRateService(BCBExchangeRateService())
+        try:
+            from .infrastructure.exchange_rate import BCBExchangeRateService, MockExchangeRateService
+            exchange_rate_service = CachedExchangeRateService(BCBExchangeRateService())
+            logger.info("Using BCB Exchange Rate Service")
+        except Exception as e:
+            logger.warning(f"Failed to initialize BCB service, using mock service: {e}")
+            from .infrastructure.exchange_rate import MockExchangeRateService
+            exchange_rate_service = MockExchangeRateService(default_rate=5.8)
+            logger.info("Using Mock Exchange Rate Service (rate=5.8)")
+        
         self._calculation_service = PortfolioCalculationService(exchange_rate_service)
         self._analytics_service = PortfolioAnalyticsService()
     

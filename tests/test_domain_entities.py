@@ -71,34 +71,50 @@ class TestExchangeRate:
     
     def test_create_valid_exchange_rate(self):
         """Test creating valid exchange rate."""
-        rate = ExchangeRate('USD', 'BRL', Decimal('5.25'), datetime(2024, 1, 1))
+        rate = ExchangeRate('USD', 'BRL', datetime(2024, 1, 1), ask_rate=Decimal('5.25'), bid_rate=Decimal('5.20'))
         assert rate.from_currency == 'USD'
         assert rate.to_currency == 'BRL'
-        assert rate.rate == Decimal('5.25')
+        assert rate.ask_rate == Decimal('5.25')
+        assert rate.bid_rate == Decimal('5.20')
     
-    def test_zero_rate_raises_error(self):
-        """Test that zero rate raises ValueError."""
-        with pytest.raises(ValueError, match="Exchange rate must be positive"):
-            ExchangeRate('USD', 'BRL', Decimal('0'), datetime(2024, 1, 1))
+    def test_zero_bid_rate_raises_error(self):
+        """Test that zero bid rate raises ValueError."""
+        with pytest.raises(ValueError, match="Bid rate must be positive"):
+            ExchangeRate('USD', 'BRL', datetime(2024, 1, 1), bid_rate=Decimal('0'), ask_rate=Decimal('5.0'))
     
-    def test_negative_rate_raises_error(self):
-        """Test that negative rate raises ValueError."""
-        with pytest.raises(ValueError, match="Exchange rate must be positive"):
-            ExchangeRate('USD', 'BRL', Decimal('-1'), datetime(2024, 1, 1))
+    def test_negative_ask_rate_raises_error(self):
+        """Test that negative ask rate raises ValueError."""
+        with pytest.raises(ValueError, match="Ask rate must be positive"):
+            ExchangeRate('USD', 'BRL', datetime(2024, 1, 1), ask_rate=Decimal('-1'), bid_rate=Decimal('5.0'))
     
-    def test_convert_money(self):
-        """Test currency conversion."""
-        rate = ExchangeRate('USD', 'BRL', Decimal('5.0'), datetime(2024, 1, 1))
+    def test_no_rates_provided_raises_error(self):
+        """Test that not providing any rates raises ValueError."""
+        with pytest.raises(ValueError, match="At least one of bid_rate or ask_rate must be provided"):
+            ExchangeRate('USD', 'BRL', datetime(2024, 1, 1))
+    
+    def test_convert_money_with_ask_rate(self):
+        """Test currency conversion using ask rate."""
+        rate = ExchangeRate('USD', 'BRL', datetime(2024, 1, 1), ask_rate=Decimal('5.0'), bid_rate=Decimal('4.9'))
         usd_money = Money(Decimal('100'), 'USD')
         
-        brl_money = rate.convert(usd_money)
+        brl_money = rate.convert(usd_money)  # Default uses ask_rate
         
         assert brl_money.amount == Decimal('500')
         assert brl_money.currency == 'BRL'
     
+    def test_convert_money_with_bid_rate(self):
+        """Test currency conversion using bid rate."""
+        rate = ExchangeRate('USD', 'BRL', datetime(2024, 1, 1), ask_rate=Decimal('5.0'), bid_rate=Decimal('4.9'))
+        usd_money = Money(Decimal('100'), 'USD')
+        
+        brl_money = rate.convert(usd_money, use_bid=True)
+        
+        assert brl_money.amount == Decimal('490')
+        assert brl_money.currency == 'BRL'
+    
     def test_convert_wrong_currency_raises_error(self):
         """Test that converting wrong currency raises error."""
-        rate = ExchangeRate('USD', 'BRL', Decimal('5.0'), datetime(2024, 1, 1))
+        rate = ExchangeRate('USD', 'BRL', datetime(2024, 1, 1), ask_rate=Decimal('5.0'), bid_rate=Decimal('4.9'))
         eur_money = Money(Decimal('100'), 'EUR')
         
         with pytest.raises(ValueError, match="Cannot convert EUR using USD/BRL rate"):

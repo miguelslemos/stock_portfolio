@@ -62,12 +62,14 @@ class BCBExchangeRateService(ExchangeRateService):
             try:
                 rate_data = self._fetch_rate_from_bcb(try_date)
                 if rate_data is not None:
-                    logger.info(f"Found USD/BRL rate for {try_date}: {rate_data}")
+                    ask_rate, bid_rate = rate_data
+                    logger.debug(f"Found USD/BRL rate for {try_date}: ask={ask_rate}, bid={bid_rate}")
                     return ExchangeRate(
                         from_currency='USD',
                         to_currency='BRL',
-                        rate=Decimal(str(rate_data)),
-                        date=try_date
+                        date=try_date,
+                        ask_rate=Decimal(str(ask_rate)),
+                        bid_rate=Decimal(str(bid_rate))
                     )
             except Exception as e:
                 logger.debug(f"Failed to fetch rate for {try_date}: {e}")
@@ -76,7 +78,7 @@ class BCBExchangeRateService(ExchangeRateService):
         logger.warning(f"Could not find USD/BRL rate for {date} (tried {self.FALLBACK_DAYS} days back)")
         return None
     
-    def _fetch_rate_from_bcb(self, date: datetime) -> Optional[float]:
+    def _fetch_rate_from_bcb(self, date: datetime) -> Optional[tuple[float, float]]:
         """
         Fetch exchange rate from BCB API for a specific date.
         
@@ -84,7 +86,7 @@ class BCBExchangeRateService(ExchangeRateService):
             date: Date to fetch rate for
             
         Returns:
-            Exchange rate as float or None if not available
+            Tuple of (ask_rate, bid_rate) as floats or None if not available
         """
         try:
             # Get rate data for a single day plus one day
@@ -96,8 +98,10 @@ class BCBExchangeRateService(ExchangeRateService):
             if rates_df is not None and not rates_df.empty:
                 date_str = date.strftime("%Y-%m-%d")
                 if date_str in rates_df.index:
-                    # Use 'ask' price (selling rate)
-                    return rates_df.loc[date_str, ('USD', 'ask')]
+                    # Return both ask (sell) and bid (buy) prices
+                    ask_rate = rates_df.loc[date_str, ('USD', 'ask')]
+                    bid_rate = rates_df.loc[date_str, ('USD', 'bid')]
+                    return (ask_rate, bid_rate)
             
             return None
             
@@ -118,7 +122,7 @@ class MockExchangeRateService(ExchangeRateService):
         Initialize mock service with a default rate.
         
         Args:
-            default_rate: Default USD/BRL exchange rate
+            default_rate: Default USD/BRL exchange rate (used for both ask and bid)
         """
         self._default_rate = Decimal(str(default_rate))
     
@@ -130,8 +134,9 @@ class MockExchangeRateService(ExchangeRateService):
         return ExchangeRate(
             from_currency='USD',
             to_currency='BRL',
-            rate=self._default_rate,
-            date=date
+            date=date,
+            ask_rate=self._default_rate,
+            bid_rate=self._default_rate
         )
 
 
