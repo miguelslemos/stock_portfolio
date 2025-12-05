@@ -1,5 +1,6 @@
 import { PortfolioSnapshot } from '../domain/entities';
 import { BRLFormatter, USDFormatter, DateFormatter } from './formatters';
+import { PortfolioPosition } from '../domain/entities';
 
 /**
  * Builder for year detail modals
@@ -44,9 +45,9 @@ export class YearDetailsBuilder {
           </div>
           <div class="modal-body">
             
-            ${this.renderYearSummary(year, yearSnapshots, finalPosition, initialPosition, totalVested, totalSold, totalProfitLoss, avgPtaxBid, avgPtaxAsk)}
+            ${this.renderYearSummary(year, yearSnapshots, finalPosition, initialPosition, totalVested, totalSold, totalProfitLoss, avgPtaxBid, avgPtaxAsk, trades)}
             ${this.renderOperationsTable(yearSnapshots)}
-            ${this.renderTaxSummary(year, trades, totalProfitLoss)}
+            ${this.renderTaxSummary(year, yearSnapshots, totalProfitLoss)}
 
           </div>
         </div>
@@ -61,22 +62,49 @@ export class YearDetailsBuilder {
   private static renderYearSummary(
     year: number,
     snapshots: PortfolioSnapshot[],
-    finalPosition: import('../domain/entities').PortfolioPosition,
-    initialPosition: import('../domain/entities').PortfolioPosition | null,
+    finalPosition: PortfolioPosition,
+    initialPosition: PortfolioPosition | null,
     totalVested: number,
     totalSold: number,
     totalProfitLoss: number,
     avgPtaxBid: number,
-    avgPtaxAsk: number
+    avgPtaxAsk: number,
+    trades: PortfolioSnapshot[]
   ): string {
     const initialQty = initialPosition?.quantity.value ?? 0;
     const finalQty = finalPosition.quantity.value;
     const netChange = finalQty - initialQty;
     const ptaxBid = snapshots[snapshots.length - 1]!.metadata.exchangeRates.ptaxBid;
 
+    const currentYear = new Date().getFullYear();
+    const isCurrentYear = year === currentYear;
+    const isFutureYear = year > currentYear;
+    const yearInProgress = isCurrentYear || isFutureYear;
+
+    const yearEndQtyLabel = yearInProgress 
+      ? `Quantidade Atual ${isCurrentYear ? '*' : '**'}`
+      : 'Quantidade no Fim do Ano';
+    
+    const yearEndQtyDetail = yearInProgress
+      ? isCurrentYear 
+        ? '* Ano em andamento'
+        : '** Ano futuro'
+      : `Em 31/12/${year}`;
+
     return `
       <div class="detail-section">
         <h3>Resumo do Ano ${year}</h3>
+        ${yearInProgress ? `
+          <div class="year-in-progress-notice">
+            <span class="notice-icon">${isCurrentYear ? '⏳' : '🔮'}</span>
+            <span class="notice-text">
+              ${isCurrentYear 
+                ? '<strong>Ano em andamento:</strong> Os valores mostrados refletem as operações até o momento. Novas operações podem alterar os resultados.'
+                : '<strong>Ano futuro:</strong> As operações mostradas são de um ano que ainda não começou ou está em andamento.'
+              }
+            </span>
+          </div>
+        ` : ''}
         <div class="year-summary-grid">
           <div class="summary-card">
             <div class="summary-label">Total de Operações</div>
@@ -102,20 +130,44 @@ export class YearDetailsBuilder {
             <div class="summary-detail">${initialQty} → ${finalQty} ações</div>
           </div>
           
+          <div class="summary-card ${yearInProgress ? 'highlight-card' : ''}">
+            <div class="summary-label">${yearEndQtyLabel}</div>
+            <div class="summary-value large">${finalQty}</div>
+            <div class="summary-detail">${yearEndQtyDetail}</div>
+          </div>
+          
+          <div class="summary-card">
+            <div class="summary-label">Total de Vendas</div>
+            <div class="summary-value">${trades.length}</div>
+            <div class="summary-detail">Operações de venda</div>
+          </div>
+          
+          <div class="summary-card">
+            <div class="summary-label">Total Vendido (BRL)</div>
+            <div class="summary-value">
+              ${BRLFormatter.format(trades.reduce((sum, t) => 
+                sum + (t.metadata.tradeFinancials?.saleRevenueBrl.amount ?? 0), 0
+              ))}
+            </div>
+            <div class="summary-detail">Valor bruto de vendas</div>
+          </div>
+
+          <div class="summary-card">
+            <div class="summary-label">Custo Total das Vendas (BRL)</div>
+            <div class="summary-value">
+              ${BRLFormatter.format(trades.reduce((sum, t) => 
+                sum + (t.metadata.tradeFinancials?.costBasisBrl.amount ?? 0), 0
+              ))}
+            </div>
+            <div class="summary-detail">Base de custo</div>
+          </div>
+          
           <div class="summary-card">
             <div class="summary-label">Lucro/Prejuízo Total</div>
             <div class="summary-value ${totalProfitLoss >= 0 ? 'positive' : 'negative'}">
               ${BRLFormatter.format(totalProfitLoss)}
             </div>
-            <div class="summary-detail">Apenas vendas</div>
-          </div>
-          
-          <div class="summary-card">
-            <div class="summary-label">Lucro Bruto Acumulado</div>
-            <div class="summary-value ${finalPosition.grossProfitBrl.amount >= 0 ? 'positive' : 'negative'}">
-              ${BRLFormatter.format(finalPosition.grossProfitBrl.amount)}
-            </div>
-            <div class="summary-detail">Posição final do ano</div>
+            <div class="summary-detail">Resultado das vendas</div>
           </div>
           
           <div class="summary-card">
@@ -198,107 +250,75 @@ export class YearDetailsBuilder {
     `;
   }
 
-  private static renderTaxSummary(year: number, trades: PortfolioSnapshot[], totalProfitLoss: number): string {
-    if (trades.length === 0) {
-      return `
-        <div class="detail-section">
-          <h3>💰 Resumo para Imposto de Renda</h3>
-          <div class="tax-info">
-            <p>✅ Nenhuma venda realizada em ${year}</p>
-            <p>Não há lucro ou prejuízo a declarar para este ano.</p>
-          </div>
-        </div>
-      `;
-    }
+  private static renderTaxSummary(year: number, yearSnapshots: PortfolioSnapshot[], totalProfitLoss: number): string {
+    const lastSnapshot = yearSnapshots.length > 0 ? yearSnapshots[yearSnapshots.length - 1] : null;
+    const finalPosition = lastSnapshot?.position;
+    const totalCostBrl = finalPosition?.totalCostBrl.amount ?? 0;
+    const ptaxBid = lastSnapshot?.metadata.exchangeRates.ptaxBid ?? 0;
+    const finalQty = finalPosition?.quantity.value ?? 0;
+    const avgPriceBrl = finalPosition ? finalPosition.averagePriceBrl(ptaxBid).amount : 0;
 
-    // Group trades by month
-    const tradesByMonth = new Map<number, PortfolioSnapshot[]>();
-    trades.forEach(trade => {
-      const month = trade.metadata.operationDate.getMonth();
-      if (!tradesByMonth.has(month)) {
-        tradesByMonth.set(month, []);
-      }
-      tradesByMonth.get(month)!.push(trade);
-    });
+    const currentYear = new Date().getFullYear();
+    const isCurrentYear = year === currentYear;
+    const isFutureYear = year > currentYear;
+    const yearInProgress = isCurrentYear || isFutureYear;
 
-    const monthlyDetails = Array.from(tradesByMonth.entries())
-      .sort(([a], [b]) => a - b)
-      .map(([month, monthTrades]) => {
-        const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-        const totalSaleRevenue = monthTrades.reduce((sum, t) => 
-          sum + (t.metadata.tradeFinancials?.saleRevenueBrl.amount ?? 0), 0
-        );
-        const monthProfit = monthTrades.reduce((sum, t) => 
-          sum + (t.metadata.tradeFinancials?.profitLossBrl.amount ?? 0), 0
-        );
-        
-        return `
-          <tr>
-            <td>${monthNames[month]}</td>
-            <td>${monthTrades.length}</td>
-            <td>${BRLFormatter.format(totalSaleRevenue)}</td>
-            <td class="${monthProfit >= 0 ? 'positive' : 'negative'}">
-              ${BRLFormatter.format(monthProfit)}
-            </td>
-          </tr>
-        `;
-      })
-      .join('');
+    const situationLabel = yearInProgress
+      ? `Situação Atual ${isCurrentYear ? '*' : '**'}`
+      : `Situação 31/12/${year}`;
+
+    const situationDetail = yearInProgress
+      ? isCurrentYear
+        ? '* Ano em andamento'
+        : '** Ano futuro'
+      : 'Valor para declarar';
 
     return `
       <div class="detail-section">
         <h3>💰 Resumo para Imposto de Renda ${year}</h3>
         
         <div class="tax-summary-cards">
+          <div class="tax-card highlight-card">
+            <div class="tax-label">${situationLabel}</div>
+            <div class="tax-value">
+              ${BRLFormatter.format(totalCostBrl)}
+            </div>
+            <div class="tax-detail">${situationDetail}</div>
+          </div>
+
           <div class="tax-card">
-            <div class="tax-label">Lucro/Prejuízo Total do Ano</div>
+            <div class="tax-label">Lucro/Prejuízo Total (BRL)</div>
             <div class="tax-value ${totalProfitLoss >= 0 ? 'positive' : 'negative'}">
               ${BRLFormatter.format(totalProfitLoss)}
             </div>
-            <div class="tax-detail">Todas as vendas</div>
+            <div class="tax-detail">Resultado das vendas</div>
           </div>
-          
-          <div class="tax-card">
-            <div class="tax-label">Total de Vendas</div>
-            <div class="tax-value">${trades.length}</div>
-            <div class="tax-detail">Operações de venda</div>
-          </div>
-          
-          <div class="tax-card">
-            <div class="tax-label">Total Vendido (BRL)</div>
-            <div class="tax-value">
-              ${BRLFormatter.format(trades.reduce((sum, t) => 
-                sum + (t.metadata.tradeFinancials?.saleRevenueBrl.amount ?? 0), 0
-              ))}
-            </div>
-            <div class="tax-detail">Valor bruto de vendas</div>
-          </div>
-        </div>
 
-        <h4>Detalhamento Mensal</h4>
-        <div class="operations-table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Mês</th>
-                <th>Vendas</th>
-                <th>Total Vendido (BRL)</th>
-                <th>Lucro/Prejuízo</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${monthlyDetails}
-            </tbody>
-          </table>
+          <div class="tax-card">
+            <div class="tax-label">Quantidade de Ações Fim do Ano</div>
+            <div class="tax-value large">${finalQty}</div>
+            <div class="tax-detail">Ações em carteira</div>
+          </div>
+
+          <div class="tax-card">
+            <div class="tax-label">Preço Médio (BRL)</div>
+            <div class="tax-value">
+              ${BRLFormatter.formatWithPrecision(avgPriceBrl)}
+            </div>
+            <div class="tax-detail">Por ação</div>
+          </div>
         </div>
 
         <div class="tax-info">
-          <h4>ℹ️ Informações Importantes:</h4>
+          <h4>ℹ️ Como Declarar no IRPF:</h4>
           <ul>
-            <li><strong>Declaração:</strong> Todas as operações com ações devem ser declaradas no IRPF</li>
-            <li><strong>Prejuízo:</strong> Pode ser compensado com lucros futuros em operações day-trade ou swing trade</li>
-            <li><strong>Documentação:</strong> Guarde todos os comprovantes de compra e venda</li>
-            <li><strong>Regime de tributação:</strong> Consulte a legislação vigente ou um contador</li>
+            <li><strong>Bens e Direitos:</strong> Grupo 03 - Participações em sociedades, Código 01 - Ações (inclusive as listadas em bolsa)</li>
+            <li><strong>Localização(País):</strong> 137 - Cayman, Ilhas</li>
+            <li><strong>Discriminação:</strong> RSU NU Holdings Ltd: ${finalQty} ações da empresa a um preço médio de ${BRLFormatter.formatWithPrecision(avgPriceBrl)} por ação</li>
+            <li><strong>Negociado em bolsa:</strong> Sim</li>
+            <li><strong>Código da Negociação:</strong> NU</li>
+            <li><strong>Situação em 31/12/${year}:</strong> ${BRLFormatter.format(totalCostBrl)}</li>
+            <li><strong>Aplicação Financeira/Lucro ou Prejuízo:</strong> ${BRLFormatter.format(totalProfitLoss)}</li>
           </ul>
           <p class="disclaimer">
             ⚠️ <strong>Atenção:</strong> Este é apenas um resumo das operações. 

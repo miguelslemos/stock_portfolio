@@ -196,12 +196,24 @@
               📝 Arquivo JSON de Operações
               <span class="label-hint">Opcional - Para operações manuais</span>
             </label>
-            <input 
-              type="file" 
-              id="json-file" 
-              accept=".json" 
-              aria-label="Selecionar arquivo JSON de operações" 
-            />
+            <div class="file-input-wrapper">
+              <input 
+                type="file" 
+                id="json-file" 
+                accept=".json" 
+                class="hidden-input"
+                aria-label="Selecionar arquivo JSON de operações" 
+              />
+              <button 
+                type="button" 
+                id="json-btn" 
+                class="file-select-btn" 
+                aria-label="Escolher arquivo JSON"
+              >
+                📄 Escolher Arquivo JSON
+              </button>
+              <span id="json-count" class="file-count" role="status" aria-live="polite"></span>
+            </div>
             <small>
               ℹ️ Use este campo para adicionar operações manualmente via JSON. 
               Útil para importar dados de outras fontes ou fazer ajustes.
@@ -274,7 +286,7 @@
         <div class="footer-info">
           <p>
             <strong>Stock Portfolio Manager</strong> • 
-            Sistema de código aberto para gestão de investimentos
+            Sistema de código aberto
           </p>
           <p style="margin-top: 8px; opacity: 0.8;">
             Desenvolvido com 💙 • 
