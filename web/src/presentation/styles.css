@@ -817,6 +817,33 @@ tbody tr:last-child td {
 }
 
 /* Year Details Styles */
+.year-in-progress-notice {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border: 2px solid #2196f3;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.notice-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.notice-text {
+  flex: 1;
+  color: #0d47a1;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.notice-text strong {
+  color: #01579b;
+}
+
 .year-summary-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -828,9 +855,32 @@ tbody tr:last-child td {
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   padding: 24px;
   border-radius: var(--radius-md);
+  transition: all 0.3s ease;
   text-align: center;
   transition: var(--transition);
   box-shadow: var(--shadow-sm);
+}
+
+.summary-card.highlight-card {
+  background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%);
+  border: 2px solid #fbc02d;
+  box-shadow: 0 4px 12px rgba(251, 192, 45, 0.3);
+  transform: scale(1.02);
+}
+
+.summary-card.highlight-card .summary-label {
+  color: #f57f17;
+  font-weight: 700;
+}
+
+.summary-card.highlight-card .summary-value {
+  color: #e65100;
+}
+
+.summary-card.highlight-card .summary-detail {
+  color: #f57f17;
+  font-weight: 600;
+
 }
 
 .summary-card:hover {
