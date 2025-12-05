@@ -75,6 +75,16 @@ export class PortfolioApp {
     this.jsonInput.addEventListener('change', () => {
       this.jsonFile = this.jsonInput.files?.[0] ?? null;
       this.updateButtonStates();
+      
+      const jsonCount = document.getElementById('json-count');
+      if (jsonCount) {
+        if (this.jsonFile) {
+          jsonCount.textContent = this.jsonFile.name;
+          jsonCount.style.color = '#28a745';
+        } else {
+          jsonCount.textContent = '';
+        }
+      }
     });
 
     this.processButton.addEventListener('click', () => {
@@ -478,6 +488,12 @@ export class PortfolioApp {
     this.jsonInput.value = '';
     this.tradeCount.textContent = '';
     this.releaseCount.textContent = '';
+    
+    const jsonCount = document.getElementById('json-count');
+    if (jsonCount) {
+      jsonCount.textContent = '';
+    }
+    
     this.resultsContainer.innerHTML = '';
     this.updateButtonStates();
   }

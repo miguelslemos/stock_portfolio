@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const releaseButton = document.getElementById('release-btn') as HTMLButtonElement;
   const releaseCount = document.getElementById('release-count') as HTMLElement;
   const jsonInput = document.getElementById('json-file') as HTMLInputElement;
+  const jsonButton = document.getElementById('json-btn') as HTMLButtonElement;
+  const jsonCount = document.getElementById('json-count') as HTMLElement;
   const processButton = document.getElementById('process-btn') as HTMLButtonElement;
   const exportButton = document.getElementById('export-btn') as HTMLButtonElement;
   const clearButton = document.getElementById('clear-btn') as HTMLButtonElement;
@@ -15,6 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const uploadSection = document.getElementById('upload-section') as HTMLElement;
   const resetSection = document.getElementById('reset-section') as HTMLElement;
   const resetButton = document.getElementById('reset-btn') as HTMLButtonElement;
+
+  setupJsonButton(jsonButton, jsonInput, jsonCount);
 
   new PortfolioApp(
     tradeInput,
@@ -35,6 +39,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
   setupHelpToggle();
 });
+
+function setupJsonButton(
+  jsonButton: HTMLButtonElement,
+  jsonInput: HTMLInputElement,
+  jsonCount: HTMLElement
+): void {
+  jsonButton.addEventListener('click', () => {
+    jsonInput.click();
+  });
+
+  jsonInput.addEventListener('change', () => {
+    if (jsonInput.files && jsonInput.files.length > 0) {
+      const file = jsonInput.files[0]!;
+      jsonCount.textContent = `${file.name}`;
+      jsonCount.style.color = '#28a745';
+    } else {
+      jsonCount.textContent = '';
+    }
+  });
+}
 
 function setupHelpToggle(): void {
   const helpToggle = document.getElementById('help-toggle');
