@@ -123,7 +123,11 @@ class PortfolioCalculationService:
     
     def _get_exchange_rate_for_operation(self, operation: PortfolioOperation) -> ExchangeRate:
         """Get exchange rate for an operation, with fallback logic."""
-        operation_date = operation.get_date()
+        # Use settlement_date if available, otherwise use the operation date
+        if hasattr(operation, 'settlement_date') and operation.settlement_date is not None:
+            operation_date = operation.settlement_date
+        else:
+            operation_date = operation.get_date()
         
         # Try to get rate for the exact date, with fallback up to 7 days back
         for days_back in range(8):  # 0 to 7 days back

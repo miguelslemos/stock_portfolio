@@ -62,21 +62,34 @@ class JSONOperationRepository(OperationRepository):
         """Create operation object from dictionary data."""
         try:
             operation_type = data['type'].lower()
-            date = self._parse_date(data['date'])
             quantity = StockQuantity(int(data['quantity']))
             price = Money(Decimal(str(data['price'])), 'USD')
             
             if operation_type == 'vesting':
+                date = self._parse_date(data['date'])
+                # settlement_date is optional, defaults to date if not provided (handled by entity)
+                settlement_date = self._parse_date(data['settlement_date']) if 'settlement_date' in data else None
                 return VestingOperation(
                     date=date,
                     quantity=quantity,
-                    price_per_share_usd=price
+                    price_per_share_usd=price,
+                    _settlement_date=settlement_date
                 )
             elif operation_type == 'trade':
+                # Support both old format (date) and new format (date/settlement_date)
+                if 'date' in data:
+                    date = self._parse_date(data['date'])
+                    settlement_date = self._parse_date(data['settlement_date']) if 'settlement_date' in data else None
+                else:
+                    # Legacy format: use 'date' for date
+                    date = self._parse_date(data['date'])
+                    settlement_date = self._parse_date(data['settlement_date']) if 'settlement_date' in data else None
+                
                 return TradeOperation(
                     date=date,
                     quantity=quantity,
-                    price_per_share_usd=price
+                    price_per_share_usd=price,
+                    _settlement_date=settlement_date
                 )
             else:
                 raise ValueError(f"Unsupported operation type: {operation_type}")
@@ -165,34 +178,37 @@ class PDFOperationRepository(OperationRepository):
             pattern = (
                 r'Trade Date\s+Settlement Date\s+Quantity\s+Price\s+Settlement Amount'
                 r'.*?'  # Allow any content between header and data
-                r'[\d/]+\s+([\d/]+)\s+([\d,.]+)\s+([\d,.]+)'
+                r'([\d/]+)\s+([\d/]+)\s+([\d,.]+)\s+([\d,.]+)'
             )
             
             # Check for legacy format
             if self._is_legacy_pdf_format(text):
                 pattern = (
                     r'TRADE\s+DATE\s+SETL\s+DATE\s+MKT\s+/\s+CPT\s+SYMBOL\s+/\s+CUSIP\s+BUY\s+/\s+SELL\s+QUANTITY\s+PRICE\s+ACCT\s+TYPE\n'
-                    r'[\d/]+\s([\d/]+)\s+[\d,\w,\s]+\s+([\d,.]+)\s+([\d,.,$]+)'
+                    r'([\d/]+)\s+([\d/]+)\s+[\d,\w,\s]+\s+([\d,.]+)\s+([\d,.,$]+)'
                 )
             logger.info(f"Loading pdf file: {pdf_path}")
             match = re.search(pattern, text, re.DOTALL)
             if match:
                 date_str = match.group(1).strip()
-                quantity_str = match.group(2).strip().replace(",", "")
-                price_str = match.group(3).replace("$", "").strip()
+                settlement_date_str = match.group(2).strip()
+                quantity_str = match.group(3).strip().replace(",", "")
+                price_str = match.group(4).replace("$", "").strip()
                 
                 date = self._parse_date(date_str)
+                settlement_date = self._parse_date(settlement_date_str)
                 quantity = StockQuantity(int(float(quantity_str)))
                 price = Money(Decimal(price_str), 'USD')
 
                 trade_op = TradeOperation(
                     date=date,
                     quantity=quantity,
-                    price_per_share_usd=price
+                    price_per_share_usd=price,
+                    _settlement_date=settlement_date
                 )
 
                 logger.debug(
-                    f"Date={trade_op.date}, Quantity={trade_op.quantity}, Price/Share={trade_op.price_per_share_usd}"
+                    f"TradeDate={trade_op.date}, SettlementDate={trade_op.settlement_date}, Quantity={trade_op.quantity}, Price/Share={trade_op.price_per_share_usd}"
                 )
                 return trade_op
             return None
