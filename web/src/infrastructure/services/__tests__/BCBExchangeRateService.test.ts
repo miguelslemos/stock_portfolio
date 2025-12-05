@@ -8,7 +8,7 @@ describe('BCBExchangeRateService', () => {
   beforeEach(() => {
     service = new BCBExchangeRateService();
     fetchMock = vi.fn();
-    global.fetch = fetchMock;
+    global.fetch = fetchMock as unknown as typeof fetch;
   });
 
   afterEach(() => {
@@ -121,8 +121,14 @@ describe('BCBExchangeRateService', () => {
     const date = new Date(2023, 0, 5); // January 5, 2023
     await service.getRate('USD', 'BRL', date);
 
-    const callUrl = fetchMock.mock.calls[0][0] as string;
-    expect(callUrl).toContain('01-05-2023');
+    expect(fetchMock).toHaveBeenCalled();
+    const firstCall = fetchMock.mock.calls[0];
+    expect(firstCall).toBeDefined();
+    
+    if (firstCall) {
+      const callUrl = firstCall[0] as string;
+      expect(callUrl).toContain('01-05-2023');
+    }
   });
 
   it('should cache null results to avoid repeated failed requests', async () => {
