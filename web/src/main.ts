@@ -32,5 +32,27 @@ document.addEventListener('DOMContentLoaded', () => {
     resetSection,
     resetButton
   );
+
+  setupHelpToggle();
 });
+
+function setupHelpToggle(): void {
+  const helpToggle = document.getElementById('help-toggle');
+  const helpContent = document.getElementById('help-content');
+
+  if (!helpToggle || !helpContent) return;
+
+  helpToggle.addEventListener('click', () => {
+    const isExpanded = helpToggle.getAttribute('aria-expanded') === 'true';
+    
+    helpToggle.setAttribute('aria-expanded', (!isExpanded).toString());
+    helpContent.setAttribute('aria-hidden', isExpanded.toString());
+
+    if (!isExpanded) {
+      setTimeout(() => {
+        helpContent.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+  });
+}
 
