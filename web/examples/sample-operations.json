@@ -1,0 +1,48 @@
+[
+  {
+    "type": "vesting",
+    "date": "01/06/2023",
+    "quantity": 100,
+    "price": 15.0
+  },
+  {
+    "type": "vesting",
+    "date": "03/27/2023",
+    "quantity": 50,
+    "price": 15.5
+  },
+  {
+    "type": "trade",
+    "date": "02/26/2023",
+    "settlement_date": "03/01/2023",
+    "quantity": 50,
+    "price": 18.0
+  },
+  {
+    "type": "vesting",
+    "date": "07/01/2023",
+    "quantity": 100,
+    "price": 20.0
+  },
+  {
+    "type": "trade",
+    "date": "08/15/2023",
+    "settlement_date": "08/18/2023",
+    "quantity": 30,
+    "price": 22.5
+  },
+  {
+    "type": "vesting",
+    "date": "01/15/2024",
+    "quantity": 75,
+    "price": 25.0
+  },
+  {
+    "type": "trade",
+    "date": "03/20/2024",
+    "settlement_date": "03/23/2024",
+    "quantity": 100,
+    "price": 28.0
+  }
+]
+
