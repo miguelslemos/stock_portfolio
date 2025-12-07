@@ -254,10 +254,11 @@ export class YearDetailsBuilder {
     const lastSnapshot = yearSnapshots.length > 0 ? yearSnapshots[yearSnapshots.length - 1] : null;
     const finalPosition = lastSnapshot?.position;
     const totalCostBrl = finalPosition?.totalCostBrl.amount ?? 0;
+    const totalCostUsd = finalPosition?.totalCostUsd.amount ?? 0;
     const ptaxBid = lastSnapshot?.metadata.exchangeRates.ptaxBid ?? 0;
     const finalQty = finalPosition?.quantity.value ?? 0;
     const avgPriceBrl = finalPosition ? finalPosition.averagePriceBrl(ptaxBid).amount : 0;
-
+    const avgPriceUsd = finalPosition ? finalPosition.averagePriceUsd.amount : 0;
     const currentYear = new Date().getFullYear();
     const isCurrentYear = year === currentYear;
     const isFutureYear = year > currentYear;
@@ -314,7 +315,7 @@ export class YearDetailsBuilder {
           <ul>
             <li><strong>Bens e Direitos:</strong> Grupo 03 - Participações em sociedades, Código 01 - Ações (inclusive as listadas em bolsa)</li>
             <li><strong>Localização(País):</strong> 137 - Cayman, Ilhas</li>
-            <li><strong>Discriminação:</strong> RSU NU Holdings Ltd: ${finalQty} ações da empresa a um preço médio de ${BRLFormatter.formatWithPrecision(avgPriceBrl)} por ação</li>
+            <li><strong>Discriminação:</strong> NU - ${finalQty} Acoes da empresa Nu Holdings Ltd. negociadas na Bolsa do pais Estados Unidos através do codigo: NU, adquiridas pela corretora ETrade. Valor de custo em ${USDFormatter.formatWithPrecision(totalCostUsd)} ou ${BRLFormatter.format(totalCostBrl)} com preço médio de ${USDFormatter.formatWithPrecision(avgPriceUsd)} ou ${BRLFormatter.format(avgPriceBrl)} por ação. Corretora: ETrade</li>
             <li><strong>Negociado em bolsa:</strong> Sim</li>
             <li><strong>Código da Negociação:</strong> NU</li>
             <li><strong>Situação em 31/12/${year}:</strong> ${BRLFormatter.format(totalCostBrl)}</li>
