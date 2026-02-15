@@ -18,25 +18,62 @@ export function App() {
   const fileUpload = useFileUpload();
   const manualEntries = useManualEntries();
   const { isDark, toggle: toggleTheme } = useDarkMode();
-  const [inputMethod, setInputMethod] = useState<InputMethod>('manual');
+  const [activeMethods, setActiveMethods] = useState<Set<InputMethod>>(new Set(['manual']));
+
+  const toggleMethod = useCallback((method: InputMethod) => {
+    setActiveMethods((prev) => {
+      const next = new Set(prev);
+      if (next.has(method)) {
+        next.delete(method);
+      } else {
+        next.add(method);
+      }
+      return next;
+    });
+  }, []);
 
   const hasData =
-    (inputMethod === 'manual' && manualEntries.hasEntries) ||
-    (inputMethod === 'json' && fileUpload.files.jsonFile !== null) ||
-    (inputMethod === 'pdf' && (fileUpload.files.tradePDFs.length > 0 || fileUpload.files.releasePDFs.length > 0));
+    (activeMethods.has('manual') && manualEntries.hasEntries) ||
+    (activeMethods.has('json') && fileUpload.files.jsonFile !== null) ||
+    (activeMethods.has('pdf') && (fileUpload.files.tradePDFs.length > 0 || fileUpload.files.releasePDFs.length > 0));
 
   const handleProcess = useCallback(
     (exportData = false) => {
       void portfolio.processPortfolio({
-        tradePDFs: inputMethod === 'pdf' ? fileUpload.files.tradePDFs : [],
-        releasePDFs: inputMethod === 'pdf' ? fileUpload.files.releasePDFs : [],
-        jsonFile: inputMethod === 'json' ? fileUpload.files.jsonFile : null,
-        manualEntriesJSON: inputMethod === 'manual' && manualEntries.hasEntries ? manualEntries.toJSON() : null,
+        tradePDFs: activeMethods.has('pdf') ? fileUpload.files.tradePDFs : [],
+        releasePDFs: activeMethods.has('pdf') ? fileUpload.files.releasePDFs : [],
+        jsonFile: activeMethods.has('json') ? fileUpload.files.jsonFile : null,
+        manualEntriesJSON: activeMethods.has('manual') && manualEntries.hasEntries ? manualEntries.toJSON() : null,
         exportData,
       });
     },
-    [portfolio, inputMethod, fileUpload.files, manualEntries]
+    [portfolio, activeMethods, fileUpload.files, manualEntries]
   );
+
+  const handleDemo = useCallback(() => {
+    void (async () => {
+      try {
+        const res = await fetch('/demo-data.json');
+        const json = await res.text();
+        void portfolio.processPortfolio({
+          tradePDFs: [],
+          releasePDFs: [],
+          jsonFile: null,
+          manualEntriesJSON: json,
+          exportData: false,
+        });
+      } catch {
+        // If fetch fails, try inline
+        void portfolio.processPortfolio({
+          tradePDFs: [],
+          releasePDFs: [],
+          jsonFile: null,
+          manualEntriesJSON: null,
+          exportData: false,
+        });
+      }
+    })();
+  }, [portfolio]);
 
   const handleReset = useCallback(() => {
     portfolio.reset();
@@ -58,21 +95,35 @@ export function App() {
         {/* ===== Input section (idle/error) ===== */}
         {(isIdle || isError) && (
           <div className="space-y-6 px-6 py-8 sm:px-10">
-            {/* Section title */}
-            <div>
-              <h2 className="text-lg font-bold text-surface-900 dark:text-surface-100">
-                Carregar Operações
-              </h2>
-              <p className="mt-1 text-sm text-surface-500 dark:text-surface-400">
-                Escolha como deseja adicionar suas operações de vesting e trade.
-              </p>
+            {/* Section title + Demo CTA */}
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <h2 className="text-lg font-bold text-surface-900 dark:text-surface-100">
+                  Carregar Operações
+                </h2>
+                <p className="mt-1 text-sm text-surface-500 dark:text-surface-400">
+                  Selecione uma ou mais fontes de dados. Elas serão combinadas automaticamente.
+                </p>
+              </div>
+
+              {/* Demo button */}
+              <button
+                onClick={handleDemo}
+                disabled={isLoading}
+                className="group flex shrink-0 items-center gap-2 rounded-xl border-2 border-dashed border-brand-300 bg-brand-50/50 px-4 py-2.5 text-sm font-semibold text-brand-700 transition-all hover:border-brand-400 hover:bg-brand-100 hover:shadow-sm active:scale-[0.98] disabled:opacity-40 dark:border-brand-600 dark:bg-brand-950/30 dark:text-brand-300 dark:hover:border-brand-500 dark:hover:bg-brand-900/40"
+              >
+                <svg className="h-4 w-4 transition-transform group-hover:scale-110" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
+                </svg>
+                Carregar com dados de demonstração
+              </button>
             </div>
 
-            {/* Method selector */}
-            <InputMethodSelector selected={inputMethod} onChange={setInputMethod} />
+            {/* Method selector (multi-select) */}
+            <InputMethodSelector selected={activeMethods} onToggle={toggleMethod} />
 
-            {/* Conditional panels */}
-            {inputMethod === 'manual' && (
+            {/* Panels: show all that are active */}
+            {activeMethods.has('manual') && (
               <ManualEntryForm
                 entries={manualEntries.entries}
                 onAdd={manualEntries.addEntry}
@@ -81,9 +132,9 @@ export function App() {
               />
             )}
 
-            {inputMethod === 'json' && <JsonUploadPanel fileUpload={fileUpload} />}
+            {activeMethods.has('json') && <JsonUploadPanel fileUpload={fileUpload} />}
 
-            {inputMethod === 'pdf' && (
+            {activeMethods.has('pdf') && (
               <>
                 <PdfUploadPanel fileUpload={fileUpload} />
                 <HelpSection />

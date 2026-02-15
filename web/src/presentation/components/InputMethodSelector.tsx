@@ -1,8 +1,8 @@
 export type InputMethod = 'manual' | 'json' | 'pdf';
 
 interface InputMethodSelectorProps {
-  selected: InputMethod;
-  onChange: (method: InputMethod) => void;
+  selected: Set<InputMethod>;
+  onToggle: (method: InputMethod) => void;
 }
 
 const methods: { id: InputMethod; label: string; desc: string; badge?: string }[] = [
@@ -11,15 +11,15 @@ const methods: { id: InputMethod; label: string; desc: string; badge?: string }[
   { id: 'pdf', label: 'PDFs do E*Trade', desc: 'Leitura automática dos PDFs', badge: 'Recomendado' },
 ];
 
-export function InputMethodSelector({ selected, onChange }: InputMethodSelectorProps) {
+export function InputMethodSelector({ selected, onToggle }: InputMethodSelectorProps) {
   return (
     <div className="grid gap-3 sm:grid-cols-3">
       {methods.map((m) => {
-        const isActive = selected === m.id;
+        const isActive = selected.has(m.id);
         return (
           <button
             key={m.id}
-            onClick={() => onChange(m.id)}
+            onClick={() => onToggle(m.id)}
             className={`group relative rounded-xl border-2 px-4 py-4 text-left transition-all ${
               isActive
                 ? 'border-brand-500 bg-brand-50 shadow-sm dark:border-brand-400 dark:bg-brand-950/40'
@@ -32,16 +32,20 @@ export function InputMethodSelector({ selected, onChange }: InputMethodSelectorP
               </span>
             )}
 
-            {/* Radio dot */}
+            {/* Checkbox */}
             <div className="mb-2 flex items-center gap-2">
               <div
-                className={`flex h-4 w-4 items-center justify-center rounded-full border-2 transition-colors ${
+                className={`flex h-4 w-4 items-center justify-center rounded border-2 transition-colors ${
                   isActive
-                    ? 'border-brand-500 dark:border-brand-400'
+                    ? 'border-brand-500 bg-brand-500 dark:border-brand-400 dark:bg-brand-400'
                     : 'border-surface-300 dark:border-surface-500'
                 }`}
               >
-                {isActive && <div className="h-2 w-2 rounded-full bg-brand-500 dark:bg-brand-400" />}
+                {isActive && (
+                  <svg className="h-3 w-3 text-white dark:text-surface-900" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                )}
               </div>
               <span
                 className={`text-sm font-semibold ${
@@ -56,6 +60,14 @@ export function InputMethodSelector({ selected, onChange }: InputMethodSelectorP
           </button>
         );
       })}
+
+      {selected.size > 1 && (
+        <div className="sm:col-span-3">
+          <p className="text-center text-[11px] text-brand-600 dark:text-brand-400">
+            As fontes selecionadas serão combinadas automaticamente ao processar.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

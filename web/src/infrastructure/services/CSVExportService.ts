@@ -36,11 +36,11 @@ export class CSVExportService implements IDataExportService {
     const headers = [
       'Ano',
       'Quantidade Final',
-      'Custo Total USD',
+      'Custo Acumulado USD',
       'Preço Médio USD',
-      'Custo Total BRL',
+      'Custo Acumulado BRL',
       'Preço Médio BRL',
-      'Lucro Bruto BRL',
+      'Ganho/Perda Total BRL',
     ];
 
     // Get last snapshot per year
@@ -50,7 +50,6 @@ export class CSVExportService implements IDataExportService {
       .sort(([a], [b]) => a - b)
       .map(([year, snapshot]) => {
         const position = snapshot.position;
-        const ptaxBid = snapshot.metadata.exchangeRates.ptaxBid;
         
         return [
           year.toString(),
@@ -58,7 +57,7 @@ export class CSVExportService implements IDataExportService {
           position.totalCostUsd.amount.toFixed(4),
           position.averagePriceUsd.amount.toFixed(4),
           position.totalCostBrl.amount.toFixed(4),
-          position.averagePriceBrl(ptaxBid).amount.toFixed(4),
+          position.averagePriceBrl.amount.toFixed(4),
           position.grossProfitBrl.amount.toFixed(4),
         ];
       });

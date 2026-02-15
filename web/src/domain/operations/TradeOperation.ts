@@ -17,8 +17,8 @@ import { PortfolioOperation } from './PortfolioOperation';
  * Reduces quantity and total cost proportionally and calculates profit/loss.
  * 
  * Business Rules:
- * - Uses bid rate (PTAX compra) for cost basis calculation
  * - Uses ask rate (PTAX venda) for sale revenue calculation
+ * - Cost basis in BRL uses accumulated average price BRL (totalCostBrl / qty)
  * - Generates profit/loss in BRL
  * - Average prices remain constant (proportional cost method)
  */
@@ -89,8 +89,11 @@ export class TradeOperation implements PortfolioOperation {
       'BRL'
     );
 
-    // Average prices remain the same (proportional cost method)
-    const newAvgPriceUsd = currentPosition.averagePriceUsd;
+    // Average prices remain the same (proportional cost method),
+    // but reset to zero when portfolio is fully liquidated
+    const newAvgPriceUsd = newQuantity.value === 0
+      ? new Money(0, 'USD')
+      : currentPosition.averagePriceUsd;
 
     // Calculate trade financials
     const saleRevenueUsd = new Money(
@@ -104,9 +107,11 @@ export class TradeOperation implements PortfolioOperation {
       currentPosition.averagePriceUsd.amount * this.quantity.value,
       'USD'
     );
-    
+
+    // Cost basis BRL uses the accumulated average price BRL (totalCostBrl / qty),
+    // NOT avgPriceUsd × bidRate, because each purchase was converted at its own PTAX.
     const costBasisBrl = new Money(
-      costBasisUsd.amount * bidRate, // uses bid rate
+      currentPosition.averagePriceBrl.amount * this.quantity.value,
       'BRL'
     );
 

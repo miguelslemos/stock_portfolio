@@ -15,6 +15,11 @@ export class BRLFormatter {
 
   static format(value: number, decimals: number = 2): string {
     const formatter = decimals === 4 ? this.formatter4 : this.formatter2;
+    if (value < 0) {
+      // Intl produces "-R$ 100,00" but we want "R$ -100,00"
+      const positive = formatter.format(Math.abs(value));
+      return positive.replace(/^(R\$)\s*/, '$1 -');
+    }
     return formatter.format(value);
   }
 

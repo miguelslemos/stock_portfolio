@@ -26,8 +26,6 @@ export class PortfolioSnapshot implements CSVExportable, PDFExportable, JSONExpo
    * Export to CSV row format
    */
   toCSVRow(): string[] {
-    const ptaxBid = this.metadata.exchangeRates.ptaxBid;
-    
     return [
       this.formatDate(this.metadata.operationDate),
       this.getOperationDescription(),
@@ -36,7 +34,7 @@ export class PortfolioSnapshot implements CSVExportable, PDFExportable, JSONExpo
       this.position.totalCostUsd.amount.toFixed(4),
       this.position.averagePriceUsd.amount.toFixed(4),
       this.position.totalCostBrl.amount.toFixed(4),
-      this.position.averagePriceBrl(ptaxBid).amount.toFixed(4),
+      this.position.averagePriceBrl.amount.toFixed(4),
       this.position.grossProfitBrl.amount.toFixed(4),
     ];
   }
@@ -50,11 +48,11 @@ export class PortfolioSnapshot implements CSVExportable, PDFExportable, JSONExpo
       'Operação',
       'Quantidade da Operação',
       'Quantidade Total',
-      'Custo Total USD',
+      'Custo Acumulado USD',
       'Preço Médio USD',
-      'Custo Total BRL',
+      'Custo Acumulado BRL',
       'Preço Médio BRL',
-      'Lucro Bruto BRL',
+      'Ganho/Perda Total BRL',
     ];
   }
 

@@ -12,7 +12,7 @@ interface ResultsSectionProps {
 }
 
 export function ResultsSection({ response, snapshots, onReset }: ResultsSectionProps) {
-  const { finalPosition, totalOperations, totalReturnBrl } = response;
+  const { finalPosition, totalOperations } = response;
 
   const [selectedOperation, setSelectedOperation] = useState<number | null>(null);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
@@ -22,6 +22,15 @@ export function ResultsSection({ response, snapshots, onReset }: ResultsSectionP
     () => Array.from(yearlySnapshots.keys()).sort((a, b) => a - b),
     [yearlySnapshots]
   );
+
+  // Sum gross profit across all years (each year's profit is reset independently)
+  const totalReturnAllYears = useMemo(() => {
+    let total = 0;
+    for (const snapshot of yearlySnapshots.values()) {
+      total += snapshot.position.grossProfitBrl.amount;
+    }
+    return total;
+  }, [yearlySnapshots]);
 
   return (
     <div className="animate-slide-up space-y-6 px-6 py-8 sm:px-10">
@@ -45,8 +54,8 @@ export function ResultsSection({ response, snapshots, onReset }: ResultsSectionP
           <StatCard label="Preço Médio (USD)" value={USDFormatter.format(finalPosition.averagePriceUsd.amount)} />
           <StatCard
             label="Retorno Total (BRL)"
-            value={BRLFormatter.format(totalReturnBrl.amount)}
-            variant={totalReturnBrl.amount >= 0 ? 'positive' : 'negative'}
+            value={BRLFormatter.format(totalReturnAllYears)}
+            variant={totalReturnAllYears >= 0 ? 'positive' : 'negative'}
           />
         </div>
       </div>
@@ -63,30 +72,39 @@ export function ResultsSection({ response, snapshots, onReset }: ResultsSectionP
               <tr className="border-b border-surface-200 bg-surface-50 text-left text-[11px] font-semibold uppercase tracking-wider text-surface-500 dark:border-surface-700 dark:bg-surface-800 dark:text-surface-400">
                 <th className="px-4 py-3">Ano</th>
                 <th className="px-4 py-3">Qtd.</th>
-                <th className="px-4 py-3">Custo Total (USD)</th>
+                <th className="px-4 py-3">Custo Acumulado (USD)</th>
                 <th className="px-4 py-3">Preço Médio (USD)</th>
-                <th className="px-4 py-3">Custo Total (BRL)</th>
+                <th className="px-4 py-3">Acumulado no Ano (BRL)</th>
                 <th className="px-4 py-3">Preço Médio (BRL)</th>
-                <th className="px-4 py-3">Lucro Bruto (BRL)</th>
+                <th className="px-4 py-3">Ganho/Perda Total</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-surface-100 dark:divide-surface-800">
               {sortedYears.map((year) => {
                 const snapshot = yearlySnapshots.get(year)!;
                 const pos = snapshot.position;
-                const ptax = snapshot.metadata.exchangeRates.ptaxBid;
+                const isCurrentYear = year === new Date().getFullYear();
                 return (
                   <tr
                     key={year}
                     onClick={() => setSelectedYear(year)}
-                    className="cursor-pointer text-surface-700 transition-colors hover:bg-brand-50/50 dark:text-surface-300 dark:hover:bg-brand-950/20"
+                    className={`cursor-pointer transition-colors hover:bg-brand-50/50 dark:hover:bg-brand-950/20 ${
+                      isCurrentYear
+                        ? 'bg-amber-50/40 text-surface-700 dark:bg-amber-950/10 dark:text-surface-300'
+                        : 'text-surface-700 dark:text-surface-300'
+                    }`}
                   >
-                    <td className="px-4 py-3 font-semibold text-surface-900 dark:text-surface-100">{year}</td>
+                    <td className="px-4 py-3 font-semibold text-surface-900 dark:text-surface-100">
+                      {year}
+                      {isCurrentYear && (
+                        <span className="ml-1.5 text-[10px] font-medium text-amber-600 dark:text-amber-400">*</span>
+                      )}
+                    </td>
                     <td className="px-4 py-3">{pos.quantity.value}</td>
                     <td className="px-4 py-3">{USDFormatter.format(pos.totalCostUsd.amount)}</td>
                     <td className="px-4 py-3">{USDFormatter.formatWithPrecision(pos.averagePriceUsd.amount)}</td>
                     <td className="px-4 py-3">{BRLFormatter.format(pos.totalCostBrl.amount)}</td>
-                    <td className="px-4 py-3">{BRLFormatter.formatWithPrecision(pos.averagePriceBrl(ptax).amount)}</td>
+                    <td className="px-4 py-3">{BRLFormatter.formatWithPrecision(pos.averagePriceBrl.amount)}</td>
                     <td className={`px-4 py-3 font-medium ${pos.grossProfitBrl.amount >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
                       {BRLFormatter.format(pos.grossProfitBrl.amount)}
                     </td>
@@ -96,6 +114,9 @@ export function ResultsSection({ response, snapshots, onReset }: ResultsSectionP
             </tbody>
           </table>
         </div>
+        {sortedYears.includes(new Date().getFullYear()) && (
+          <p className="mt-1.5 text-[11px] text-amber-600 dark:text-amber-400">* Ano em andamento — valores parciais</p>
+        )}
       </div>
 
       {/* Operations table */}
@@ -113,14 +134,13 @@ export function ResultsSection({ response, snapshots, onReset }: ResultsSectionP
                 <th className="px-4 py-3">Qtd. Final</th>
                 <th className="px-4 py-3">Preço Médio (USD)</th>
                 <th className="px-4 py-3">Preço Médio (BRL)</th>
-                <th className="px-4 py-3">Lucro Bruto (BRL)</th>
+                <th className="px-4 py-3">Ganho/Perda Total</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-surface-100 dark:divide-surface-800">
               {snapshots.map((snapshot, index) => {
                 const pos = snapshot.position;
                 const meta = snapshot.metadata;
-                const ptax = meta.exchangeRates.ptaxBid;
                 return (
                   <tr
                     key={index}
@@ -139,7 +159,7 @@ export function ResultsSection({ response, snapshots, onReset }: ResultsSectionP
                     </td>
                     <td className="px-4 py-3">{pos.quantity.value}</td>
                     <td className="px-4 py-3">{USDFormatter.formatWithPrecision(pos.averagePriceUsd.amount)}</td>
-                    <td className="px-4 py-3">{BRLFormatter.formatWithPrecision(pos.averagePriceBrl(ptax).amount)}</td>
+                    <td className="px-4 py-3">{BRLFormatter.formatWithPrecision(pos.averagePriceBrl.amount)}</td>
                     <td className={`px-4 py-3 font-medium ${pos.grossProfitBrl.amount >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
                       {BRLFormatter.format(pos.grossProfitBrl.amount)}
                     </td>

@@ -39,22 +39,22 @@ export class PortfolioPosition {
   }
 
   /**
-   * Calculate average price in BRL using a given PTAX bid rate
-   * @param ptaxBid - The PTAX buy rate to use for conversion
+   * Average price per share in BRL, derived from the accumulated total cost
+   * in BRL (where each purchase was converted at that day's PTAX rate)
+   * divided by the total quantity of shares.
    */
-  averagePriceBrl(ptaxBid: number): Money {
-    if (ptaxBid <= 0) {
-      throw new Error('PTAX bid rate must be positive');
+  get averagePriceBrl(): Money {
+    if (this.isEmpty) {
+      return new Money(0, 'BRL');
     }
-    return new Money(this.averagePriceUsd.amount * ptaxBid, 'BRL');
+    return new Money(this.totalCostBrl.amount / this.quantity.value, 'BRL');
   }
 
   /**
    * Calculate average price per share
    * @param currency - Currency to calculate in ('USD' or 'BRL')
-   * @param ptaxBid - Required if currency is 'BRL'
    */
-  calculateAveragePrice(currency: string, ptaxBid?: number): Money {
+  calculateAveragePrice(currency: string): Money {
     if (this.isEmpty) {
       return new Money(0, currency);
     }
@@ -62,10 +62,7 @@ export class PortfolioPosition {
     if (currency === 'USD') {
       return new Money(this.totalCostUsd.amount / this.quantity.value, 'USD');
     } else if (currency === 'BRL') {
-      if (ptaxBid === undefined) {
-        throw new Error('PTAX bid rate is required to calculate BRL average price');
-      }
-      return this.averagePriceBrl(ptaxBid);
+      return this.averagePriceBrl;
     } else {
       throw new Error(`Unsupported currency: ${currency}`);
     }

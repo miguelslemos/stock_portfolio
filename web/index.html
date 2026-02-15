@@ -3,9 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- CSP: 'unsafe-inline' is intentionally omitted from script-src.
+         Production builds produce only external module scripts (no inline JS).
+         During Vite dev server, the React Refresh preamble may trigger CSP
+         warnings in the console — this is expected and harmless in development. -->
     <meta http-equiv="Content-Security-Policy" 
           content="default-src 'self'; 
-                   script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; 
+                   script-src 'self' 'wasm-unsafe-eval'; 
                    style-src 'self' 'unsafe-inline'; 
                    connect-src 'self' https://olinda.bcb.gov.br; 
                    img-src 'self' data: blob:; 

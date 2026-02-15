@@ -1,10 +1,24 @@
 [
     {
         "type": "vesting",
-        "date": "12/31/2023",
-        "settlement_date": "12/31/2023",
-        "quantity": 322,
-        "price": 7.05
+        "date": "02/15/2023",
+        "settlement_date": "02/15/2023",
+        "quantity": 100,
+        "price": 6.500000
+    },
+    {
+        "type": "vesting",
+        "date": "06/20/2023",
+        "settlement_date": "06/20/2023",
+        "quantity": 100,
+        "price": 4.431929
+    },
+    {
+        "type": "vesting",
+        "date": "10/10/2023",
+        "settlement_date": "10/10/2023",
+        "quantity": 122,
+        "price": 9.646779
     },
     {
         "type": "vesting",
@@ -39,48 +53,48 @@
         "date": "02/23/2024",
         "settlement_date": "02/23/2024",
         "quantity": 430,
-        "price": 9.97
+        "price": 9.96644393175384
     },
     {
         "type": "trade",
         "date": "05/21/2024",
         "settlement_date": "05/21/2024",
         "quantity": 41,
-        "price": 11.80
+        "price": 11.7961381580174
     },
     {
         "type": "trade",
         "date": "08/14/2024",
         "settlement_date": "08/14/2024",
         "quantity": 50,
-        "price": 12.94
+        "price": 12.9406021723973
     },
     {
         "type": "trade",
         "date": "08/15/2024",
         "settlement_date": "08/15/2024",
         "quantity": 50,
-        "price": 13.30
+        "price": 13.3000104261587
     },
     {
         "type": "trade",
         "date": "08/15/2024",
         "settlement_date": "08/15/2024",
         "quantity": 50,
-        "price": 13.80
+        "price": 13.7995438290242
     },
     {
         "type": "trade",
         "date": "08/21/2024",
         "settlement_date": "08/21/2024",
         "quantity": 50,
-        "price": 14.30
+        "price": 14.3004865410277
     },
     {
         "type": "trade",
         "date": "08/30/2024",
         "settlement_date": "08/30/2024",
         "quantity": 50,
-        "price": 14.80
+        "price": 14.7990696085711
     }
 ]
