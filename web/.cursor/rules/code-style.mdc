@@ -1,0 +1,52 @@
+---
+description: TypeScript code style standards
+globs: web/src/**/*.ts
+alwaysApply: false
+---
+
+# Code Style
+
+## Clarity Above All
+
+- Variable, function, and class names must be self-explanatory
+- Avoid obscure abbreviations. Prefer `calculateTotalGain` over `calcTG`
+- Small functions with a single responsibility (< 30 lines ideally)
+- No unnecessary comments. The code should explain itself
+
+```typescript
+// ❌ Bad: comment that repeats the code
+// Calculate the total gain
+const totalGain = this.calculateTotalGain(positions);
+
+// ✅ Good: self-explanatory name, no comment needed
+const totalGain = this.calculateTotalGain(positions);
+```
+
+## When to Comment
+
+Comment only:
+- Non-obvious business decisions (e.g., a specific tax rule)
+- Temporary workarounds with a link to the issue
+- Public interfaces (concise JSDoc)
+
+## Strict TypeScript
+
+- `strict: true` is active. Never use `any` (ESLint rule enforced)
+- Use discriminated unions instead of boolean flags
+- Prefer `readonly` for immutable properties
+- Use `interface` for contracts, `type` for unions and utility types
+
+```typescript
+// ❌ Bad
+function process(data: any): any { ... }
+
+// ✅ Good
+function processOperations(operations: readonly Operation[]): PortfolioSnapshot { ... }
+```
+
+## Conventions
+
+- Imports use the `@/` alias for `src/`
+- One main class/type per file
+- Files named after the class/type they export
+- Private methods prefixed with clear purpose, not underscore

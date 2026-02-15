@@ -1,0 +1,47 @@
+---
+description: Clean Architecture patterns and layer separation
+globs: web/src/**/*.ts
+alwaysApply: false
+---
+
+# Architecture and Separation of Concerns
+
+## Layers and Dependencies
+
+Dependencies flow only inward (presentation → application → domain).
+
+### Domain (src/domain/)
+- Value entities: `Money`, `StockQuantity`, `StockPosition`
+- Operations: `VestingOperation`, `TradeOperation`
+- Domain services: `PortfolioCalculationService`, `PortfolioAnalyticsService`
+- Zero external dependencies. Pure, testable logic.
+
+### Application (src/application/)
+- Interfaces (contracts): `IOperationRepository`, `IDataExportService`
+- Use cases: `ProcessPortfolioUseCase`
+- Orchestrates the flow without containing business rules.
+
+### Infrastructure (src/infrastructure/)
+- Concrete implementations of contracts: `PDFOperationRepository`, `JSONOperationRepository`
+- External services: `BCBExchangeRateService`, `CSVExportService`
+- Utilities: `DateParser`
+
+### Presentation (src/presentation/)
+- UI controllers: `PortfolioApp`
+- HTML builders: `ModalBuilder`, `YearDetailsBuilder`
+- Formatters: `BRLFormatter`, `USDFormatter`
+
+## Applied Patterns
+
+- **Repository Pattern**: abstract data sources behind an interface
+- **Composite Pattern**: `CompositeOperationRepository` combines multiple sources
+- **Dependency Injection**: pass dependencies via constructor
+- **Use Case Pattern**: one class per use case
+- **Builder Pattern**: construct complex HTML elements
+
+## When Creating New Code
+
+1. Ask: "Is this business logic?" → `domain/`
+2. Ask: "Does this orchestrate a flow?" → `application/`
+3. Ask: "Does this communicate with something external?" → `infrastructure/`
+4. Ask: "Does this manipulate the UI?" → `presentation/`

@@ -1,0 +1,86 @@
+[
+    {
+        "type": "vesting",
+        "date": "12/31/2023",
+        "settlement_date": "12/31/2023",
+        "quantity": 322,
+        "price": 7.05
+    },
+    {
+        "type": "vesting",
+        "date": "01/02/2024",
+        "settlement_date": "01/02/2024",
+        "quantity": 108,
+        "price": 8.13
+    },
+    {
+        "type": "vesting",
+        "date": "04/01/2024",
+        "settlement_date": "04/01/2024",
+        "quantity": 184,
+        "price": 11.82
+    },
+    {
+        "type": "vesting",
+        "date": "07/01/2024",
+        "settlement_date": "07/01/2024",
+        "quantity": 184,
+        "price": 12.36
+    },
+    {
+        "type": "vesting",
+        "date": "10/01/2024",
+        "settlement_date": "10/01/2024",
+        "quantity": 184,
+        "price": 13.43
+    },
+    {
+        "type": "trade",
+        "date": "02/23/2024",
+        "settlement_date": "02/23/2024",
+        "quantity": 430,
+        "price": 9.97
+    },
+    {
+        "type": "trade",
+        "date": "05/21/2024",
+        "settlement_date": "05/21/2024",
+        "quantity": 41,
+        "price": 11.80
+    },
+    {
+        "type": "trade",
+        "date": "08/14/2024",
+        "settlement_date": "08/14/2024",
+        "quantity": 50,
+        "price": 12.94
+    },
+    {
+        "type": "trade",
+        "date": "08/15/2024",
+        "settlement_date": "08/15/2024",
+        "quantity": 50,
+        "price": 13.30
+    },
+    {
+        "type": "trade",
+        "date": "08/15/2024",
+        "settlement_date": "08/15/2024",
+        "quantity": 50,
+        "price": 13.80
+    },
+    {
+        "type": "trade",
+        "date": "08/21/2024",
+        "settlement_date": "08/21/2024",
+        "quantity": 50,
+        "price": 14.30
+    },
+    {
+        "type": "trade",
+        "date": "08/30/2024",
+        "settlement_date": "08/30/2024",
+        "quantity": 50,
+        "price": 14.80
+    }
+]

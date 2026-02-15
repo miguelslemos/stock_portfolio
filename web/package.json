@@ -17,16 +17,24 @@
     "deploy:build": "NODE_ENV=production npm run build"
   },
   "dependencies": {
-    "pdfjs-dist": "^5.4.449"
+    "pdfjs-dist": "^5.4.449",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.1.18",
     "@types/node": "^20.10.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
+    "@vitejs/plugin-react": "^5.1.4",
     "@vitest/ui": "^4.0.14",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
+    "playwright": "^1.58.2",
     "prettier": "^3.3.0",
+    "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3",
     "vite": "^7.2.4",
     "vitest": "^4.0.14"

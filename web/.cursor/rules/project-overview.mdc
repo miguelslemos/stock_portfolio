@@ -1,0 +1,34 @@
+---
+description: General context for the Stock Portfolio Web project
+alwaysApply: true
+---
+
+# Stock Portfolio Web - Overview
+
+A pure TypeScript SPA (no React/Vue/Angular) for calculating taxes on stock operations (E*Trade RSU/ESPP).
+
+## Stack
+
+- **Runtime**: TypeScript 5.9, ES2020
+- **Build**: Vite 7
+- **Testing**: Vitest 4 with V8 coverage
+- **Linting**: ESLint + Prettier
+- **Main dependency**: pdfjs-dist (PDF parsing)
+- **External API**: BCB PTAX (exchange rates)
+
+## Layer Structure (Clean Architecture)
+
+```
+src/
+├── domain/          → Pure entities and services (no external dependencies)
+├── application/     → Use cases and interfaces (contracts)
+├── infrastructure/  → Repositories, APIs, concrete utilities
+└── presentation/    → UI, formatters, HTML builders
+```
+
+## Fundamental Rules
+
+- Never import from `infrastructure/` or `presentation/` inside `domain/`
+- Use cases orchestrate the flow, they never contain domain logic
+- All external API communication belongs in `infrastructure/`
+- The `presentation/` layer never accesses repositories directly
