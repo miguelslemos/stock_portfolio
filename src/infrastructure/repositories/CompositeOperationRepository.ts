@@ -11,7 +11,7 @@ export class CompositeOperationRepository implements IOperationRepository {
       try {
         const operations = await repo.getAllOperations();
         allOperations.push(...operations);
-      } catch (error) {
+      } catch (_error) {
       }
     }
 

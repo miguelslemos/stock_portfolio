@@ -11,7 +11,7 @@ interface AnalyticsProviderProps {
 
 export function AnalyticsProvider({ children }: AnalyticsProviderProps) {
   const service = useMemo<IAnalyticsService>(() => {
-    const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined;
+    const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
     if (measurementId) {
       return new GoogleAnalyticsService(measurementId);
     }

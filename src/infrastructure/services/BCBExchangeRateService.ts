@@ -44,7 +44,7 @@ export class BCBExchangeRateService implements ExchangeRateService {
       const rate = await this.fetchRateFromBCB(date);
       this.cache.set(cacheKey, { rate, timestamp: Date.now() });
       return rate;
-    } catch (error) {
+    } catch (_error) {
       // Cache null result to avoid repeated failed requests
       this.cache.set(cacheKey, { rate: null, timestamp: Date.now() });
       return null;
