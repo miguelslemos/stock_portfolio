@@ -4,31 +4,39 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
+    branches: ['*']
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
-  lint-and-test:
+  ci:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: web
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node
+        uses: actions/setup-node@v6
         with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: web/package-lock.json
+          node-version: '24'
+          cache: 'npm'
 
-      - run: npm ci
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
 
       - name: Type check
         run: npx tsc --noEmit
 
-      - name: Unit tests
-        run: npx vitest run --exclude '**/BCBExchangeRateService*'
+      - name: Tests
+        run: npm test -- --run
 
       - name: Build
-        run: npx vite build
+        run: npm run build

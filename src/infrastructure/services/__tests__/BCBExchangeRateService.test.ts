@@ -37,7 +37,8 @@ describe('BCBExchangeRateService', () => {
     expect(rate).not.toBeNull();
     expect(rate?.fromCurrency).toBe('USD');
     expect(rate?.toCurrency).toBe('BRL');
-    expect(rate?.bidRate).toBe(5.0);
+    // Service uses cotacaoVenda for both rates per Art. 57 of IN RFB
+    expect(rate?.bidRate).toBe(5.05);
     expect(rate?.askRate).toBe(5.05);
   });
 
