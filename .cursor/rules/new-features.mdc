@@ -1,0 +1,37 @@
+---
+alwaysApply: true
+---
+# Implementing New Features
+
+## Checklist Before Coding
+
+1. Identify which layer the feature belongs to
+2. Define interfaces/contracts before implementations
+3. Start with the domain if business rules are involved
+4. Write tests alongside the implementation
+
+## Implementation Order
+
+```
+1. Domain (entities, services)          → Unit tests
+2. Application (interfaces, use cases)  → Tests with mocks
+3. Infrastructure (repositories, APIs)  → Integration tests
+4. Presentation (UI, formatters)        → Visual verification
+```
+
+## Patterns to Follow
+
+- Single responsibility per class/function
+- Prefer composition over inheritance
+- Use discriminated unions to represent states
+- Inject dependencies — never instantiate services internally
+- Side-effect-free code in the domain
+
+## What to Avoid
+
+- Classes with more than 200 lines
+- Functions with more than 5 parameters (use a config object)
+- Circular imports between layers
+- Complex conditional logic (extract into strategy/policy)
+- Magic strings (use enums or constants)
+- Comments explaining "what" — the code should be clear

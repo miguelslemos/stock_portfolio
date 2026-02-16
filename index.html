@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- CSP: 'unsafe-inline' is intentionally omitted from script-src.
+         Production builds produce only external module scripts (no inline JS).
+         During Vite dev server, the React Refresh preamble may trigger CSP
+         warnings in the console — this is expected and harmless in development. -->
+    <meta http-equiv="Content-Security-Policy" 
+          content="default-src 'self'; 
+                   script-src 'self' 'wasm-unsafe-eval' https://www.googletagmanager.com; 
+                   style-src 'self' 'unsafe-inline'; 
+                   connect-src 'self' https://olinda.bcb.gov.br https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com; 
+                   img-src 'self' data: blob: https://www.google-analytics.com; 
+                   font-src 'self' https://fonts.gstatic.com; 
+                   object-src 'none'; 
+                   base-uri 'self'; 
+                   form-action 'self';" />
+    <meta name="description" content="Sistema de gestão de portfólio de ações com cálculo automático de impostos e relatórios detalhados" />
+    <title>Stock Portfolio Manager | NU Holdings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  </head>
+  <body class="min-h-screen bg-surface-100 dark:bg-surface-950 p-3 sm:p-5 md:p-8 transition-colors">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

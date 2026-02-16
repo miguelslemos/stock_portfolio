@@ -29,16 +29,6 @@ coverage/
 .DS_Store
 Thumbs.db
 
-# Python (legacy)
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-venv/
-env/
-*.egg-info/
-
 # Logs
 logs/
 *.log
