@@ -64,7 +64,8 @@ export function App() {
     analytics.trackEvent('demo_loaded');
     void (async () => {
       try {
-        const res = await fetch('/demo-data.json');
+        const base = import.meta.env.BASE_URL;
+        const res = await fetch(`${base}demo-data.json`);
         const json = await res.text();
         void portfolio.processPortfolio({
           tradePDFs: [],

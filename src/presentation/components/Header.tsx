@@ -59,7 +59,7 @@ export function Header({ isDark, onToggleTheme }: HeaderProps) {
           </div>
           <p className="text-xs leading-snug text-white/80">
             <strong className="text-white">Processamento 100% local.</strong>{' '}
-            Seus PDFs são processados no navegador. Dados financeiros nunca são enviados. Analytics anônimo de uso pode estar ativo.
+            Seus PDFs são processados no navegador. Dados financeiros nunca são enviados para o servidor.
           </p>
         </div>
       </div>
