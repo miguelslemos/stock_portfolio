@@ -1,14 +1,12 @@
 import { useState, useCallback } from 'react';
-import { type useFileUpload } from '@/presentation/hooks/useFileUpload';
-
-type FileUploadReturn = ReturnType<typeof useFileUpload>;
+import { type UseFileUploadReturn } from '@/presentation/hooks/useFileUpload';
 
 interface JsonUploadPanelProps {
-  fileUpload: FileUploadReturn;
+  fileUpload: UseFileUploadReturn;
 }
 
 export function JsonUploadPanel({ fileUpload }: JsonUploadPanelProps) {
-  const { files, jsonInputRef, handleJsonFile, openJsonDialog } = fileUpload;
+  const { files, jsonInputRef, handleJsonFile, openJsonDialog, jsonValidation } = fileUpload;
 
   return (
     <div className="space-y-4 animate-fade-in">
@@ -47,6 +45,51 @@ export function JsonUploadPanel({ fileUpload }: JsonUploadPanelProps) {
           )}
         </div>
       </div>
+
+      {/* Validation feedback */}
+      {jsonValidation.status === 'valid' && (
+        <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-xs text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/20 dark:text-emerald-400">
+          <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+          <span>{jsonValidation.validCount} operações válidas encontradas.</span>
+        </div>
+      )}
+
+      {jsonValidation.status === 'warning' && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs dark:border-amber-800 dark:bg-amber-950/20">
+          <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
+            <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126Z" />
+            </svg>
+            <span>{jsonValidation.validCount} válidas, {jsonValidation.errors.length} com problema:</span>
+          </div>
+          <ul className="mt-1.5 space-y-0.5 pl-6 text-amber-600 dark:text-amber-300">
+            {jsonValidation.errors.slice(0, 5).map((err, i) => (
+              <li key={i}>{err}</li>
+            ))}
+            {jsonValidation.errors.length > 5 && (
+              <li>...e mais {jsonValidation.errors.length - 5} erros</li>
+            )}
+          </ul>
+        </div>
+      )}
+
+      {jsonValidation.status === 'error' && (
+        <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-2.5 text-xs dark:border-rose-800 dark:bg-rose-950/20">
+          <div className="flex items-center gap-2 text-rose-700 dark:text-rose-400">
+            <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+            </svg>
+            <span>Erro na validação:</span>
+          </div>
+          <ul className="mt-1.5 space-y-0.5 pl-6 text-rose-600 dark:text-rose-300">
+            {jsonValidation.errors.map((err, i) => (
+              <li key={i}>{err}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Schema section */}
       <JsonSchemaInline />
@@ -113,7 +156,7 @@ function getJSONSchema(): string {
             required: ['type', 'date', 'quantity', 'price'],
             properties: {
               type: { const: 'vesting' },
-              date: { type: 'string', format: 'date' },
+              date: { type: 'string', pattern: '^\\d{2}/\\d{2}/\\d{4}$', description: 'MM/DD/YYYY (aceita também YYYY-MM-DD)' },
               quantity: { type: 'integer', minimum: 1 },
               price: { type: 'number', minimum: 0, description: 'Preço por ação em USD' },
             },
@@ -124,8 +167,8 @@ function getJSONSchema(): string {
             required: ['type', 'date', 'quantity', 'price'],
             properties: {
               type: { const: 'trade' },
-              date: { type: 'string', format: 'date' },
-              settlement_date: { type: 'string', format: 'date' },
+              date: { type: 'string', pattern: '^\\d{2}/\\d{2}/\\d{4}$', description: 'MM/DD/YYYY' },
+              settlement_date: { type: 'string', pattern: '^\\d{2}/\\d{2}/\\d{4}$', description: 'MM/DD/YYYY' },
               quantity: { type: 'integer', minimum: 1 },
               price: { type: 'number', minimum: 0 },
             },
@@ -141,11 +184,11 @@ function getJSONSchema(): string {
 function getJSONExample(): string {
   return JSON.stringify(
     [
-      { type: 'vesting', date: '2023-01-15', quantity: 100, price: 8.5 },
-      { type: 'vesting', date: '2023-04-15', quantity: 100, price: 9.2 },
-      { type: 'trade', date: '2023-06-10', settlement_date: '2023-06-12', quantity: 50, price: 10.75 },
-      { type: 'vesting', date: '2023-07-15', quantity: 100, price: 11.0 },
-      { type: 'trade', date: '2023-12-20', settlement_date: '2023-12-22', quantity: 150, price: 12.5 },
+      { type: 'vesting', date: '01/15/2023', quantity: 100, price: 8.5 },
+      { type: 'vesting', date: '04/15/2023', quantity: 100, price: 9.2 },
+      { type: 'trade', date: '06/10/2023', settlement_date: '06/12/2023', quantity: 50, price: 10.75 },
+      { type: 'vesting', date: '07/15/2023', quantity: 100, price: 11.0 },
+      { type: 'trade', date: '12/20/2023', settlement_date: '12/22/2023', quantity: 150, price: 12.5 },
     ],
     null,
     2

@@ -1,9 +1,18 @@
+import { useAnalytics } from '@/presentation/hooks';
+import { useCallback } from 'react';
+
 interface HeaderProps {
   isDark: boolean;
   onToggleTheme: () => void;
 }
 
 export function Header({ isDark, onToggleTheme }: HeaderProps) {
+  const analytics = useAnalytics();
+
+  const handleToggleTheme = useCallback(() => {
+    analytics.trackEvent('theme_toggled', { theme: isDark ? 'light' : 'dark' });
+    onToggleTheme();
+  }, [analytics, isDark, onToggleTheme]);
   return (
     <header className="relative overflow-hidden bg-gradient-to-br from-brand-600 via-brand-700 to-accent-600 px-6 py-10 text-white sm:px-10 sm:py-14">
       {/* Subtle grid pattern */}
@@ -20,7 +29,7 @@ export function Header({ isDark, onToggleTheme }: HeaderProps) {
 
       {/* Theme toggle */}
       <button
-        onClick={onToggleTheme}
+        onClick={handleToggleTheme}
         className="absolute right-4 top-4 z-20 flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 text-sm backdrop-blur-sm transition-all hover:bg-white/20"
         aria-label={isDark ? 'Modo claro' : 'Modo escuro'}
       >
@@ -49,8 +58,8 @@ export function Header({ isDark, onToggleTheme }: HeaderProps) {
             </svg>
           </div>
           <p className="text-xs leading-snug text-white/80">
-            <strong className="text-white">100% local e privado.</strong>{' '}
-            Seus PDFs são processados no navegador. Nenhum dado é enviado para servidores.
+            <strong className="text-white">Processamento 100% local.</strong>{' '}
+            Seus PDFs são processados no navegador. Dados financeiros nunca são enviados. Analytics anônimo de uso pode estar ativo.
           </p>
         </div>
       </div>

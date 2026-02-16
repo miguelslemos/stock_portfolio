@@ -74,6 +74,6 @@ export function ModalHeader({ title, onClose }: ModalHeaderProps) {
   );
 }
 
-export function ModalBody({ children }: { children: ReactNode }) {
-  return <div className="max-h-[75vh] overflow-y-auto px-6 py-5">{children}</div>;
+export function ModalBody({ children, maxHeight }: { children: ReactNode; maxHeight?: string }) {
+  return <div className={`${maxHeight ?? 'max-h-[85vh]'} overflow-y-auto px-6 py-5`}>{children}</div>;
 }

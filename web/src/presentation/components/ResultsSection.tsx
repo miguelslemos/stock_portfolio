@@ -1,7 +1,8 @@
 import { type ProcessPortfolioResponse } from '@/application/usecases';
 import { type PortfolioSnapshot } from '@/domain/entities';
 import { BRLFormatter, USDFormatter, DateFormatter } from '@/presentation/formatters';
-import { useState, useMemo } from 'react';
+import { useAnalytics } from '@/presentation/hooks';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { OperationDetailModal } from './OperationDetailModal';
 import { YearDetailModal } from './YearDetailModal';
 
@@ -13,9 +14,25 @@ interface ResultsSectionProps {
 
 export function ResultsSection({ response, snapshots, onReset }: ResultsSectionProps) {
   const { finalPosition, totalOperations } = response;
+  const analytics = useAnalytics();
 
   const [selectedOperation, setSelectedOperation] = useState<number | null>(null);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
+
+  useEffect(() => {
+    analytics.trackPageView('results');
+  }, [analytics]);
+
+  const handleYearClick = useCallback((year: number) => {
+    analytics.trackEvent('year_detail_viewed', { year });
+    setSelectedYear(year);
+  }, [analytics]);
+
+  const handleOperationClick = useCallback((index: number) => {
+    const operationType = snapshots[index]?.getOperationDescription() ?? 'unknown';
+    analytics.trackEvent('operation_detail_viewed', { operation_type: operationType, index });
+    setSelectedOperation(index);
+  }, [analytics, snapshots]);
 
   const yearlySnapshots = useMemo(() => getYearlySnapshots(snapshots), [snapshots]);
   const sortedYears = useMemo(
@@ -87,7 +104,7 @@ export function ResultsSection({ response, snapshots, onReset }: ResultsSectionP
                 return (
                   <tr
                     key={year}
-                    onClick={() => setSelectedYear(year)}
+                    onClick={() => handleYearClick(year)}
                     className={`cursor-pointer transition-colors hover:bg-brand-50/50 dark:hover:bg-brand-950/20 ${
                       isCurrentYear
                         ? 'bg-amber-50/40 text-surface-700 dark:bg-amber-950/10 dark:text-surface-300'
@@ -144,7 +161,7 @@ export function ResultsSection({ response, snapshots, onReset }: ResultsSectionP
                 return (
                   <tr
                     key={index}
-                    onClick={() => setSelectedOperation(index)}
+                    onClick={() => handleOperationClick(index)}
                     className="cursor-pointer text-surface-700 transition-colors hover:bg-brand-50/50 dark:text-surface-300 dark:hover:bg-brand-950/20"
                   >
                     <td className="px-4 py-3">{DateFormatter.format(meta.operationDate)}</td>

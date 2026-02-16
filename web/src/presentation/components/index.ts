@@ -10,3 +10,5 @@ export { ResultsSection } from './ResultsSection';
 export { OperationDetailModal } from './OperationDetailModal';
 export { YearDetailModal } from './YearDetailModal';
 export { Modal, ModalHeader, ModalBody } from './Modal';
+export { StepIndicator } from './StepIndicator';
+export { ErrorBoundary } from './ErrorBoundary';

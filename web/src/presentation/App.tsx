@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react';
-import { usePortfolio, useFileUpload, useDarkMode, useManualEntries } from './hooks';
+import { useState, useCallback, useEffect } from 'react';
+import { usePortfolio, useFileUpload, useDarkMode, useManualEntries, useAnalytics } from './hooks';
 import {
   Header,
   Footer,
@@ -11,6 +11,8 @@ import {
   HelpSection,
   LoadingState,
   ResultsSection,
+  StepIndicator,
+  ErrorBoundary,
 } from './components';
 
 export function App() {
@@ -18,7 +20,12 @@ export function App() {
   const fileUpload = useFileUpload();
   const manualEntries = useManualEntries();
   const { isDark, toggle: toggleTheme } = useDarkMode();
+  const analytics = useAnalytics();
   const [activeMethods, setActiveMethods] = useState<Set<InputMethod>>(new Set(['manual']));
+
+  useEffect(() => {
+    analytics.trackPageView('home');
+  }, [analytics]);
 
   const toggleMethod = useCallback((method: InputMethod) => {
     setActiveMethods((prev) => {
@@ -30,7 +37,8 @@ export function App() {
       }
       return next;
     });
-  }, []);
+    analytics.trackEvent('input_method_toggled', { method });
+  }, [analytics]);
 
   const hasData =
     (activeMethods.has('manual') && manualEntries.hasEntries) ||
@@ -39,6 +47,8 @@ export function App() {
 
   const handleProcess = useCallback(
     (exportData = false) => {
+      const methods = Array.from(activeMethods).join(',');
+      analytics.trackEvent(exportData ? 'portfolio_exported_csv' : 'portfolio_processed', { methods });
       void portfolio.processPortfolio({
         tradePDFs: activeMethods.has('pdf') ? fileUpload.files.tradePDFs : [],
         releasePDFs: activeMethods.has('pdf') ? fileUpload.files.releasePDFs : [],
@@ -47,10 +57,11 @@ export function App() {
         exportData,
       });
     },
-    [portfolio, activeMethods, fileUpload.files, manualEntries]
+    [portfolio, activeMethods, fileUpload.files, manualEntries, analytics]
   );
 
   const handleDemo = useCallback(() => {
+    analytics.trackEvent('demo_loaded');
     void (async () => {
       try {
         const res = await fetch('/demo-data.json');
@@ -73,14 +84,15 @@ export function App() {
         });
       }
     })();
-  }, [portfolio]);
+  }, [portfolio, analytics]);
 
   const handleReset = useCallback(() => {
+    analytics.trackEvent('portfolio_reset');
     portfolio.reset();
     fileUpload.clearAll();
     manualEntries.clearEntries();
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [portfolio, fileUpload, manualEntries]);
+  }, [portfolio, fileUpload, manualEntries, analytics]);
 
   const isIdle = portfolio.state.status === 'idle';
   const isLoading = portfolio.state.status === 'loading';
@@ -92,9 +104,14 @@ export function App() {
       <Header isDark={isDark} onToggleTheme={toggleTheme} />
 
       <main>
+        {/* Step indicator */}
+        <div className="px-6 pt-6 sm:px-10">
+          <StepIndicator currentStep={isSuccess ? 3 : isLoading ? 2 : 1} />
+        </div>
+
         {/* ===== Input section (idle/error) ===== */}
         {(isIdle || isError) && (
-          <div className="space-y-6 px-6 py-8 sm:px-10">
+          <div className="animate-fade-in space-y-6 px-6 py-8 sm:px-10">
             {/* Section title + Demo CTA */}
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div>
@@ -174,15 +191,29 @@ export function App() {
         )}
 
         {/* ===== Loading ===== */}
-        {isLoading && <LoadingState progress={portfolio.state.progress} />}
+        {isLoading && (
+          <div className="animate-fade-in">
+            <LoadingState progress={portfolio.state.progress} />
+            <div className="flex justify-center px-6 pb-8">
+              <button
+                onClick={portfolio.cancelProcessing}
+                className="rounded-lg border border-surface-300 bg-surface-0 px-4 py-2 text-xs font-medium text-surface-600 transition-colors hover:bg-surface-100 dark:border-surface-600 dark:bg-surface-800 dark:text-surface-400 dark:hover:bg-surface-700"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* ===== Results ===== */}
         {isSuccess && portfolio.state.response && (
-          <ResultsSection
-            response={portfolio.state.response}
-            snapshots={portfolio.state.snapshots}
-            onReset={handleReset}
-          />
+          <ErrorBoundary fallbackMessage="Erro ao exibir os resultados." onReset={handleReset}>
+            <ResultsSection
+              response={portfolio.state.response}
+              snapshots={portfolio.state.snapshots}
+              onReset={handleReset}
+            />
+          </ErrorBoundary>
         )}
       </main>
 

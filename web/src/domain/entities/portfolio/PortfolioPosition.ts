@@ -11,6 +11,8 @@ import { StockQuantity } from '../core/StockQuantity';
  * Immutable by design - any change creates a new instance.
  */
 export class PortfolioPosition {
+  private _averagePriceBrl: Money | null = null;
+
   constructor(
     public readonly quantity: StockQuantity,
     public readonly totalCostUsd: Money,
@@ -19,7 +21,6 @@ export class PortfolioPosition {
     public readonly grossProfitBrl: ProfitLoss,
     public readonly lastUpdated: Date
   ) {
-    // Validate invariants
     if (quantity.value < 0) {
       throw new Error('Quantity cannot be negative');
     }
@@ -31,9 +32,6 @@ export class PortfolioPosition {
     }
   }
 
-  /**
-   * Check if the portfolio is empty (no shares)
-   */
   get isEmpty(): boolean {
     return this.quantity.value === 0;
   }
@@ -42,12 +40,15 @@ export class PortfolioPosition {
    * Average price per share in BRL, derived from the accumulated total cost
    * in BRL (where each purchase was converted at that day's PTAX rate)
    * divided by the total quantity of shares.
+   * Cached on first access since the class is immutable.
    */
   get averagePriceBrl(): Money {
-    if (this.isEmpty) {
-      return new Money(0, 'BRL');
+    if (this._averagePriceBrl === null) {
+      this._averagePriceBrl = this.isEmpty
+        ? new Money(0, 'BRL')
+        : new Money(this.totalCostBrl.amount / this.quantity.value, 'BRL');
     }
-    return new Money(this.totalCostBrl.amount / this.quantity.value, 'BRL');
+    return this._averagePriceBrl;
   }
 
   /**

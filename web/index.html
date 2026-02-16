@@ -9,10 +9,10 @@
          warnings in the console — this is expected and harmless in development. -->
     <meta http-equiv="Content-Security-Policy" 
           content="default-src 'self'; 
-                   script-src 'self' 'wasm-unsafe-eval'; 
+                   script-src 'self' 'wasm-unsafe-eval' https://www.googletagmanager.com; 
                    style-src 'self' 'unsafe-inline'; 
-                   connect-src 'self' https://olinda.bcb.gov.br; 
-                   img-src 'self' data: blob:; 
+                   connect-src 'self' https://olinda.bcb.gov.br https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com; 
+                   img-src 'self' data: blob: https://www.google-analytics.com; 
                    font-src 'self' https://fonts.gstatic.com; 
                    object-src 'none'; 
                    base-uri 'self'; 

@@ -1,5 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { PortfolioSnapshot } from '@/domain/entities';
+import { getErrorMessage } from '@/domain/errors';
 import {
   ProcessPortfolioUseCase,
   type ProcessPortfolioResponse,
@@ -24,6 +25,7 @@ export interface PortfolioState {
 interface UsePortfolioReturn {
   state: PortfolioState;
   processPortfolio: (params: ProcessParams) => Promise<void>;
+  cancelProcessing: () => void;
   reset: () => void;
 }
 
@@ -54,9 +56,20 @@ function readFileAsText(file: File): Promise<string> {
 
 export function usePortfolio(): UsePortfolioReturn {
   const [state, setState] = useState<PortfolioState>(initialState);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  const cancelProcessing = useCallback(() => {
+    abortControllerRef.current?.abort();
+    abortControllerRef.current = null;
+    setState(initialState);
+  }, []);
 
   const processPortfolio = useCallback(async (params: ProcessParams) => {
     const { tradePDFs, releasePDFs, jsonFile, manualEntriesJSON, exportData = false } = params;
+
+    abortControllerRef.current?.abort();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
     try {
       setState((prev) => ({
@@ -129,6 +142,8 @@ export function usePortfolio(): UsePortfolioReturn {
 
       const response = await useCase.execute({ exportData });
 
+      if (controller.signal.aborted) return;
+
       setState({
         status: 'success',
         response,
@@ -137,10 +152,11 @@ export function usePortfolio(): UsePortfolioReturn {
         progress: null,
       });
     } catch (error) {
+      if (controller.signal.aborted) return;
       setState((prev) => ({
         ...prev,
         status: 'error',
-        error: error instanceof Error ? error.message : 'Erro desconhecido',
+        error: getErrorMessage(error),
         progress: null,
       }));
     }
@@ -150,5 +166,5 @@ export function usePortfolio(): UsePortfolioReturn {
     setState(initialState);
   }, []);
 
-  return { state, processPortfolio, reset };
+  return { state, processPortfolio, cancelProcessing, reset };
 }

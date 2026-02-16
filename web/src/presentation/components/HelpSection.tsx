@@ -1,12 +1,21 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+import { useAnalytics } from '@/presentation/hooks';
 
 export function HelpSection() {
   const [isOpen, setIsOpen] = useState(true);
+  const analytics = useAnalytics();
+
+  const handleToggle = useCallback(() => {
+    if (!isOpen) {
+      analytics.trackEvent('help_section_opened');
+    }
+    setIsOpen((prev) => !prev);
+  }, [isOpen, analytics]);
 
   return (
     <div className="animate-fade-in">
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleToggle}
         className="flex w-full items-center gap-3 rounded-xl border border-surface-200 bg-surface-0 px-5 py-4 text-left transition-all hover:shadow-sm dark:border-surface-700 dark:bg-surface-800"
         aria-expanded={isOpen}
       >
