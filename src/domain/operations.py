@@ -102,7 +102,7 @@ class VestingOperation(PortfolioOperation):
             'USD'
         )
         new_avg_price_brl = Money(
-            new_total_cost_usd.amount * exchange_rate.bid_rate,
+            new_total_cost_brl.amount / new_quantity.value if new_quantity.value > 0 else Decimal('0'),
             'BRL'
         )
 
