@@ -181,7 +181,7 @@ function OperationCost({
           value={USDFormatter.formatWithPrecision(priceUsd)}
         />
         <MetricCard
-          label="PTAX Compra"
+          label="PTAX Venda"
           value={ptaxBid.toFixed(4)}
           detail={DateFormatter.format(metadata.settlementDate)}
         />
