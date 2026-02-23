@@ -52,7 +52,7 @@ export function HelpSection() {
               { label: 'Baixe os PDFs de Release dos anos desejados' },
               { label: 'Organize em uma pasta (aceita subpastas)' },
             ]}
-            gifSrc="/download-release-confirmation.gif"
+            gifSrc="./download-release-confirmation.gif"
             gifAlt="Demo de download de release"
           />
 
@@ -64,7 +64,7 @@ export function HelpSection() {
               { label: 'Baixe os PDFs de Trade dos anos desejados' },
               { label: 'Organize em uma pasta separada' },
             ]}
-            gifSrc="/download-trade-confirmation.gif"
+            gifSrc="./download-trade-confirmation.gif"
             gifAlt="Demo de download de trade"
           />
         </div>
