@@ -60,6 +60,8 @@ jobs:
         run: npm ci
 
       - name: Build
+        env:
+          VITE_GA_MEASUREMENT_ID: ${{ secrets.VITE_GA_MEASUREMENT_ID }}
         run: npm run build
 
       - name: Setup Pages
