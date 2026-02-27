@@ -90,8 +90,8 @@ export class ModalBuilder {
         • Ações antes: ${previousQty}<br>
         • Ações adicionadas: +${operationQty}<br>
         • Ações após: <strong>${position.quantity.value}</strong><br>
-        • Novo preço médio: ${USDFormatter.formatWithPrecision(position.averagePriceUsd.amount)} 
-        (${BRLFormatter.formatWithPrecision(position.averagePriceBrl(ptaxBid).amount)})<br>
+        • Novo preço médio: ${USDFormatter.formatWithPrecision(position.averagePriceUsd.amount)}
+        (${BRLFormatter.formatWithPrecision(position.averagePriceBrl().amount)})<br>
         • Custo total acumulado: ${BRLFormatter.format(position.totalCostBrl.amount)}
       `;
     } else {
@@ -191,7 +191,7 @@ export class ModalBuilder {
           </div>
           <div class="detail-item">
             <label>Preço Médio (BRL)</label>
-            <div class="value">${BRLFormatter.formatWithPrecision(position.averagePriceBrl(ptaxBid).amount)}</div>
+            <div class="value">${BRLFormatter.formatWithPrecision(position.averagePriceBrl().amount)}</div>
           </div>
           <div class="detail-item">
             <label>PTAX Compra</label>
@@ -199,8 +199,8 @@ export class ModalBuilder {
           </div>
         </div>
         <div class="calculation-detail">
-          <div class="formula">Preço Médio BRL = Preço Médio USD × PTAX Compra</div>
-          ${BRLFormatter.formatWithPrecision(position.averagePriceBrl(ptaxBid).amount)} = ${USDFormatter.formatWithPrecision(position.averagePriceUsd.amount)} × ${ptaxBid.toFixed(6)}
+          <div class="formula">Preço Médio BRL = Custo Total BRL ÷ Quantidade</div>
+          ${BRLFormatter.formatWithPrecision(position.averagePriceBrl().amount)} = ${BRLFormatter.formatWithPrecision(position.totalCostBrl.amount)} ÷ ${position.quantity.value}
         </div>
       </div>
     `;
