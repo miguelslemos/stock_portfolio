@@ -50,15 +50,14 @@ export class CSVExportService implements IDataExportService {
       .sort(([a], [b]) => a - b)
       .map(([year, snapshot]) => {
         const position = snapshot.position;
-        const ptaxBid = snapshot.metadata.exchangeRates.ptaxBid;
-        
+
         return [
           year.toString(),
           position.quantity.value.toString(),
           position.totalCostUsd.amount.toFixed(4),
           position.averagePriceUsd.amount.toFixed(4),
           position.totalCostBrl.amount.toFixed(4),
-          position.averagePriceBrl(ptaxBid).amount.toFixed(4),
+          position.averagePriceBrl().amount.toFixed(4),
           position.grossProfitBrl.amount.toFixed(4),
         ];
       });

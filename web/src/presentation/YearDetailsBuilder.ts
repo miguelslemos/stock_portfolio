@@ -74,7 +74,6 @@ export class YearDetailsBuilder {
     const initialQty = initialPosition?.quantity.value ?? 0;
     const finalQty = finalPosition.quantity.value;
     const netChange = finalQty - initialQty;
-    const ptaxBid = snapshots[snapshots.length - 1]!.metadata.exchangeRates.ptaxBid;
 
     const currentYear = new Date().getFullYear();
     const isCurrentYear = year === currentYear;
@@ -190,7 +189,7 @@ export class YearDetailsBuilder {
           
           <div class="summary-card">
             <div class="summary-label">Preço Médio Final (BRL)</div>
-            <div class="summary-value">${BRLFormatter.formatWithPrecision(finalPosition.averagePriceBrl(ptaxBid).amount)}</div>
+            <div class="summary-value">${BRLFormatter.formatWithPrecision(finalPosition.averagePriceBrl().amount)}</div>
             <div class="summary-detail">Por ação</div>
           </div>
         </div>
@@ -203,7 +202,6 @@ export class YearDetailsBuilder {
       .map((snapshot) => {
         const metadata = snapshot.metadata;
         const position = snapshot.position;
-        const ptaxBid = metadata.exchangeRates.ptaxBid;
         const operationDesc = snapshot.getOperationDescription();
         const profitLoss = snapshot.getOperationProfitLoss();
 
@@ -215,7 +213,7 @@ export class YearDetailsBuilder {
           <td>${USDFormatter.formatWithPrecision(metadata.pricePerShareUsd.amount)}</td>
           <td>${position.quantity.value}</td>
           <td>${USDFormatter.formatWithPrecision(position.averagePriceUsd.amount)}</td>
-          <td>${BRLFormatter.formatWithPrecision(position.averagePriceBrl(ptaxBid).amount)}</td>
+          <td>${BRLFormatter.formatWithPrecision(position.averagePriceBrl().amount)}</td>
           <td class="${profitLoss && profitLoss.amount >= 0 ? 'positive' : profitLoss ? 'negative' : ''}">
             ${profitLoss ? BRLFormatter.format(profitLoss.amount) : '-'}
           </td>
@@ -255,9 +253,8 @@ export class YearDetailsBuilder {
     const finalPosition = lastSnapshot?.position;
     const totalCostBrl = finalPosition?.totalCostBrl.amount ?? 0;
     const totalCostUsd = finalPosition?.totalCostUsd.amount ?? 0;
-    const ptaxBid = lastSnapshot?.metadata.exchangeRates.ptaxBid ?? 0;
     const finalQty = finalPosition?.quantity.value ?? 0;
-    const avgPriceBrl = finalPosition ? finalPosition.averagePriceBrl(ptaxBid).amount : 0;
+    const avgPriceBrl = finalPosition ? finalPosition.averagePriceBrl().amount : 0;
     const avgPriceUsd = finalPosition ? finalPosition.averagePriceUsd.amount : 0;
     const currentYear = new Date().getFullYear();
     const isCurrentYear = year === currentYear;

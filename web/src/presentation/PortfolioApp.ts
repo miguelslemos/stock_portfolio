@@ -339,7 +339,6 @@ export class PortfolioApp {
       .map((year) => {
         const snapshot = yearlySnapshots.get(year)!;
         const position = snapshot.position;
-        const ptaxBid = snapshot.metadata.exchangeRates.ptaxBid;
         return `
         <tr data-year="${year}" style="cursor: pointer;">
           <td>${year}</td>
@@ -347,7 +346,7 @@ export class PortfolioApp {
           <td>${USDFormatter.format(position.totalCostUsd.amount)}</td>
           <td>${USDFormatter.formatWithPrecision(position.averagePriceUsd.amount)}</td>
           <td>${BRLFormatter.format(position.totalCostBrl.amount)}</td>
-          <td>${BRLFormatter.formatWithPrecision(position.averagePriceBrl(ptaxBid).amount)}</td>
+          <td>${BRLFormatter.formatWithPrecision(position.averagePriceBrl().amount)}</td>
           <td class="${position.grossProfitBrl.amount >= 0 ? 'positive' : 'negative'}">
             ${BRLFormatter.format(position.grossProfitBrl.amount)}
           </td>
@@ -382,15 +381,14 @@ export class PortfolioApp {
         const position = snapshot.position;
         const metadata = snapshot.metadata;
         const operationDesc = snapshot.getOperationDescription();
-        const ptaxBid = metadata.exchangeRates.ptaxBid;
-        
+
         return `
         <tr data-operation-index="${index}">
           <td>${DateFormatter.format(metadata.operationDate)}</td>
           <td>${operationDesc}</td>
           <td>${position.quantity.value}</td>
           <td>${USDFormatter.formatWithPrecision(position.averagePriceUsd.amount)}</td>
-          <td>${BRLFormatter.formatWithPrecision(position.averagePriceBrl(ptaxBid).amount)}</td>
+          <td>${BRLFormatter.formatWithPrecision(position.averagePriceBrl().amount)}</td>
           <td class="${position.grossProfitBrl.amount >= 0 ? 'positive' : 'negative'}">
             ${BRLFormatter.format(position.grossProfitBrl.amount)}
           </td>
