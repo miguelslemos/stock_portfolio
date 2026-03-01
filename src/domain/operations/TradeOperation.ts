@@ -55,12 +55,12 @@ export class TradeOperation implements PortfolioOperation {
     // Validate trade is possible
     if (this.quantity.value > currentPosition.quantity.value) {
       throw new Error(
-        `Cannot sell ${this.quantity.value} shares, only ${currentPosition.quantity.value} available`
+        `Tentativa de vender ${this.quantity.value} ações, mas apenas ${currentPosition.quantity.value} disponíveis no portfólio`
       );
     }
 
     if (currentPosition.quantity.value === 0) {
-      throw new Error('Cannot sell from empty portfolio');
+      throw new Error('Não é possível vender ações de um portfólio vazio');
     }
 
     // Validate exchange rates
@@ -68,7 +68,7 @@ export class TradeOperation implements PortfolioOperation {
     const askRate = exchangeRate.askRate;
     
     if (bidRate === null || askRate === null) {
-      throw new Error('Both bid and ask rates are required for trade operation');
+      throw new Error('Cotações PTAX (compra e venda) não encontradas para processar esta venda');
     }
 
     // Calculate fraction being sold

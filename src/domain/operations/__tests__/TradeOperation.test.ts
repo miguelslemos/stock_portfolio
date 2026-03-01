@@ -66,7 +66,7 @@ describe('TradeOperation', () => {
     const exchangeRate = new ExchangeRate('USD', 'BRL', new Date('2023-02-15'), 5.0, 5.0);
 
     expect(() => operation.execute(currentPosition, exchangeRate)).toThrow(
-      'Cannot sell 150 shares, only 100 available'
+      'Tentativa de vender 150 ações, mas apenas 100 disponíveis no portfólio'
     );
   });
 
@@ -89,7 +89,7 @@ describe('TradeOperation', () => {
     const exchangeRate = new ExchangeRate('USD', 'BRL', new Date('2023-02-15'), 5.0, 5.0);
 
     expect(() => operation.execute(emptyPosition, exchangeRate)).toThrow(
-      'Cannot sell 50 shares, only 0 available'
+      'Tentativa de vender 50 ações, mas apenas 0 disponíveis no portfólio'
     );
   });
 

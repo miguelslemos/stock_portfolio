@@ -55,7 +55,7 @@ export class VestingOperation implements PortfolioOperation {
     const askRate = exchangeRate.askRate;
     
     if (bidRate === null || askRate === null) {
-      throw new Error('Both bid and ask rates are required for vesting operation');
+      throw new Error('Cotações PTAX (compra e venda) não encontradas para processar este vesting');
     }
 
     // Calculate vesting costs

@@ -12,3 +12,4 @@ export { YearDetailModal } from './YearDetailModal';
 export { Modal, ModalHeader, ModalBody } from './Modal';
 export { StepIndicator } from './StepIndicator';
 export { ErrorBoundary } from './ErrorBoundary';
+export { ErrorModal } from './ErrorModal';

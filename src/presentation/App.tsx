@@ -13,6 +13,7 @@ import {
   ResultsSection,
   StepIndicator,
   ErrorBoundary,
+  ErrorModal,
 } from './components';
 
 export function App() {
@@ -21,7 +22,7 @@ export function App() {
   const manualEntries = useManualEntries();
   const { isDark, toggle: toggleTheme } = useDarkMode();
   const analytics = useAnalytics();
-  const [activeMethods, setActiveMethods] = useState<Set<InputMethod>>(new Set(['manual']));
+  const [activeMethods, setActiveMethods] = useState<Set<InputMethod>>(new Set(['pdf']));
 
   useEffect(() => {
     analytics.trackPageView('home');
@@ -158,17 +159,6 @@ export function App() {
               </>
             )}
 
-            {/* Error message */}
-            {isError && portfolio.state.error && (
-              <div className="flex items-start gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 dark:border-rose-500/20 dark:bg-rose-500/5">
-                <svg className="mt-0.5 h-4 w-4 shrink-0 text-rose-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
-                </svg>
-                <p className="text-sm text-rose-700 dark:text-rose-400">
-                  <strong>Erro:</strong> {portfolio.state.error}
-                </p>
-              </div>
-            )}
 
             {/* Action buttons */}
             <div className="flex flex-wrap items-center gap-3 border-t border-surface-200 pt-6 dark:border-surface-700">
@@ -218,6 +208,10 @@ export function App() {
       </main>
 
       <Footer />
+
+      {isError && portfolio.state.error && (
+        <ErrorModal message={portfolio.state.error} onClose={portfolio.reset} />
+      )}
     </div>
   );
 }
