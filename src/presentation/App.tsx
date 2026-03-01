@@ -207,7 +207,11 @@ export function App() {
 
         {/* ===== Results ===== */}
         {isSuccess && portfolio.state.response && (
-          <ErrorBoundary fallbackMessage="Erro ao exibir os resultados." onReset={handleReset}>
+          <ErrorBoundary
+            fallbackMessage="Erro ao exibir os resultados."
+            onReset={handleReset}
+            onError={(error) => analytics.trackException(error, 'ErrorBoundary')}
+          >
             <ResultsSection
               response={portfolio.state.response}
               snapshots={portfolio.state.snapshots}

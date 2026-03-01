@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
+import { useAnalytics } from './useAnalytics';
 import { PortfolioSnapshot } from '@/domain/entities';
 import { getErrorMessage } from '@/domain/errors';
 import {
@@ -57,6 +58,7 @@ function readFileAsText(file: File): Promise<string> {
 export function usePortfolio(): UsePortfolioReturn {
   const [state, setState] = useState<PortfolioState>(initialState);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const analytics = useAnalytics();
 
   const cancelProcessing = useCallback(() => {
     abortControllerRef.current?.abort();
@@ -111,12 +113,19 @@ export function usePortfolio(): UsePortfolioReturn {
           ...prev,
           progress: { current: currentStep, total: totalSteps, message: `Carregando ${totalPDFs} PDFs...` },
         }));
-        const pdfRepo = new PDFOperationRepository(tradePDFs, releasePDFs, (current, total) => {
-          setState((prev) => ({
-            ...prev,
-            progress: { current: currentStep, total: totalSteps, message: `Processando PDFs: ${current}/${total}` },
-          }));
-        });
+        const pdfRepo = new PDFOperationRepository(
+          tradePDFs,
+          releasePDFs,
+          (current, total) => {
+            setState((prev) => ({
+              ...prev,
+              progress: { current: currentStep, total: totalSteps, message: `Processando PDFs: ${current}/${total}` },
+            }));
+          },
+          (error, fileName) => {
+            analytics.trackException(error, `PDFRepository:${fileName}`);
+          }
+        );
         repositories.push(pdfRepo);
         currentStep++;
       }
@@ -153,6 +162,8 @@ export function usePortfolio(): UsePortfolioReturn {
       });
     } catch (error) {
       if (controller.signal.aborted) return;
+      const err = error instanceof Error ? error : new Error(getErrorMessage(error));
+      analytics.trackException(err, 'ProcessPortfolioUseCase');
       setState((prev) => ({
         ...prev,
         status: 'error',
@@ -160,7 +171,7 @@ export function usePortfolio(): UsePortfolioReturn {
         progress: null,
       }));
     }
-  }, []);
+  }, [analytics]);
 
   const reset = useCallback(() => {
     setState(initialState);

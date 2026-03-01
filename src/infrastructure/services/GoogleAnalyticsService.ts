@@ -53,4 +53,12 @@ export class GoogleAnalyticsService implements IAnalyticsService {
     if (!this.initialized) return;
     window.gtag('event', eventName, params);
   }
+
+  trackException(error: Error, context?: string): void {
+    if (!this.initialized) return;
+    const description = context
+      ? `[${context}] ${error.name}: ${error.message}`
+      : `${error.name}: ${error.message}`;
+    window.gtag('event', 'exception', { description, fatal: false });
+  }
 }
