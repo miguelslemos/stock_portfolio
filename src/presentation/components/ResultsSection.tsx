@@ -1,4 +1,5 @@
 import { type ProcessPortfolioResponse } from '@/application/usecases';
+import { computeYearSummary } from '@/application/services';
 import { type PortfolioSnapshot, type PortfolioPosition } from '@/domain/entities';
 import { BRLFormatter, USDFormatter, DateFormatter } from '@/presentation/formatters';
 import { useAnalytics } from '@/presentation/hooks';
@@ -226,16 +227,22 @@ export function ResultsSection({ response, snapshots, initialPosition, onReset }
           }}
         />
       )}
-      {selectedYear !== null && (
-        <YearDetailModal
-          year={selectedYear}
-          yearSnapshots={snapshots.filter((s) => s.position.lastUpdated.getFullYear() === selectedYear)}
-          onClose={() => {
-            analytics.trackEvent('year_detail_closed', { year: selectedYear });
-            setSelectedYear(null);
-          }}
-        />
-      )}
+      {selectedYear !== null && (() => {
+        const yearSnapshots = snapshots.filter((s) => s.position.lastUpdated.getFullYear() === selectedYear);
+        const summary = computeYearSummary(selectedYear, yearSnapshots);
+        if (!summary) return null;
+        return (
+          <YearDetailModal
+            year={selectedYear}
+            yearSnapshots={yearSnapshots}
+            summary={summary}
+            onClose={() => {
+              analytics.trackEvent('year_detail_closed', { year: selectedYear });
+              setSelectedYear(null);
+            }}
+          />
+        );
+      })()}
     </div>
   );
 }
