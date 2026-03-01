@@ -82,7 +82,6 @@ export class PDFOperationRepository implements IOperationRepository {
 
   private async extractTradeOperation(file: File): Promise<TradeOperation | null> {
     const text = await this.extractTextFromPDF(file);
-    console.log(text);
 
     const modernPattern =
       /Trade Date\s+Settlement Date\s+Quantity\s+Price\s+Settlement Amount[\s\S]*?([\d\/\-]+)\s+([\d\/\-]+)\s+([\d,.]+)\s+([\d,.]+)/;
@@ -108,9 +107,7 @@ export class PDFOperationRepository implements IOperationRepository {
       const quantity = new StockQuantity(Math.floor(parseFloat(quantityStr)));
       const price = new Money(parseFloat(priceStr), 'USD');
 
-      let operation = new TradeOperation(date, quantity, price, settlementDate);
-      console.log(operation);
-      return operation;
+      return new TradeOperation(date, quantity, price, settlementDate);
     }
 
     console.warn(`Could not extract trade operation from file: ${file.name}`);
