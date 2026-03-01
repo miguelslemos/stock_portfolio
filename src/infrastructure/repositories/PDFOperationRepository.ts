@@ -82,6 +82,7 @@ export class PDFOperationRepository implements IOperationRepository {
 
   private async extractTradeOperation(file: File): Promise<TradeOperation | null> {
     const text = await this.extractTextFromPDF(file);
+    console.log(text);
 
     const modernPattern =
       /Trade Date\s+Settlement Date\s+Quantity\s+Price\s+Settlement Amount[\s\S]*?([\d\/\-]+)\s+([\d\/\-]+)\s+([\d,.]+)\s+([\d,.]+)/;
@@ -107,7 +108,9 @@ export class PDFOperationRepository implements IOperationRepository {
       const quantity = new StockQuantity(Math.floor(parseFloat(quantityStr)));
       const price = new Money(parseFloat(priceStr), 'USD');
 
-      return new TradeOperation(date, quantity, price, settlementDate);
+      let operation = new TradeOperation(date, quantity, price, settlementDate);
+      console.log(operation);
+      return operation;
     }
 
     console.warn(`Could not extract trade operation from file: ${file.name}`);
@@ -139,31 +142,37 @@ export class PDFOperationRepository implements IOperationRepository {
   }
 
   private async extractTextFromPDF(file: File): Promise<string> {
+    const arrayBuffer = await file.arrayBuffer();
+    const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+    const pdf = await loadingTask.promise;
+
+    let fullText = '';
+
     try {
-      const arrayBuffer = await file.arrayBuffer();
-      const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
-      const pdf = await loadingTask.promise;
-      
-      let fullText = '';
-      
       for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-        const page = await pdf.getPage(pageNum);
-        const textContent = await page.getTextContent();
-        const pageText = textContent.items
-          .map((item: unknown) => {
-            if (item && typeof item === 'object' && 'str' in item) {
-              return (item as TextItem).str;
-            }
-            return '';
-          })
-          .join(' ');
-        fullText += pageText + '\n';
+        try {
+          const page = await pdf.getPage(pageNum);
+          const textContent = await page.getTextContent();
+          const pageText = textContent.items
+            .map((item: unknown) => {
+              if (item && typeof item === 'object' && 'str' in item) {
+                return (item as TextItem).str;
+              }
+              return '';
+            })
+            .join(' ');
+          fullText += pageText + '\n';
+        } catch (pageError) {
+          console.warn(
+            `Skipping page ${pageNum}/${pdf.numPages} of "${file.name}": ${pageError instanceof Error ? pageError.message : String(pageError)}`
+          );
+        }
       }
-      
-      return fullText;
-    } catch (error) {
-      throw error;
+    } finally {
+      await pdf.destroy();
     }
+
+    return fullText;
   }
 
 }
