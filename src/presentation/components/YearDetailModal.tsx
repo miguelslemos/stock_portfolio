@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { type PortfolioSnapshot } from '@/domain/entities';
 import { BRLFormatter, USDFormatter, DateFormatter } from '@/presentation/formatters';
+import { useAnalytics } from '@/presentation/hooks';
 import { Modal, ModalHeader, ModalBody } from './Modal';
 
 interface YearDetailModalProps {
@@ -537,12 +538,14 @@ function TaxSummary({
 
 function IrpfField({ label, value }: { label: string; value: string }) {
   const [copied, setCopied] = useState(false);
+  const analytics = useAnalytics();
 
   const handleCopy = useCallback(() => {
     void navigator.clipboard.writeText(value);
+    analytics.trackEvent('irpf_field_copied', { field: label });
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  }, [value]);
+  }, [value, label, analytics]);
 
   return (
     <div

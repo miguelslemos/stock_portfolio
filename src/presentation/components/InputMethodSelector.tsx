@@ -7,8 +7,8 @@ interface InputMethodSelectorProps {
 
 const methods: { id: InputMethod; label: string; desc: string; badge?: string }[] = [
   { id: 'pdf', label: 'PDFs do E*Trade', desc: 'Leitura automática dos PDFs', badge: 'Recomendado' },
-  { id: 'json', label: 'Arquivo JSON', desc: 'Importe de um arquivo .json' },
   { id: 'manual', label: 'Entrada Manual', desc: 'Adicione operações uma a uma' },
+  { id: 'json', label: 'Arquivo JSON', desc: 'Importe de um arquivo .json' },
 ];
 
 export function InputMethodSelector({ selected, onToggle }: InputMethodSelectorProps) {
@@ -20,6 +20,8 @@ export function InputMethodSelector({ selected, onToggle }: InputMethodSelectorP
           <button
             key={m.id}
             onClick={() => onToggle(m.id)}
+            role="checkbox"
+            aria-checked={isActive}
             className={`group relative rounded-xl border-2 px-4 py-4 text-left transition-all ${
               isActive
                 ? 'border-brand-500 bg-brand-50 shadow-sm dark:border-brand-400 dark:bg-brand-950/40'

@@ -1,5 +1,6 @@
 import { PortfolioSnapshot } from '../../domain/entities';
 import { IDataExportService } from '../../application/interfaces';
+import { PortfolioSnapshotSerializer } from '../adapters/PortfolioSnapshotSerializer';
 
 /**
  * CSV Export Service
@@ -23,11 +24,8 @@ export class CSVExportService implements IDataExportService {
       return '';
     }
 
-    // Get headers from first snapshot
-    const headers = snapshots[0]!.getCSVHeaders();
-    
-    // Get rows from all snapshots
-    const rows = snapshots.map(snapshot => snapshot.toCSVRow());
+    const headers = PortfolioSnapshotSerializer.csvHeaders();
+    const rows = snapshots.map((snapshot) => PortfolioSnapshotSerializer.toCSVRow(snapshot));
 
     return this.arrayToCSV([headers, ...rows]);
   }

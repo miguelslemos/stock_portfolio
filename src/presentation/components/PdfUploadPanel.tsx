@@ -1,3 +1,4 @@
+import { useState, useCallback } from 'react';
 import { type useFileUpload } from '@/presentation/hooks/useFileUpload';
 
 type FileUploadReturn = ReturnType<typeof useFileUpload>;
@@ -19,6 +20,8 @@ export function PdfUploadPanel({ fileUpload }: PdfUploadPanelProps) {
     openTradeFolderDialog,
     openReleaseFilesDialog,
     openReleaseFolderDialog,
+    dropTradeFiles,
+    dropReleaseFiles,
   } = fileUpload;
 
   return (
@@ -36,6 +39,7 @@ export function PdfUploadPanel({ fileUpload }: PdfUploadPanelProps) {
         onFileChange={handleReleaseFiles}
         onOpenFiles={openReleaseFilesDialog}
         onOpenFolder={openReleaseFolderDialog}
+        onDropFiles={dropReleaseFiles}
       />
 
       <FileDropZone
@@ -51,9 +55,49 @@ export function PdfUploadPanel({ fileUpload }: PdfUploadPanelProps) {
         onFileChange={handleTradeFiles}
         onOpenFiles={openTradeFilesDialog}
         onOpenFolder={openTradeFolderDialog}
+        onDropFiles={dropTradeFiles}
       />
     </div>
   );
+}
+
+function readAllEntries(reader: FileSystemDirectoryReader): Promise<FileSystemEntry[]> {
+  return new Promise((resolve, reject) => {
+    const all: FileSystemEntry[] = [];
+    const readBatch = () => {
+      reader.readEntries((batch) => {
+        if (batch.length === 0) {
+          resolve(all);
+        } else {
+          all.push(...batch);
+          readBatch();
+        }
+      }, reject);
+    };
+    readBatch();
+  });
+}
+
+async function collectPDFsFromEntries(entries: FileSystemEntry[]): Promise<File[]> {
+  const files: File[] = [];
+
+  const process = async (entry: FileSystemEntry) => {
+    if (entry.isFile) {
+      const fileEntry = entry as FileSystemFileEntry;
+      if (entry.name.toLowerCase().endsWith('.pdf')) {
+        await new Promise<void>((resolve) => {
+          fileEntry.file((f) => { files.push(f); resolve(); }, () => resolve());
+        });
+      }
+    } else if (entry.isDirectory) {
+      const dirEntry = entry as FileSystemDirectoryEntry;
+      const children = await readAllEntries(dirEntry.createReader());
+      await Promise.all(children.map(process));
+    }
+  };
+
+  await Promise.all(entries.map(process));
+  return files;
 }
 
 function FileDropZone({
@@ -65,6 +109,7 @@ function FileDropZone({
   onFileChange,
   onOpenFiles,
   onOpenFolder,
+  onDropFiles,
 }: {
   label: string;
   count: number;
@@ -74,9 +119,50 @@ function FileDropZone({
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onOpenFiles: () => void;
   onOpenFolder: () => void;
+  onDropFiles: (files: File[]) => void;
 }) {
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const items = Array.from(e.dataTransfer.items);
+    const entries = items
+      .map((item) => item.webkitGetAsEntry?.())
+      .filter((entry): entry is FileSystemEntry => entry !== null && entry !== undefined);
+
+    if (entries.length === 0) return;
+
+    void collectPDFsFromEntries(entries).then((files) => {
+      if (files.length > 0) onDropFiles(files);
+    });
+  }, [onDropFiles]);
+
   return (
-    <div className="rounded-xl border-2 border-dashed border-surface-200 bg-surface-50/50 p-5 transition-all dark:border-surface-700 dark:bg-surface-800/50">
+    <div
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      className={`rounded-xl border-2 border-dashed p-5 transition-all ${
+        isDragging
+          ? 'border-brand-400 bg-brand-50/40 dark:border-brand-500 dark:bg-brand-950/30'
+          : 'border-surface-200 bg-surface-50/50 dark:border-surface-700 dark:bg-surface-800/50'
+      }`}
+    >
       {/* Hidden inputs */}
       <input
         ref={filesInputRef}
@@ -105,7 +191,9 @@ function FileDropZone({
         </div>
         <div className="flex-1">
           <p className="text-sm font-semibold text-surface-800 dark:text-surface-100">{label}</p>
-          <p className="text-sm text-surface-400">Selecione arquivos individuais ou uma pasta</p>
+          <p className="text-sm text-surface-400">
+            {isDragging ? 'Solte os arquivos aqui' : 'Selecione ou arraste arquivos PDF'}
+          </p>
         </div>
         {count > 0 && (
           <span className="rounded-full bg-emerald-50 px-3 py-1 text-sm font-semibold text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">

@@ -1,4 +1,7 @@
+import { useAnalytics } from '@/presentation/hooks';
+
 export function Footer() {
+  const analytics = useAnalytics();
   return (
     <footer className="border-t border-surface-200 bg-surface-50 px-6 py-8 dark:border-surface-800 dark:bg-surface-900">
       {/* Disclaimer */}
@@ -33,6 +36,7 @@ export function Footer() {
             href="https://github.com/miguelslemos/stock_portfolio"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => analytics.trackEvent('footer_github_clicked')}
             className="font-medium text-brand-500 transition-colors hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300"
           >
             GitHub

@@ -17,7 +17,7 @@ export function StepIndicator({ currentStep }: StepIndicatorProps) {
         const isCompleted = stepNum < currentStep;
 
         return (
-          <div key={i} className="flex flex-1 items-center gap-2">
+          <div key={i} className="flex flex-1 items-center gap-2" aria-current={isActive ? 'step' : undefined}>
             {/* Step circle + text */}
             <div className="flex items-center gap-2.5">
               <div

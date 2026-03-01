@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { type ManualEntry } from '@/presentation/hooks/useManualEntries';
+import { useAnalytics } from '@/presentation/hooks';
 
 interface ManualEntryFormProps {
   entries: ManualEntry[];
@@ -27,6 +28,7 @@ const emptyForm: FormState = {
 export function ManualEntryForm({ entries, onAdd, onRemove, onClear }: ManualEntryFormProps) {
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState('');
+  const analytics = useAnalytics();
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
@@ -45,9 +47,10 @@ export function ManualEntryForm({ entries, onAdd, onRemove, onClear }: ManualEnt
         ...(form.type === 'trade' && form.settlementDate ? { settlementDate: form.settlementDate } : {}),
       });
 
+      analytics.trackEvent('manual_entry_added', { type: form.type });
       setForm(emptyForm);
     },
-    [form, onAdd]
+    [form, onAdd, analytics]
   );
 
   return (
@@ -63,6 +66,7 @@ export function ManualEntryForm({ entries, onAdd, onRemove, onClear }: ManualEnt
             <div className="flex overflow-hidden rounded-lg border border-surface-200 dark:border-surface-600">
               <button
                 type="button"
+                aria-pressed={form.type === 'vesting'}
                 onClick={() => setForm((f) => ({ ...f, type: 'vesting' }))}
                 className={`flex-1 px-3 py-2 text-sm font-medium transition-colors ${
                   form.type === 'vesting'
@@ -74,6 +78,7 @@ export function ManualEntryForm({ entries, onAdd, onRemove, onClear }: ManualEnt
               </button>
               <button
                 type="button"
+                aria-pressed={form.type === 'trade'}
                 onClick={() => setForm((f) => ({ ...f, type: 'trade' }))}
                 className={`flex-1 px-3 py-2 text-sm font-medium transition-colors ${
                   form.type === 'trade'
@@ -88,10 +93,11 @@ export function ManualEntryForm({ entries, onAdd, onRemove, onClear }: ManualEnt
 
           {/* Date */}
           <div>
-            <label className="mb-1 block text-sm font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400">
+            <label htmlFor="entry-date" className="mb-1 block text-sm font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400">
               Data
             </label>
             <input
+              id="entry-date"
               type="date"
               value={form.date}
               onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
@@ -101,10 +107,11 @@ export function ManualEntryForm({ entries, onAdd, onRemove, onClear }: ManualEnt
 
           {/* Quantity */}
           <div>
-            <label className="mb-1 block text-sm font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400">
+            <label htmlFor="entry-quantity" className="mb-1 block text-sm font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400">
               Quantidade
             </label>
             <input
+              id="entry-quantity"
               type="number"
               min="1"
               step="1"
@@ -117,10 +124,11 @@ export function ManualEntryForm({ entries, onAdd, onRemove, onClear }: ManualEnt
 
           {/* Price */}
           <div>
-            <label className="mb-1 block text-sm font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400">
+            <label htmlFor="entry-price" className="mb-1 block text-sm font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400">
               Preço (USD)
             </label>
             <input
+              id="entry-price"
               type="number"
               min="0.01"
               step="0.01"
@@ -135,10 +143,11 @@ export function ManualEntryForm({ entries, onAdd, onRemove, onClear }: ManualEnt
           <div className="flex flex-col justify-end">
             {form.type === 'trade' ? (
               <>
-                <label className="mb-1 block text-sm font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400">
+                <label htmlFor="entry-settlement" className="mb-1 block text-sm font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400">
                   Liquidação
                 </label>
                 <input
+                  id="entry-settlement"
                   type="date"
                   value={form.settlementDate}
                   onChange={(e) => setForm((f) => ({ ...f, settlementDate: e.target.value }))}
@@ -180,7 +189,7 @@ export function ManualEntryForm({ entries, onAdd, onRemove, onClear }: ManualEnt
               {entries.length} operaç{entries.length === 1 ? 'ão' : 'ões'} adicionada{entries.length === 1 ? '' : 's'}
             </h4>
             <button
-              onClick={onClear}
+              onClick={() => { analytics.trackEvent('manual_entries_cleared', { count: entries.length }); onClear(); }}
               className="text-sm font-medium text-surface-400 transition-colors hover:text-rose-500"
             >
               Remover todas
@@ -210,7 +219,7 @@ export function ManualEntryForm({ entries, onAdd, onRemove, onClear }: ManualEnt
                   @ ${entry.price.toFixed(2)}
                 </span>
                 <button
-                  onClick={() => onRemove(entry.id)}
+                  onClick={() => { analytics.trackEvent('manual_entry_removed'); onRemove(entry.id); }}
                   className="ml-auto flex h-6 w-6 items-center justify-center rounded-full text-surface-400 transition-colors hover:bg-rose-50 hover:text-rose-500 dark:hover:bg-rose-500/10"
                   aria-label="Remover operação"
                 >

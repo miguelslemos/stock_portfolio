@@ -18,14 +18,11 @@ interface UseManualEntriesReturn {
   hasEntries: boolean;
 }
 
-let entryCounter = 0;
-
 export function useManualEntries(): UseManualEntriesReturn {
   const [entries, setEntries] = useState<ManualEntry[]>([]);
 
   const addEntry = useCallback((entry: Omit<ManualEntry, 'id'>) => {
-    entryCounter++;
-    const newEntry: ManualEntry = { ...entry, id: `manual-${entryCounter}-${Date.now()}` };
+    const newEntry: ManualEntry = { ...entry, id: crypto.randomUUID() };
     setEntries((prev) => [...prev, newEntry]);
   }, []);
 

@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { useAnalytics } from '@/presentation/hooks';
 import { type UseFileUploadReturn } from '@/presentation/hooks/useFileUpload';
 
 interface JsonUploadPanelProps {
@@ -103,12 +104,19 @@ function JsonSchemaInline() {
   const [tab, setTab] = useState<'example' | 'schema'>('example');
   const [copyLabel, setCopyLabel] = useState('Copiar');
   const content = tab === 'schema' ? getJSONSchema() : getJSONExample();
+  const analytics = useAnalytics();
 
   const handleCopy = useCallback(async () => {
     await navigator.clipboard.writeText(content);
+    analytics.trackEvent('json_example_copied', { tab });
     setCopyLabel('Copiado!');
     setTimeout(() => setCopyLabel('Copiar'), 2000);
-  }, [content]);
+  }, [content, tab, analytics]);
+
+  const handleTabChange = useCallback((t: 'example' | 'schema') => {
+    setTab(t);
+    analytics.trackEvent('json_schema_tab_switched', { tab: t });
+  }, [analytics]);
 
   return (
     <div className="rounded-xl border border-surface-200 bg-surface-0 dark:border-surface-700 dark:bg-surface-800">
@@ -117,7 +125,7 @@ function JsonSchemaInline() {
           {(['example', 'schema'] as const).map((t) => (
             <button
               key={t}
-              onClick={() => setTab(t)}
+              onClick={() => handleTabChange(t)}
               className={`px-4 py-2.5 text-sm font-semibold uppercase tracking-wider transition-colors ${
                 tab === t
                   ? 'border-b-2 border-brand-500 text-brand-600 dark:text-brand-400'
