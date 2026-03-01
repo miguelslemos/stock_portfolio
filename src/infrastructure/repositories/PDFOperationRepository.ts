@@ -139,31 +139,37 @@ export class PDFOperationRepository implements IOperationRepository {
   }
 
   private async extractTextFromPDF(file: File): Promise<string> {
+    const arrayBuffer = await file.arrayBuffer();
+    const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+    const pdf = await loadingTask.promise;
+
+    let fullText = '';
+
     try {
-      const arrayBuffer = await file.arrayBuffer();
-      const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
-      const pdf = await loadingTask.promise;
-      
-      let fullText = '';
-      
       for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-        const page = await pdf.getPage(pageNum);
-        const textContent = await page.getTextContent();
-        const pageText = textContent.items
-          .map((item: unknown) => {
-            if (item && typeof item === 'object' && 'str' in item) {
-              return (item as TextItem).str;
-            }
-            return '';
-          })
-          .join(' ');
-        fullText += pageText + '\n';
+        try {
+          const page = await pdf.getPage(pageNum);
+          const textContent = await page.getTextContent();
+          const pageText = textContent.items
+            .map((item: unknown) => {
+              if (item && typeof item === 'object' && 'str' in item) {
+                return (item as TextItem).str;
+              }
+              return '';
+            })
+            .join(' ');
+          fullText += pageText + '\n';
+        } catch (pageError) {
+          console.warn(
+            `Skipping page ${pageNum}/${pdf.numPages} of "${file.name}": ${pageError instanceof Error ? pageError.message : String(pageError)}`
+          );
+        }
       }
-      
-      return fullText;
-    } catch (error) {
-      throw error;
+    } finally {
+      await pdf.destroy();
     }
+
+    return fullText;
   }
 
 }
