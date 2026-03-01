@@ -20,6 +20,25 @@ export function AnalyticsProvider({ children }: AnalyticsProviderProps) {
 
   useEffect(() => {
     service.initialize();
+
+    const handleWindowError = (event: ErrorEvent) => {
+      const error = event.error instanceof Error ? event.error : new Error(event.message);
+      service.trackException(error, 'window.onerror');
+    };
+
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      const error =
+        event.reason instanceof Error ? event.reason : new Error(String(event.reason));
+      service.trackException(error, 'unhandledrejection');
+    };
+
+    window.addEventListener('error', handleWindowError);
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+
+    return () => {
+      window.removeEventListener('error', handleWindowError);
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+    };
   }, [service]);
 
   return createElement(AnalyticsContext.Provider, { value: service }, children);

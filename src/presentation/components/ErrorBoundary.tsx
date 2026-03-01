@@ -4,6 +4,7 @@ interface ErrorBoundaryProps {
   children: ReactNode;
   fallbackMessage?: string;
   onReset?: () => void;
+  onError?: (error: Error, errorInfo: ErrorInfo) => void;
 }
 
 interface ErrorBoundaryState {
@@ -23,6 +24,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   override componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     console.error('[ErrorBoundary]', error, errorInfo);
+    this.props.onError?.(error, errorInfo);
   }
 
   private handleReset = () => {

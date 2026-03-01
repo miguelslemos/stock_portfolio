@@ -17,4 +17,8 @@ export class NoOpAnalyticsService implements IAnalyticsService {
   trackEvent(_eventName: string, _params?: Record<string, string | number | boolean>): void {
     /* no-op */
   }
+
+  trackException(_error: Error, _context?: string): void {
+    /* no-op */
+  }
 }
