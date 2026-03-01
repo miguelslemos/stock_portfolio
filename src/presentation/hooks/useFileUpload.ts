@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
+import { useAnalytics } from './useAnalytics';
 
 interface FileUploadState {
   tradePDFs: File[];
@@ -24,6 +25,8 @@ export interface UseFileUploadReturn {
   handleTradeFiles: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleReleaseFiles: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleJsonFile: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  dropTradeFiles: (files: File[]) => void;
+  dropReleaseFiles: (files: File[]) => void;
   openTradeFilesDialog: () => void;
   openTradeFolderDialog: () => void;
   openReleaseFilesDialog: () => void;
@@ -33,9 +36,10 @@ export interface UseFileUploadReturn {
   getUniqueFolders: (files: File[]) => Set<string>;
 }
 
-const DATE_PATTERN = /^(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})$/;
+// Accepts MM/DD/YYYY, MM-DD-YYYY and YYYY-MM-DD formats
+const DATE_PATTERN = /^(\d{4})[/-](\d{1,2})[/-](\d{1,2})$|^(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})$/;
 
-function validateJsonContent(content: string): JsonValidationResult {
+export function validateJsonContent(content: string): JsonValidationResult {
   let parsed: unknown;
   try {
     parsed = JSON.parse(content);
@@ -109,6 +113,7 @@ export function useFileUpload(): UseFileUploadReturn {
     jsonFile: null,
   });
   const [jsonValidation, setJsonValidation] = useState<JsonValidationResult>(IDLE_VALIDATION);
+  const analytics = useAnalytics();
 
   const tradeFilesInputRef = useRef<HTMLInputElement | null>(null);
   const tradeFolderInputRef = useRef<HTMLInputElement | null>(null);
@@ -120,13 +125,25 @@ export function useFileUpload(): UseFileUploadReturn {
     const allFiles = Array.from(e.target.files ?? []);
     const pdfs = allFiles.filter((f) => f.name.toLowerCase().endsWith('.pdf'));
     setFiles((prev) => ({ ...prev, tradePDFs: pdfs }));
-  }, []);
+    analytics.trackEvent('trade_pdfs_selected', { count: pdfs.length });
+  }, [analytics]);
 
   const handleReleaseFiles = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const allFiles = Array.from(e.target.files ?? []);
     const pdfs = allFiles.filter((f) => f.name.toLowerCase().endsWith('.pdf'));
     setFiles((prev) => ({ ...prev, releasePDFs: pdfs }));
-  }, []);
+    analytics.trackEvent('release_pdfs_selected', { count: pdfs.length });
+  }, [analytics]);
+
+  const dropTradeFiles = useCallback((droppedFiles: File[]) => {
+    setFiles((prev) => ({ ...prev, tradePDFs: droppedFiles }));
+    analytics.trackEvent('trade_pdfs_dropped', { count: droppedFiles.length });
+  }, [analytics]);
+
+  const dropReleaseFiles = useCallback((droppedFiles: File[]) => {
+    setFiles((prev) => ({ ...prev, releasePDFs: droppedFiles }));
+    analytics.trackEvent('release_pdfs_dropped', { count: droppedFiles.length });
+  }, [analytics]);
 
   const handleJsonFile = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
@@ -137,16 +154,24 @@ export function useFileUpload(): UseFileUploadReturn {
       return;
     }
 
+    analytics.trackEvent('json_file_selected');
+
     const reader = new FileReader();
     reader.onload = (ev) => {
       const content = ev.target?.result as string;
-      setJsonValidation(validateJsonContent(content));
+      const validation = validateJsonContent(content);
+      setJsonValidation(validation);
+      analytics.trackEvent('json_validation_result', {
+        status: validation.status,
+        valid_count: validation.validCount,
+        error_count: validation.errors.length,
+      });
     };
     reader.onerror = () => {
       setJsonValidation({ status: 'error', validCount: 0, errors: ['Falha ao ler o arquivo.'] });
     };
     reader.readAsText(file);
-  }, []);
+  }, [analytics]);
 
   const openTradeFilesDialog = useCallback(() => {
     tradeFilesInputRef.current?.click();
@@ -203,6 +228,8 @@ export function useFileUpload(): UseFileUploadReturn {
     handleTradeFiles,
     handleReleaseFiles,
     handleJsonFile,
+    dropTradeFiles,
+    dropReleaseFiles,
     openTradeFilesDialog,
     openTradeFolderDialog,
     openReleaseFilesDialog,

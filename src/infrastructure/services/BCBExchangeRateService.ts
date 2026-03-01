@@ -80,15 +80,8 @@ export class BCBExchangeRateService implements ExchangeRateService {
 
       if (data.value && data.value.length > 0) {
         const rateData = data.value[0]!;
-        return new ExchangeRate(
-          'USD',
-          'BRL',
-          date,
-          // Art. 57. A cotação a ser utilizada para converter os valores em moeda estrangeira em moeda nacional é a cotação de fechamento da moeda estrangeira divulgada, para venda, pelo BCB, para a data do fato gerador, ressalvadas as disposições específicas previstas nesta Instrução Normativa.
-          // https://normasinternet2.receita.fazenda.gov.br/#/consulta/externa/136603/visao/vigente#
-          rateData.cotacaoVenda,
-          rateData.cotacaoVenda 
-        );
+        // Art. 57 IN RFB 1.500/2014: uses cotacaoVenda for both bid and ask for tax purposes.
+        return ExchangeRate.fromPTAX(rateData.cotacaoVenda, date);
       }
 
       return null;

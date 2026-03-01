@@ -36,7 +36,15 @@ jobs:
         run: npx tsc --noEmit
 
       - name: Tests
-        run: npm test -- --run
+        run: npm test -- --run --coverage
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 14
 
       - name: Build
         run: npm run build

@@ -8,6 +8,7 @@ import {
   ProfitLoss,
   type TradeFinancials,
 } from '../entities';
+import { ValidationError, ExchangeRateError } from '../errors';
 import { PortfolioOperation } from './PortfolioOperation';
 
 /**
@@ -54,13 +55,13 @@ export class TradeOperation implements PortfolioOperation {
   execute(currentPosition: PortfolioPosition, exchangeRate: ExchangeRate): OperationResult {
     // Validate trade is possible
     if (this.quantity.value > currentPosition.quantity.value) {
-      throw new Error(
+      throw new ValidationError(
         `Tentativa de vender ${this.quantity.value} ações, mas apenas ${currentPosition.quantity.value} disponíveis no portfólio`
       );
     }
 
     if (currentPosition.quantity.value === 0) {
-      throw new Error('Não é possível vender ações de um portfólio vazio');
+      throw new ValidationError('Não é possível vender ações de um portfólio vazio');
     }
 
     // Validate exchange rates
@@ -68,7 +69,7 @@ export class TradeOperation implements PortfolioOperation {
     const askRate = exchangeRate.askRate;
     
     if (bidRate === null || askRate === null) {
-      throw new Error('Cotações PTAX (compra e venda) não encontradas para processar esta venda');
+      throw new ExchangeRateError('Cotações PTAX (compra e venda) não encontradas para processar esta venda');
     }
 
     // Calculate fraction being sold

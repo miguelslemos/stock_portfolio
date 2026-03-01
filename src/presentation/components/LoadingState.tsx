@@ -6,7 +6,7 @@ export function LoadingState({ progress }: LoadingStateProps) {
   const percentage = progress && progress.total > 0 ? (progress.current / progress.total) * 100 : 0;
 
   return (
-    <div className="flex flex-col items-center justify-center px-8 py-20 text-center animate-fade-in">
+    <div className="flex flex-col items-center justify-center px-8 py-20 text-center animate-fade-in" role="status" aria-live="polite" aria-label="Processando portfólio">
       {/* Animated spinner */}
       <div className="relative mb-8">
         <div className="h-14 w-14 animate-spin rounded-full border-[3px] border-surface-200 border-t-brand-500 dark:border-surface-700 dark:border-t-brand-400" />
@@ -24,7 +24,14 @@ export function LoadingState({ progress }: LoadingStateProps) {
 
       {/* Progress bar */}
       <div className="w-full max-w-sm">
-        <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-200 dark:bg-surface-700">
+        <div
+          className="h-1.5 w-full overflow-hidden rounded-full bg-surface-200 dark:bg-surface-700"
+          role="progressbar"
+          aria-valuenow={Math.round(percentage)}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label="Progresso do processamento"
+        >
           <div
             className="h-full rounded-full bg-gradient-to-r from-brand-500 to-accent-500 transition-all duration-700 ease-out"
             style={{ width: `${Math.max(percentage, 5)}%` }}

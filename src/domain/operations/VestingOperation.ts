@@ -6,6 +6,7 @@ import {
   OperationMetadata,
   ExchangeRate,
 } from '../entities';
+import { ExchangeRateError } from '../errors';
 import { PortfolioOperation } from './PortfolioOperation';
 
 /**
@@ -55,7 +56,7 @@ export class VestingOperation implements PortfolioOperation {
     const askRate = exchangeRate.askRate;
     
     if (bidRate === null || askRate === null) {
-      throw new Error('Cotações PTAX (compra e venda) não encontradas para processar este vesting');
+      throw new ExchangeRateError('Cotações PTAX (compra e venda) não encontradas para processar este vesting');
     }
 
     // Calculate vesting costs

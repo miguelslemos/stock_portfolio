@@ -105,7 +105,11 @@ export function ResultsSection({ response, snapshots, onReset }: ResultsSectionP
                   <tr
                     key={year}
                     onClick={() => handleYearClick(year)}
-                    className={`cursor-pointer transition-colors hover:bg-brand-50/50 dark:hover:bg-brand-950/20 ${
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleYearClick(year); } }}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`Ver detalhes do ano ${year}`}
+                    className={`cursor-pointer transition-colors hover:bg-brand-50/50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-400 dark:hover:bg-brand-950/20 ${
                       isCurrentYear
                         ? 'bg-amber-50/40 text-surface-700 dark:bg-amber-950/10 dark:text-surface-300'
                         : 'text-surface-700 dark:text-surface-300'
@@ -162,7 +166,11 @@ export function ResultsSection({ response, snapshots, onReset }: ResultsSectionP
                   <tr
                     key={index}
                     onClick={() => handleOperationClick(index)}
-                    className="cursor-pointer text-surface-700 transition-colors hover:bg-brand-50/50 dark:text-surface-300 dark:hover:bg-brand-950/20"
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleOperationClick(index); } }}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`Ver detalhes da operação ${DateFormatter.format(meta.operationDate)}`}
+                    className="cursor-pointer text-surface-700 transition-colors hover:bg-brand-50/50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-400 dark:text-surface-300 dark:hover:bg-brand-950/20"
                   >
                     <td className="px-4 py-3">{DateFormatter.format(meta.operationDate)}</td>
                     <td className="px-4 py-3">
@@ -190,13 +198,22 @@ export function ResultsSection({ response, snapshots, onReset }: ResultsSectionP
 
       {/* Modals */}
       {selectedOperation !== null && snapshots[selectedOperation] && (
-        <OperationDetailModal snapshot={snapshots[selectedOperation]} onClose={() => setSelectedOperation(null)} />
+        <OperationDetailModal
+          snapshot={snapshots[selectedOperation]}
+          onClose={() => {
+            analytics.trackEvent('operation_detail_closed');
+            setSelectedOperation(null);
+          }}
+        />
       )}
       {selectedYear !== null && (
         <YearDetailModal
           year={selectedYear}
           yearSnapshots={snapshots.filter((s) => s.position.lastUpdated.getFullYear() === selectedYear)}
-          onClose={() => setSelectedYear(null)}
+          onClose={() => {
+            analytics.trackEvent('year_detail_closed', { year: selectedYear });
+            setSelectedYear(null);
+          }}
         />
       )}
     </div>

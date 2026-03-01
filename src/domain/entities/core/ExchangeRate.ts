@@ -18,6 +18,17 @@ export class ExchangeRate {
       throw new Error('At least one of bidRate or askRate must be provided');
     }
   }
+  
+
+  /**
+   * Creates an ExchangeRate from a BCB PTAX cotacaoVenda rate.
+   * Per Art. 57 IN RFB 1.500/2014, both the cost basis (bid) and
+   * sale revenue (ask) use the same cotacaoVenda rate for tax purposes.
+   * https://normasinternet2.receita.fazenda.gov.br/#/consulta/externa/136603/visao/vigente#
+   */
+  static fromPTAX(cotacaoVenda: number, date: Date): ExchangeRate {
+    return new ExchangeRate('USD', 'BRL', date, cotacaoVenda, cotacaoVenda);
+  }
 
   convert(amount: Money, useBid = false): Money {
     if (amount.currency !== this.fromCurrency) {

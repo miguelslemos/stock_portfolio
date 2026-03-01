@@ -63,8 +63,9 @@ export function usePortfolio(): UsePortfolioReturn {
   const cancelProcessing = useCallback(() => {
     abortControllerRef.current?.abort();
     abortControllerRef.current = null;
+    analytics.trackEvent('processing_cancelled');
     setState(initialState);
-  }, []);
+  }, [analytics]);
 
   const processPortfolio = useCallback(async (params: ProcessParams) => {
     const { tradePDFs, releasePDFs, jsonFile, manualEntriesJSON, exportData = false } = params;
@@ -149,9 +150,30 @@ export function usePortfolio(): UsePortfolioReturn {
         exportService
       );
 
+      const startTime = performance.now();
       const response = await useCase.execute({ exportData });
+      const durationMs = Math.round(performance.now() - startTime);
 
       if (controller.signal.aborted) return;
+
+      analytics.trackEvent('processing_completed', {
+        duration_ms: durationMs,
+        total_operations: response.totalOperations,
+      });
+
+      const yearlySnapshots = new Map<number, true>();
+      let vestingCount = 0;
+      let tradeCount = 0;
+      for (const snapshot of response.snapshots) {
+        yearlySnapshots.set(snapshot.position.lastUpdated.getFullYear(), true);
+        if (snapshot.metadata.isVesting) vestingCount++;
+        else tradeCount++;
+      }
+      analytics.trackEvent('portfolio_results_summary', {
+        years_covered: yearlySnapshots.size,
+        vesting_count: vestingCount,
+        trade_count: tradeCount,
+      });
 
       setState({
         status: 'success',

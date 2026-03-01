@@ -3,6 +3,7 @@ import {
   OperationResult,
   ExchangeRate,
 } from '../entities';
+import { ExchangeRateError } from '../errors';
 import { PortfolioOperation } from '../operations';
 import { ExchangeRateService } from './ExchangeRateService';
 
@@ -94,7 +95,7 @@ export class PortfolioCalculationService {
       }
     }
 
-    throw new Error(
+    throw new ExchangeRateError(
       `Cotação PTAX USD/BRL não encontrada para ${settlementDate.toLocaleDateString('pt-BR')} (buscado até 7 dias anteriores)`
     );
   }

@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { useAnalytics } from '@/presentation/hooks';
 
 export function HelpSection() {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const analytics = useAnalytics();
 
   const handleToggle = useCallback(() => {
@@ -18,6 +18,7 @@ export function HelpSection() {
         onClick={handleToggle}
         className="flex w-full items-center gap-3 rounded-xl border border-surface-200 bg-surface-0 px-5 py-4 text-left transition-all hover:shadow-sm dark:border-surface-700 dark:bg-surface-800"
         aria-expanded={isOpen}
+        aria-controls="help-section-content"
       >
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-100 dark:bg-brand-900/40">
           <svg className="h-4 w-4 text-brand-600 dark:text-brand-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -39,10 +40,10 @@ export function HelpSection() {
       </button>
 
       <div
-        className={`overflow-hidden transition-all duration-300 ease-in-out ${
-          isOpen ? 'mt-4 max-h-[3000px] opacity-100' : 'max-h-0 opacity-0'
-        }`}
+        id="help-section-content"
+        className={`grid transition-all duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr] mt-4 opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
       >
+        <div className="overflow-hidden">
         <div className="grid gap-4 md:grid-cols-2">
           <InstructionCard
             icon="📈"
@@ -54,6 +55,7 @@ export function HelpSection() {
             ]}
             gifSrc="./download-release-confirmation.gif"
             gifAlt="Demo de download de release"
+            onLinkClick={() => analytics.trackEvent('help_etrade_link_clicked', { link_type: 'release' })}
           />
 
           <InstructionCard
@@ -66,6 +68,7 @@ export function HelpSection() {
             ]}
             gifSrc="./download-trade-confirmation.gif"
             gifAlt="Demo de download de trade"
+            onLinkClick={() => analytics.trackEvent('help_etrade_link_clicked', { link_type: 'trade' })}
           />
         </div>
 
@@ -92,6 +95,7 @@ export function HelpSection() {
             ))}
           </ul>
         </div>
+        </div>
       </div>
     </div>
   );
@@ -103,12 +107,14 @@ function InstructionCard({
   steps,
   gifSrc,
   gifAlt,
+  onLinkClick,
 }: {
   icon: string;
   title: string;
   steps: { label: string; url?: string }[];
   gifSrc: string;
   gifAlt: string;
+  onLinkClick?: () => void;
 }) {
   return (
     <div className="rounded-xl border border-surface-200 bg-surface-0 p-5 dark:border-surface-700 dark:bg-surface-800">
@@ -123,7 +129,7 @@ function InstructionCard({
             </span>
             <span className="text-sm text-surface-600 dark:text-surface-400">
               {step.url ? (
-                <a href={step.url} target="_blank" rel="noopener noreferrer" className="font-medium text-brand-600 underline decoration-brand-300 underline-offset-2 dark:text-brand-400">
+                <a href={step.url} target="_blank" rel="noopener noreferrer" onClick={onLinkClick} className="font-medium text-brand-600 underline decoration-brand-300 underline-offset-2 dark:text-brand-400">
                   {step.label}
                 </a>
               ) : (

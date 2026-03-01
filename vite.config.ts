@@ -28,5 +28,22 @@ export default defineConfig({
     port: 3000,
     open: true,
   },
+  test: {
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'lcov'],
+      include: ['src/domain/**', 'src/application/**', 'src/infrastructure/**'],
+      exclude: [
+        'src/infrastructure/services/MockExchangeRateService.ts',
+        '**/__tests__/**',
+      ],
+      thresholds: {
+        lines: 70,
+        functions: 70,
+        branches: 60,
+        statements: 70,
+      },
+    },
+  },
 });
 

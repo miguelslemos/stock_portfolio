@@ -45,16 +45,6 @@ export function isDomainError(error: unknown): error is DomainError {
 }
 
 export function getErrorMessage(error: unknown): string {
-  if (isDomainError(error)) {
-    switch (error.code) {
-      case 'PARSE_ERROR':
-        return `Erro ao processar dados: ${error.message}`;
-      case 'EXCHANGE_RATE_ERROR':
-        return `Erro na cotação PTAX: ${error.message}`;
-      case 'VALIDATION_ERROR':
-        return `Dados inválidos: ${error.message}`;
-    }
-  }
   if (error instanceof Error) {
     return error.message;
   }
