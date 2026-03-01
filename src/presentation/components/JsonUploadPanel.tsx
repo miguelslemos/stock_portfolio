@@ -32,14 +32,14 @@ export function JsonUploadPanel({ fileUpload }: JsonUploadPanelProps) {
             <p className="text-sm font-semibold text-surface-800 dark:text-surface-100">
               Arquivo JSON de Operações
             </p>
-            <p className="text-xs text-surface-400">Formato: array de objetos com type, date, quantity, price</p>
+            <p className="text-sm text-surface-400">Formato: array de objetos com type, date, quantity, price</p>
           </div>
           {files.jsonFile ? (
-            <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">
+            <span className="rounded-full bg-emerald-50 px-3 py-1 text-sm font-semibold text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">
               {files.jsonFile.name}
             </span>
           ) : (
-            <span className="text-xs text-surface-300 transition-colors group-hover:text-brand-500 dark:text-surface-500">
+            <span className="text-sm text-surface-300 transition-colors group-hover:text-brand-500 dark:text-surface-500">
               Selecionar
             </span>
           )}
@@ -48,7 +48,7 @@ export function JsonUploadPanel({ fileUpload }: JsonUploadPanelProps) {
 
       {/* Validation feedback */}
       {jsonValidation.status === 'valid' && (
-        <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-xs text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/20 dark:text-emerald-400">
+        <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/20 dark:text-emerald-400">
           <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
           </svg>
@@ -57,7 +57,7 @@ export function JsonUploadPanel({ fileUpload }: JsonUploadPanelProps) {
       )}
 
       {jsonValidation.status === 'warning' && (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs dark:border-amber-800 dark:bg-amber-950/20">
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2.5 text-sm dark:border-amber-800 dark:bg-amber-950/20">
           <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
             <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126Z" />
@@ -76,7 +76,7 @@ export function JsonUploadPanel({ fileUpload }: JsonUploadPanelProps) {
       )}
 
       {jsonValidation.status === 'error' && (
-        <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-2.5 text-xs dark:border-rose-800 dark:bg-rose-950/20">
+        <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm dark:border-rose-800 dark:bg-rose-950/20">
           <div className="flex items-center gap-2 text-rose-700 dark:text-rose-400">
             <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
@@ -118,7 +118,7 @@ function JsonSchemaInline() {
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`px-4 py-2.5 text-xs font-semibold uppercase tracking-wider transition-colors ${
+              className={`px-4 py-2.5 text-sm font-semibold uppercase tracking-wider transition-colors ${
                 tab === t
                   ? 'border-b-2 border-brand-500 text-brand-600 dark:text-brand-400'
                   : 'text-surface-400 hover:text-surface-600 dark:hover:text-surface-300'
@@ -130,12 +130,12 @@ function JsonSchemaInline() {
         </div>
         <button
           onClick={() => void handleCopy()}
-          className="mr-3 rounded-md bg-surface-100 px-3 py-1 text-xs font-medium text-surface-600 transition-colors hover:bg-surface-200 dark:bg-surface-700 dark:text-surface-300 dark:hover:bg-surface-600"
+          className="mr-3 rounded-md bg-surface-100 px-3 py-1 text-sm font-medium text-surface-600 transition-colors hover:bg-surface-200 dark:bg-surface-700 dark:text-surface-300 dark:hover:bg-surface-600"
         >
           {copyLabel}
         </button>
       </div>
-      <pre className="max-h-64 overflow-auto p-4 text-xs leading-relaxed text-surface-700 dark:text-surface-300">
+      <pre className="max-h-64 overflow-auto p-4 text-sm leading-relaxed text-surface-700 dark:text-surface-300">
         {content}
       </pre>
     </div>

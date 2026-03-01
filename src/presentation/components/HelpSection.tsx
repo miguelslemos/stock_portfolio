@@ -70,8 +70,8 @@ export function HelpSection() {
         </div>
 
         <div className="mt-4 rounded-xl border border-brand-200/50 bg-brand-50/50 p-4 dark:border-brand-900/30 dark:bg-brand-950/20">
-          <p className="text-xs font-semibold uppercase tracking-wider text-brand-700 dark:text-brand-400">Dicas</p>
-          <ul className="mt-2 space-y-1 text-xs text-surface-600 dark:text-surface-400">
+          <p className="text-sm font-semibold uppercase tracking-wider text-brand-700 dark:text-brand-400">Dicas</p>
+          <ul className="mt-2 space-y-1 text-sm text-surface-600 dark:text-surface-400">
             <li>Organize por ano — crie subpastas (2023/, 2024/)</li>
             <li>O sistema processa PDFs recursivamente em todas subpastas</li>
             <li>Nomes de arquivo não importam — o conteúdo do PDF é analisado</li>
@@ -104,10 +104,10 @@ function InstructionCard({
       <ol className="space-y-2">
         {steps.map((step, i) => (
           <li key={i} className="flex gap-2.5">
-            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-500 text-[10px] font-bold text-white">
+            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-500 text-xs font-bold text-white">
               {i + 1}
             </span>
-            <span className="text-xs text-surface-600 dark:text-surface-400">
+            <span className="text-sm text-surface-600 dark:text-surface-400">
               {step.url ? (
                 <a href={step.url} target="_blank" rel="noopener noreferrer" className="font-medium text-brand-600 underline decoration-brand-300 underline-offset-2 dark:text-brand-400">
                   {step.label}

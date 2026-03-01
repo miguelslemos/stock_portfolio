@@ -197,7 +197,7 @@ export function App() {
             <div className="flex justify-center px-6 pb-8">
               <button
                 onClick={portfolio.cancelProcessing}
-                className="rounded-lg border border-surface-300 bg-surface-0 px-4 py-2 text-xs font-medium text-surface-600 transition-colors hover:bg-surface-100 dark:border-surface-600 dark:bg-surface-800 dark:text-surface-400 dark:hover:bg-surface-700"
+                className="rounded-lg border border-surface-300 bg-surface-0 px-4 py-2 text-sm font-medium text-surface-600 transition-colors hover:bg-surface-100 dark:border-surface-600 dark:bg-surface-800 dark:text-surface-400 dark:hover:bg-surface-700"
               >
                 Cancelar
               </button>

@@ -52,7 +52,7 @@ export function OperationDetailModal({ snapshot, onClose }: OperationDetailModal
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-surface-400">
+    <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-surface-400">
       {children}
     </h3>
   );
@@ -82,11 +82,11 @@ function MetricCard({
 
   return (
     <div>
-      <div className="text-[11px] text-surface-400">{label}</div>
+      <div className="text-xs text-surface-400">{label}</div>
       <div className={`font-semibold ${valueColor} ${large ? 'text-lg' : 'text-sm'}`}>
         {value}
       </div>
-      {detail && <div className="text-[10px] text-surface-400">{detail}</div>}
+      {detail && <div className="text-xs text-surface-400">{detail}</div>}
     </div>
   );
 }
@@ -112,7 +112,6 @@ function OperationHero({
   isVesting: boolean;
 }) {
   const qty = metadata.quantity.value;
-  const price = metadata.pricePerShareUsd.amount;
 
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -146,9 +145,6 @@ function OperationHero({
         >
           {isVesting ? '+' : '-'}{qty}
         </span>
-        <span className="text-sm text-surface-500">
-          ações a {USDFormatter.formatWithPrecision(price)}
-        </span>
       </div>
     </div>
   );
@@ -177,12 +173,12 @@ function OperationCost({
       <SectionTitle>{isVesting ? 'Custo da Aquisição' : 'Custo de Aquisição da Venda'}</SectionTitle>
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <MetricCard
-          label="Preço Unitário"
-          value={USDFormatter.formatWithPrecision(priceUsd)}
+          label="Preço Unitário (USD)"
+          value={USDFormatter.format(priceUsd)}
         />
         <MetricCard
           label="PTAX Venda"
-          value={ptaxBid.toFixed(4)}
+          value={BRLFormatter.format(ptaxBid)}
           detail={DateFormatter.format(metadata.settlementDate)}
         />
         <MetricCard
@@ -192,7 +188,7 @@ function OperationCost({
         <MetricCard
           label="Total BRL"
           value={BRLFormatter.format(totalBrl)}
-          detail={`${qty} × ${USDFormatter.formatWithPrecision(priceUsd)} × ${ptaxBid.toFixed(4)}`}
+          detail={`${qty} × ${USDFormatter.format(priceUsd)} × ${BRLFormatter.format(ptaxBid)}`}
           large
         />
       </div>
@@ -274,7 +270,7 @@ function PositionCard({
 
   return (
     <div className={`rounded-xl border p-3 sm:p-4 ${borderClass} ${bgClass}`}>
-      <div className={`mb-3 text-[10px] font-semibold uppercase tracking-widest ${
+      <div className={`mb-3 text-xs font-semibold uppercase tracking-widest ${
         dimmed ? 'text-surface-400' : 'text-brand-600 dark:text-brand-400'
       }`}>
         {label}
@@ -321,7 +317,7 @@ function DeltaRow({
 
   return (
     <div className="mt-2 rounded-lg bg-surface-50 px-4 py-2.5 dark:bg-surface-800">
-      <div className="mb-2 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-widest text-surface-400">
+      <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-surface-400">
         <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5" />
         </svg>
@@ -374,7 +370,7 @@ function DeltaItem({
 
   return (
     <div>
-      <div className={`text-[10px] ${labelColor}`}>{label}</div>
+      <div className={`text-xs ${labelColor}`}>{label}</div>
       <div className={`font-semibold ${valueColor}`}>{formatted}</div>
     </div>
   );
@@ -520,11 +516,11 @@ function FormulasSection({
             expression={`${BRLFormatter.format(ganhoCapital)} = ${BRLFormatter.format(tradeFinancials.saleRevenueBrl.amount)} - ${BRLFormatter.format(tradeFinancials.costBasisBrl.amount)}`}
           />
         )}
-        <div className="mt-1 rounded-lg border border-amber-100 bg-amber-50/50 px-4 py-2 text-[11px] text-amber-700 dark:border-amber-900 dark:bg-amber-950/20 dark:text-amber-300">
+        <div className="mt-1 rounded-lg border border-amber-100 bg-amber-50/50 px-4 py-2 text-xs text-amber-700 dark:border-amber-900 dark:bg-amber-950/20 dark:text-amber-300">
           O Custo Acumulado é a soma em reais de todas as suas aquisições, onde cada compra foi convertida pela PTAX do dia da liquidação. Ele representa quanto você investiu no total até o momento.
         </div>
         {isVesting && (
-          <div className="mt-1 rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-2 text-[11px] text-blue-700 dark:border-blue-900 dark:bg-blue-950/20 dark:text-blue-300">
+          <div className="mt-1 rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-2 text-xs text-blue-700 dark:border-blue-900 dark:bg-blue-950/20 dark:text-blue-300">
             O preço médio em BRL reflete o custo real acumulado, não uma simples conversão do preço médio em USD.
           </div>
         )}

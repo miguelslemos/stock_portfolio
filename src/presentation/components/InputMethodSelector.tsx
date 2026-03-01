@@ -27,7 +27,7 @@ export function InputMethodSelector({ selected, onToggle }: InputMethodSelectorP
             }`}
           >
             {m.badge && (
-              <span className="absolute -top-2.5 right-3 rounded-full bg-brand-600 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+              <span className="absolute -top-2.5 right-3 rounded-full bg-brand-600 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide text-white">
                 {m.badge}
               </span>
             )}
@@ -56,14 +56,14 @@ export function InputMethodSelector({ selected, onToggle }: InputMethodSelectorP
               </span>
             </div>
 
-            <p className="pl-6 text-xs text-surface-500 dark:text-surface-400">{m.desc}</p>
+            <p className="pl-6 text-sm text-surface-500 dark:text-surface-400">{m.desc}</p>
           </button>
         );
       })}
 
       {selected.size > 1 && (
         <div className="sm:col-span-3">
-          <p className="text-center text-[11px] text-brand-600 dark:text-brand-400">
+          <p className="text-center text-sm text-brand-600 dark:text-brand-400">
             As fontes selecionadas serão combinadas automaticamente ao processar.
           </p>
         </div>

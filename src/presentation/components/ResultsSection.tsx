@@ -81,12 +81,12 @@ export function ResultsSection({ response, snapshots, onReset }: ResultsSectionP
       <div>
         <div className="mb-3 flex items-baseline gap-2">
           <h2 className="text-lg font-bold text-surface-900 dark:text-surface-100">Resumo Anual</h2>
-          <span className="text-xs text-surface-400">Clique para detalhes</span>
+          <span className="text-sm text-surface-400">Clique para detalhes</span>
         </div>
         <div className="overflow-x-auto rounded-xl border border-surface-200 dark:border-surface-700">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-surface-200 bg-surface-50 text-left text-[11px] font-semibold uppercase tracking-wider text-surface-500 dark:border-surface-700 dark:bg-surface-800 dark:text-surface-400">
+              <tr className="border-b border-surface-200 bg-surface-50 text-left text-xs font-semibold uppercase tracking-wider text-surface-500 dark:border-surface-700 dark:bg-surface-800 dark:text-surface-400">
                 <th className="px-4 py-3">Ano</th>
                 <th className="px-4 py-3">Qtd.</th>
                 <th className="px-4 py-3">Custo Acumulado (USD)</th>
@@ -114,7 +114,7 @@ export function ResultsSection({ response, snapshots, onReset }: ResultsSectionP
                     <td className="px-4 py-3 font-semibold text-surface-900 dark:text-surface-100">
                       {year}
                       {isCurrentYear && (
-                        <span className="ml-1.5 text-[10px] font-medium text-amber-600 dark:text-amber-400">*</span>
+                        <span className="ml-1.5 text-xs font-medium text-amber-600 dark:text-amber-400">*</span>
                       )}
                     </td>
                     <td className="px-4 py-3">{pos.quantity.value}</td>
@@ -132,7 +132,7 @@ export function ResultsSection({ response, snapshots, onReset }: ResultsSectionP
           </table>
         </div>
         {sortedYears.includes(new Date().getFullYear()) && (
-          <p className="mt-1.5 text-[11px] text-amber-600 dark:text-amber-400">* Ano em andamento — valores parciais</p>
+          <p className="mt-1.5 text-sm text-amber-600 dark:text-amber-400">* Ano em andamento — valores parciais</p>
         )}
       </div>
 
@@ -140,12 +140,12 @@ export function ResultsSection({ response, snapshots, onReset }: ResultsSectionP
       <div>
         <div className="mb-3 flex items-baseline gap-2">
           <h2 className="text-lg font-bold text-surface-900 dark:text-surface-100">Histórico de Operações</h2>
-          <span className="text-xs text-surface-400">Clique para detalhes</span>
+          <span className="text-sm text-surface-400">Clique para detalhes</span>
         </div>
         <div className="overflow-x-auto rounded-xl border border-surface-200 dark:border-surface-700">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-surface-200 bg-surface-50 text-left text-[11px] font-semibold uppercase tracking-wider text-surface-500 dark:border-surface-700 dark:bg-surface-800 dark:text-surface-400">
+              <tr className="border-b border-surface-200 bg-surface-50 text-left text-xs font-semibold uppercase tracking-wider text-surface-500 dark:border-surface-700 dark:bg-surface-800 dark:text-surface-400">
                 <th className="px-4 py-3">Data</th>
                 <th className="px-4 py-3">Operação</th>
                 <th className="px-4 py-3">Qtd. Final</th>
@@ -166,7 +166,7 @@ export function ResultsSection({ response, snapshots, onReset }: ResultsSectionP
                   >
                     <td className="px-4 py-3">{DateFormatter.format(meta.operationDate)}</td>
                     <td className="px-4 py-3">
-                      <span className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                      <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${
                         meta.isVesting
                           ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400'
                           : 'bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400'
@@ -213,7 +213,7 @@ function StatCard({ label, value, variant = 'neutral' }: { label: string; value:
 
   return (
     <div className="rounded-xl border border-surface-200 bg-surface-0 p-4 transition-shadow hover:shadow-sm dark:border-surface-700 dark:bg-surface-800">
-      <p className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-surface-400">{label}</p>
+      <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-surface-400">{label}</p>
       <p className={`text-xl font-bold ${valueColor}`}>{value}</p>
     </div>
   );

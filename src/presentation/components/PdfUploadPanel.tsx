@@ -102,14 +102,14 @@ function FileDropZone({
         </div>
         <div className="flex-1">
           <p className="text-sm font-semibold text-surface-800 dark:text-surface-100">{label}</p>
-          <p className="text-xs text-surface-400">{hint}</p>
+          <p className="text-sm text-surface-400">{hint}</p>
         </div>
         {count > 0 ? (
-          <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">
+          <span className="rounded-full bg-emerald-50 px-3 py-1 text-sm font-semibold text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">
             {count} arquivo{count > 1 ? 's' : ''}
           </span>
         ) : (
-          <span className="text-xs text-surface-300 transition-colors group-hover:text-brand-500 dark:text-surface-500">
+          <span className="text-sm text-surface-300 transition-colors group-hover:text-brand-500 dark:text-surface-500">
             Selecionar
           </span>
         )}

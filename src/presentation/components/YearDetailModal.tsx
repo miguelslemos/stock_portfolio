@@ -96,7 +96,6 @@ export function YearDetailModal({ year, yearSnapshots, onClose }: YearDetailModa
           {/* Position & pricing */}
           <PositionSection
             finalPosition={finalPosition}
-            avgPtaxBid={avgPtaxBid}
             avgPtaxAsk={avgPtaxAsk}
           />
 
@@ -123,7 +122,7 @@ export function YearDetailModal({ year, yearSnapshots, onClose }: YearDetailModa
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-surface-400">
+    <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-surface-400">
       {children}
     </h3>
   );
@@ -151,9 +150,9 @@ function StatCard({
 
   return (
     <div className="rounded-xl border border-surface-200 bg-surface-0 p-4 dark:border-surface-700 dark:bg-surface-800">
-      <div className="text-[11px] text-surface-500 dark:text-surface-400">{label}</div>
+      <div className="text-xs text-surface-500 dark:text-surface-400">{label}</div>
       <div className={`font-bold ${valueColor} ${large ? 'text-2xl' : 'text-lg'}`}>{value}</div>
-      {detail && <div className="text-[10px] text-surface-400">{detail}</div>}
+      {detail && <div className="text-xs text-surface-400">{detail}</div>}
     </div>
   );
 }
@@ -210,21 +209,21 @@ function HeroSection({
   return (
     <div className="grid grid-cols-3 gap-3">
       <div className="rounded-xl border-2 border-brand-300 bg-brand-50/60 p-4 dark:border-brand-600 dark:bg-brand-950/30">
-        <div className="text-[11px] font-medium text-brand-600 dark:text-brand-400">{qtyLabel}</div>
+        <div className="text-xs font-medium text-brand-600 dark:text-brand-400">{qtyLabel}</div>
         <div className="text-3xl font-bold text-surface-900 dark:text-surface-100">{finalQty}</div>
-        <div className="text-[10px] text-brand-500 dark:text-brand-400">{qtyDetail}</div>
+        <div className="text-xs text-brand-500 dark:text-brand-400">{qtyDetail}</div>
       </div>
       <div className="rounded-xl border border-surface-200 bg-surface-0 p-4 dark:border-surface-700 dark:bg-surface-800">
-        <div className="text-[11px] text-surface-500 dark:text-surface-400">Custo Acumulado no Ano (BRL)</div>
+        <div className="text-xs text-surface-500 dark:text-surface-400">Custo Acumulado no Ano (BRL)</div>
         <div className="text-2xl font-bold text-surface-900 dark:text-surface-100">{BRLFormatter.format(totalCostBrl)}</div>
-        <div className="text-[10px] text-surface-400">Valor para IRPF</div>
+        <div className="text-xs text-surface-400">Valor para IRPF</div>
       </div>
       <div className="rounded-xl border border-surface-200 bg-surface-0 p-4 dark:border-surface-700 dark:bg-surface-800">
-        <div className="text-[11px] text-surface-500 dark:text-surface-400">Ganho/Perda Total</div>
+        <div className="text-xs text-surface-500 dark:text-surface-400">Ganho/Perda Total</div>
         <div className={`text-2xl font-bold ${totalProfitLoss >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
           {BRLFormatter.format(totalProfitLoss)}
         </div>
-        <div className="text-[10px] text-surface-400">Resultado das vendas</div>
+        <div className="text-xs text-surface-400">Resultado das vendas</div>
       </div>
     </div>
   );
@@ -312,15 +311,15 @@ function FinancialSection({
       >
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <div className="text-[11px] text-surface-500 dark:text-surface-400">Valor das Vendas (BRL)</div>
+            <div className="text-xs text-surface-500 dark:text-surface-400">Valor das Vendas (BRL)</div>
             <div className="text-lg font-bold text-surface-900 dark:text-surface-100">{BRLFormatter.format(totalSaleRevenue)}</div>
           </div>
           <div>
-            <div className="text-[11px] text-surface-500 dark:text-surface-400">Custo de Aquisição (BRL)</div>
+            <div className="text-xs text-surface-500 dark:text-surface-400">Custo de Aquisição (BRL)</div>
             <div className="text-lg font-bold text-surface-900 dark:text-surface-100">{BRLFormatter.format(totalCostBasis)}</div>
           </div>
           <div>
-            <div className="text-[11px] text-surface-500 dark:text-surface-400">Ganho/Perda de Capital</div>
+            <div className="text-xs text-surface-500 dark:text-surface-400">Ganho/Perda de Capital</div>
             <div className={`text-xl font-bold ${isProfit ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
               {BRLFormatter.format(totalProfitLoss)}
             </div>
@@ -337,7 +336,6 @@ function FinancialSection({
 
 function PositionSection({
   finalPosition,
-  avgPtaxBid,
   avgPtaxAsk,
 }: {
   finalPosition: PortfolioSnapshot['position'];
@@ -359,13 +357,8 @@ function PositionSection({
           detail="Por ação"
         />
         <StatCard
-          label="PTAX Média Compra"
-          value={avgPtaxBid.toFixed(4)}
-          detail="Média das operações"
-        />
-        <StatCard
           label="PTAX Média Venda"
-          value={avgPtaxAsk.toFixed(4)}
+          value={BRLFormatter.format(avgPtaxAsk)}
           detail="Média das operações"
         />
       </div>
@@ -384,7 +377,7 @@ function OperationsTable({ snapshots }: { snapshots: PortfolioSnapshot[] }) {
       <div className="overflow-x-auto rounded-xl border border-surface-200 dark:border-surface-700">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-surface-200 bg-surface-50 text-left text-[11px] font-semibold uppercase tracking-wider text-surface-500 dark:border-surface-700 dark:bg-surface-800 dark:text-surface-400">
+            <tr className="border-b border-surface-200 bg-surface-50 text-left text-xs font-semibold uppercase tracking-wider text-surface-500 dark:border-surface-700 dark:bg-surface-800 dark:text-surface-400">
               <th className="px-4 py-3">Data</th>
               <th className="px-4 py-3">Operação</th>
               <th className="px-4 py-3 text-right">Qtd.</th>
@@ -411,7 +404,7 @@ function OperationsTable({ snapshots }: { snapshots: PortfolioSnapshot[] }) {
                   </td>
                   <td className="px-4 py-3">
                     <span
-                      className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                      className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${
                         isVesting
                           ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400'
                           : 'bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400'
@@ -495,28 +488,28 @@ function TaxSummary({
       {/* Key IRPF metrics */}
       <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-xl border-2 border-brand-300 bg-brand-50/60 p-4 dark:border-brand-600 dark:bg-brand-950/30">
-          <div className="text-[11px] font-medium text-brand-600 dark:text-brand-400">{situationLabel}</div>
+          <div className="text-xs font-medium text-brand-600 dark:text-brand-400">{situationLabel}</div>
           <div className="text-xl font-bold text-surface-900 dark:text-surface-100">{BRLFormatter.format(totalCostBrl)}</div>
-          <div className="text-[10px] text-brand-500 dark:text-brand-400">{situationDetail}</div>
+          <div className="text-xs text-brand-500 dark:text-brand-400">{situationDetail}</div>
         </div>
         <div className="rounded-xl border border-surface-200 bg-surface-0 p-4 dark:border-surface-700 dark:bg-surface-800">
-          <div className="text-[11px] text-surface-500 dark:text-surface-400">Ganho/Perda Total (BRL)</div>
+          <div className="text-xs text-surface-500 dark:text-surface-400">Ganho/Perda Total (BRL)</div>
           <div className={`text-xl font-bold ${totalProfitLoss >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
             {BRLFormatter.format(totalProfitLoss)}
           </div>
-          <div className="text-[10px] text-surface-400">Resultado das vendas</div>
+          <div className="text-xs text-surface-400">Resultado das vendas</div>
         </div>
         <div className="rounded-xl border border-surface-200 bg-surface-0 p-4 dark:border-surface-700 dark:bg-surface-800">
-          <div className="text-[11px] text-surface-500 dark:text-surface-400">Ações em Carteira</div>
+          <div className="text-xs text-surface-500 dark:text-surface-400">Ações em Carteira</div>
           <div className="text-2xl font-bold text-surface-900 dark:text-surface-100">{finalQty}</div>
-          <div className="text-[10px] text-surface-400">Fim do período</div>
+          <div className="text-xs text-surface-400">Fim do período</div>
         </div>
         <div className="rounded-xl border border-surface-200 bg-surface-0 p-4 dark:border-surface-700 dark:bg-surface-800">
-          <div className="text-[11px] text-surface-500 dark:text-surface-400">Preço Médio (BRL)</div>
+          <div className="text-xs text-surface-500 dark:text-surface-400">Preço Médio (BRL)</div>
           <div className="text-xl font-bold text-surface-900 dark:text-surface-100">
             {BRLFormatter.formatWithPrecision(avgPriceBrl)}
           </div>
-          <div className="text-[10px] text-surface-400">Por ação</div>
+          <div className="text-xs text-surface-400">Por ação</div>
         </div>
       </div>
 
@@ -537,7 +530,7 @@ function TaxSummary({
           <IrpfField label="Lucro ou Prejuízo" value={BRLFormatter.format(totalProfitLoss)} />
         </div>
 
-        <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50/60 px-4 py-2.5 text-[11px] text-amber-700 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300">
+        <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50/60 px-4 py-2.5 text-xs text-amber-700 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300">
           <strong>Atenção:</strong> Este é apenas um resumo das operações. Consulte um contador
           para orientação fiscal precisa e atualizada sobre suas obrigações tributárias.
         </div>
@@ -561,8 +554,8 @@ function IrpfField({ label, value }: { label: string; value: string }) {
       className="group cursor-pointer rounded-lg bg-surface-100/60 px-3 py-2 transition-colors hover:bg-surface-200/80 dark:bg-surface-700/40 dark:hover:bg-surface-600/40"
     >
       <div className="flex items-center justify-between">
-        <div className="text-[11px] font-semibold text-surface-500 dark:text-surface-400">{label}</div>
-        <span className={`text-[10px] font-medium transition-opacity ${copied ? 'text-emerald-600 dark:text-emerald-400' : 'text-surface-400'}`}>
+        <div className="text-xs font-semibold text-surface-500 dark:text-surface-400">{label}</div>
+        <span className={`text-xs font-medium transition-opacity ${copied ? 'text-emerald-600 dark:text-emerald-400' : 'text-surface-400'}`}>
           {copied ? (
             'Copiado!'
           ) : (
