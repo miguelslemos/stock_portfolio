@@ -38,9 +38,6 @@ export function YearDetailModal({ year, yearSnapshots, onClose }: YearDetailModa
     0
   );
 
-  const avgPtaxBid =
-    yearSnapshots.reduce((sum, s) => sum + s.metadata.exchangeRates.ptaxBid, 0) /
-    yearSnapshots.length;
   const avgPtaxAsk =
     yearSnapshots.reduce((sum, s) => sum + s.metadata.exchangeRates.ptaxAsk, 0) /
     yearSnapshots.length;
@@ -339,7 +336,6 @@ function PositionSection({
   avgPtaxAsk,
 }: {
   finalPosition: PortfolioSnapshot['position'];
-  avgPtaxBid: number;
   avgPtaxAsk: number;
 }) {
   return (
@@ -378,13 +374,13 @@ function OperationsTable({ snapshots }: { snapshots: PortfolioSnapshot[] }) {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-surface-200 bg-surface-50 text-left text-xs font-semibold uppercase tracking-wider text-surface-500 dark:border-surface-700 dark:bg-surface-800 dark:text-surface-400">
-              <th className="px-4 py-3">Data</th>
+              <th className="px-4 py-3">Data da Operação</th>
               <th className="px-4 py-3">Operação</th>
               <th className="px-4 py-3 text-right">Qtd.</th>
               <th className="px-4 py-3 text-right">Preço (USD)</th>
               <th className="px-4 py-3 text-right">Qtd. Final</th>
-              <th className="px-4 py-3 text-right">PM (USD)</th>
-              <th className="px-4 py-3 text-right">PM (BRL)</th>
+              <th className="px-4 py-3 text-right">P. Médio (USD)</th>
+              <th className="px-4 py-3 text-right">P. Médio (BRL)</th>
               <th className="px-4 py-3 text-right">Ganho/Perda</th>
             </tr>
           </thead>

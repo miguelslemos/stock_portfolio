@@ -50,7 +50,7 @@ export function HelpSection() {
             steps={[
               { label: 'Acesse o E*TRADE Stock Plan', url: 'https://us.etrade.com/etx/sp/stockplan/#/myAccount/stockPlanConfirmations' },
               { label: 'Baixe os PDFs de Release dos anos desejados' },
-              { label: 'Organize em uma pasta (aceita subpastas)' },
+              { label: 'Selecione arquivos individuais ou uma pasta inteira (aceita subpastas)' },
             ]}
             gifSrc="./download-release-confirmation.gif"
             gifAlt="Demo de download de release"
@@ -62,20 +62,34 @@ export function HelpSection() {
             steps={[
               { label: 'Acesse E*TRADE Documents', url: 'https://us.etrade.com/etx/pxy/accountdocs-statements#/documents' },
               { label: 'Baixe os PDFs de Trade dos anos desejados' },
-              { label: 'Organize em uma pasta separada' },
+              { label: 'Selecione arquivos individuais ou uma pasta separada' },
             ]}
             gifSrc="./download-trade-confirmation.gif"
             gifAlt="Demo de download de trade"
           />
         </div>
 
-        <div className="mt-4 rounded-xl border border-brand-200/50 bg-brand-50/50 p-4 dark:border-brand-900/30 dark:bg-brand-950/20">
-          <p className="text-sm font-semibold uppercase tracking-wider text-brand-700 dark:text-brand-400">Dicas</p>
-          <ul className="mt-2 space-y-1 text-sm text-surface-600 dark:text-surface-400">
-            <li>Organize por ano — crie subpastas (2023/, 2024/)</li>
-            <li>O sistema processa PDFs recursivamente em todas subpastas</li>
-            <li>Nomes de arquivo não importam — o conteúdo do PDF é analisado</li>
-            <li>Se não tiver vendas, deixe o campo de Trade vazio</li>
+        <div className="mt-4 rounded-xl border border-brand-300/60 bg-brand-50 p-4 dark:border-brand-700/40 dark:bg-brand-950/40">
+          <div className="mb-3 flex items-center gap-2">
+            <svg className="h-4 w-4 text-brand-600 dark:text-brand-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
+            </svg>
+            <p className="text-sm font-bold uppercase tracking-wider text-brand-700 dark:text-brand-300">Dicas</p>
+          </div>
+          <ul className="space-y-2">
+            {[
+              { icon: 'M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3', text: 'Pode selecionar arquivos individuais ou uma pasta inteira, use o que for mais conveniente' },
+              { icon: 'M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z', text: 'Ao selecionar uma pasta, subpastas são processadas automaticamente.' },
+              { icon: 'M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z', text: 'Nomes de arquivo não importam apenas o conteúdo interno do PDF é analisado' },
+              { icon: 'M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636', text: 'Se não tiver vendas no período, deixe o campo de Trade sem arquivos' },
+            ].map(({ icon, text }, i) => (
+              <li key={i} className="flex items-start gap-2.5">
+                <svg className="mt-0.5 h-4 w-4 shrink-0 text-brand-500 dark:text-brand-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d={icon} />
+                </svg>
+                <span className="text-sm leading-relaxed text-surface-700 dark:text-surface-300">{text}</span>
+              </li>
+            ))}
           </ul>
         </div>
       </div>

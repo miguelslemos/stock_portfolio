@@ -13,4 +13,10 @@ export interface IAnalyticsService {
 
   /** Record a custom event with optional parameters. */
   trackEvent(eventName: string, params?: Record<string, string | number | boolean>): void;
+
+  /**
+   * Record an exception. `context` identifies where the error originated
+   * (e.g. 'ErrorBoundary', 'PDFRepository', 'unhandledrejection').
+   */
+  trackException(error: Error, context?: string): void;
 }

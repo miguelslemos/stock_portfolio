@@ -18,7 +18,8 @@ export class PDFOperationRepository implements IOperationRepository {
   constructor(
     private readonly tradePDFs: File[],
     private readonly releasePDFs: File[],
-    private readonly onProgress?: (current: number, total: number) => void
+    private readonly onProgress?: (current: number, total: number) => void,
+    private readonly onError?: (error: Error, fileName: string) => void
   ) {}
 
   async getAllOperations(): Promise<PortfolioOperation[]> {
@@ -41,6 +42,8 @@ export class PDFOperationRepository implements IOperationRepository {
         }
       } catch (error) {
         console.error(`Error processing trade PDF ${file.name}:`, error);
+        const err = error instanceof Error ? error : new Error(String(error));
+        this.onError?.(err, file.name);
         processedCount++;
         this.onProgress?.(processedCount, totalPDFs);
         return null;
@@ -61,6 +64,8 @@ export class PDFOperationRepository implements IOperationRepository {
         }
       } catch (error) {
         console.error(`Error processing vesting PDF ${file.name}:`, error);
+        const err = error instanceof Error ? error : new Error(String(error));
+        this.onError?.(err, file.name);
         processedCount++;
         this.onProgress?.(processedCount, totalPDFs);
         return null;

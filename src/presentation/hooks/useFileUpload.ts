@@ -16,14 +16,18 @@ export interface UseFileUploadReturn {
   files: FileUploadState;
   hasData: boolean;
   jsonValidation: JsonValidationResult;
-  tradeInputRef: React.RefObject<HTMLInputElement | null>;
-  releaseInputRef: React.RefObject<HTMLInputElement | null>;
+  tradeFilesInputRef: React.RefObject<HTMLInputElement | null>;
+  tradeFolderInputRef: React.RefObject<HTMLInputElement | null>;
+  releaseFilesInputRef: React.RefObject<HTMLInputElement | null>;
+  releaseFolderInputRef: React.RefObject<HTMLInputElement | null>;
   jsonInputRef: React.RefObject<HTMLInputElement | null>;
   handleTradeFiles: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleReleaseFiles: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleJsonFile: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  openTradeDialog: () => void;
-  openReleaseDialog: () => void;
+  openTradeFilesDialog: () => void;
+  openTradeFolderDialog: () => void;
+  openReleaseFilesDialog: () => void;
+  openReleaseFolderDialog: () => void;
   openJsonDialog: () => void;
   clearAll: () => void;
   getUniqueFolders: (files: File[]) => Set<string>;
@@ -106,8 +110,10 @@ export function useFileUpload(): UseFileUploadReturn {
   });
   const [jsonValidation, setJsonValidation] = useState<JsonValidationResult>(IDLE_VALIDATION);
 
-  const tradeInputRef = useRef<HTMLInputElement | null>(null);
-  const releaseInputRef = useRef<HTMLInputElement | null>(null);
+  const tradeFilesInputRef = useRef<HTMLInputElement | null>(null);
+  const tradeFolderInputRef = useRef<HTMLInputElement | null>(null);
+  const releaseFilesInputRef = useRef<HTMLInputElement | null>(null);
+  const releaseFolderInputRef = useRef<HTMLInputElement | null>(null);
   const jsonInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleTradeFiles = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -142,12 +148,20 @@ export function useFileUpload(): UseFileUploadReturn {
     reader.readAsText(file);
   }, []);
 
-  const openTradeDialog = useCallback(() => {
-    tradeInputRef.current?.click();
+  const openTradeFilesDialog = useCallback(() => {
+    tradeFilesInputRef.current?.click();
   }, []);
 
-  const openReleaseDialog = useCallback(() => {
-    releaseInputRef.current?.click();
+  const openTradeFolderDialog = useCallback(() => {
+    tradeFolderInputRef.current?.click();
+  }, []);
+
+  const openReleaseFilesDialog = useCallback(() => {
+    releaseFilesInputRef.current?.click();
+  }, []);
+
+  const openReleaseFolderDialog = useCallback(() => {
+    releaseFolderInputRef.current?.click();
   }, []);
 
   const openJsonDialog = useCallback(() => {
@@ -157,8 +171,10 @@ export function useFileUpload(): UseFileUploadReturn {
   const clearAll = useCallback(() => {
     setFiles({ tradePDFs: [], releasePDFs: [], jsonFile: null });
     setJsonValidation(IDLE_VALIDATION);
-    if (tradeInputRef.current) tradeInputRef.current.value = '';
-    if (releaseInputRef.current) releaseInputRef.current.value = '';
+    if (tradeFilesInputRef.current) tradeFilesInputRef.current.value = '';
+    if (tradeFolderInputRef.current) tradeFolderInputRef.current.value = '';
+    if (releaseFilesInputRef.current) releaseFilesInputRef.current.value = '';
+    if (releaseFolderInputRef.current) releaseFolderInputRef.current.value = '';
     if (jsonInputRef.current) jsonInputRef.current.value = '';
   }, []);
 
@@ -179,14 +195,18 @@ export function useFileUpload(): UseFileUploadReturn {
     files,
     hasData,
     jsonValidation,
-    tradeInputRef,
-    releaseInputRef,
+    tradeFilesInputRef,
+    tradeFolderInputRef,
+    releaseFilesInputRef,
+    releaseFolderInputRef,
     jsonInputRef,
     handleTradeFiles,
     handleReleaseFiles,
     handleJsonFile,
-    openTradeDialog,
-    openReleaseDialog,
+    openTradeFilesDialog,
+    openTradeFolderDialog,
+    openReleaseFilesDialog,
+    openReleaseFolderDialog,
     openJsonDialog,
     clearAll,
     getUniqueFolders,

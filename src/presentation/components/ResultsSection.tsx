@@ -146,7 +146,7 @@ export function ResultsSection({ response, snapshots, onReset }: ResultsSectionP
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-surface-200 bg-surface-50 text-left text-xs font-semibold uppercase tracking-wider text-surface-500 dark:border-surface-700 dark:bg-surface-800 dark:text-surface-400">
-                <th className="px-4 py-3">Data</th>
+                <th className="px-4 py-3">Data da Operação</th>
                 <th className="px-4 py-3">Operação</th>
                 <th className="px-4 py-3">Qtd. Final</th>
                 <th className="px-4 py-3">Preço Médio (USD)</th>
