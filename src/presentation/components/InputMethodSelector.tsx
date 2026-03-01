@@ -6,9 +6,9 @@ interface InputMethodSelectorProps {
 }
 
 const methods: { id: InputMethod; label: string; desc: string; badge?: string }[] = [
-  { id: 'manual', label: 'Entrada Manual', desc: 'Adicione operações uma a uma' },
-  { id: 'json', label: 'Arquivo JSON', desc: 'Importe de um arquivo .json' },
   { id: 'pdf', label: 'PDFs do E*Trade', desc: 'Leitura automática dos PDFs', badge: 'Recomendado' },
+  { id: 'json', label: 'Arquivo JSON', desc: 'Importe de um arquivo .json' },
+  { id: 'manual', label: 'Entrada Manual', desc: 'Adicione operações uma a uma' },
 ];
 
 export function InputMethodSelector({ selected, onToggle }: InputMethodSelectorProps) {

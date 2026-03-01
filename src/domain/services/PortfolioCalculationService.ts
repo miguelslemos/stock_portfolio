@@ -95,7 +95,7 @@ export class PortfolioCalculationService {
     }
 
     throw new Error(
-      `Could not find USD/BRL exchange rate for ${settlementDate.toISOString()} (tried 7 days back)`
+      `Cotação PTAX USD/BRL não encontrada para ${settlementDate.toLocaleDateString('pt-BR')} (buscado até 7 dias anteriores)`
     );
   }
 }
