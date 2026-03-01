@@ -38,10 +38,10 @@ export function StepIndicator({ currentStep }: StepIndicatorProps) {
                 )}
               </div>
               <div className="hidden sm:block">
-                <div className={`text-xs font-semibold ${isActive ? 'text-brand-700 dark:text-brand-300' : isCompleted ? 'text-emerald-700 dark:text-emerald-400' : 'text-surface-400 dark:text-surface-500'}`}>
+                <div className={`text-sm font-semibold ${isActive ? 'text-brand-700 dark:text-brand-300' : isCompleted ? 'text-emerald-700 dark:text-emerald-400' : 'text-surface-400 dark:text-surface-500'}`}>
                   {step.label}
                 </div>
-                <div className="text-[10px] text-surface-400">{step.desc}</div>
+                <div className="text-xs text-surface-400">{step.desc}</div>
               </div>
             </div>
 

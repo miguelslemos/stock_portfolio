@@ -74,7 +74,7 @@ export function HelpSection() {
             <svg className="h-4 w-4 text-brand-600 dark:text-brand-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
             </svg>
-            <p className="text-xs font-bold uppercase tracking-wider text-brand-700 dark:text-brand-300">Dicas</p>
+            <p className="text-sm font-bold uppercase tracking-wider text-brand-700 dark:text-brand-300">Dicas</p>
           </div>
           <ul className="space-y-2">
             {[
@@ -87,7 +87,7 @@ export function HelpSection() {
                 <svg className="mt-0.5 h-4 w-4 shrink-0 text-brand-500 dark:text-brand-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d={icon} />
                 </svg>
-                <span className="text-xs leading-relaxed text-surface-700 dark:text-surface-300">{text}</span>
+                <span className="text-sm leading-relaxed text-surface-700 dark:text-surface-300">{text}</span>
               </li>
             ))}
           </ul>
@@ -118,10 +118,10 @@ function InstructionCard({
       <ol className="space-y-2">
         {steps.map((step, i) => (
           <li key={i} className="flex gap-2.5">
-            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-500 text-[10px] font-bold text-white">
+            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-500 text-xs font-bold text-white">
               {i + 1}
             </span>
-            <span className="text-xs text-surface-600 dark:text-surface-400">
+            <span className="text-sm text-surface-600 dark:text-surface-400">
               {step.url ? (
                 <a href={step.url} target="_blank" rel="noopener noreferrer" className="font-medium text-brand-600 underline decoration-brand-300 underline-offset-2 dark:text-brand-400">
                   {step.label}

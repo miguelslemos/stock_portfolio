@@ -38,7 +38,7 @@ export function Header({ isDark, onToggleTheme }: HeaderProps) {
 
       <div className="relative z-10 mx-auto max-w-3xl text-center">
         {/* Logo / Title */}
-        <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-xs font-medium tracking-wide backdrop-blur-sm">
+        <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium tracking-wide backdrop-blur-sm">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse-soft" />
           NU Holdings — Stock Portfolio
         </div>
@@ -57,7 +57,7 @@ export function Header({ isDark, onToggleTheme }: HeaderProps) {
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
             </svg>
           </div>
-          <p className="text-xs leading-snug text-white/80">
+          <p className="text-sm leading-snug text-white/80">
             <strong className="text-white">Processamento 100% local.</strong>{' '}
             Seus PDFs são processados no navegador. Dados financeiros nunca são enviados para o servidor.
           </p>

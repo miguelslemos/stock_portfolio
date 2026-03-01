@@ -57,7 +57,7 @@ export function ManualEntryForm({ entries, onAdd, onRemove, onClear }: ManualEnt
         <div className="mb-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {/* Type */}
           <div>
-            <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400">
+            <label className="mb-1 block text-sm font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400">
               Tipo
             </label>
             <div className="flex overflow-hidden rounded-lg border border-surface-200 dark:border-surface-600">
@@ -88,7 +88,7 @@ export function ManualEntryForm({ entries, onAdd, onRemove, onClear }: ManualEnt
 
           {/* Date */}
           <div>
-            <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400">
+            <label className="mb-1 block text-sm font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400">
               Data
             </label>
             <input
@@ -101,7 +101,7 @@ export function ManualEntryForm({ entries, onAdd, onRemove, onClear }: ManualEnt
 
           {/* Quantity */}
           <div>
-            <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400">
+            <label className="mb-1 block text-sm font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400">
               Quantidade
             </label>
             <input
@@ -117,7 +117,7 @@ export function ManualEntryForm({ entries, onAdd, onRemove, onClear }: ManualEnt
 
           {/* Price */}
           <div>
-            <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400">
+            <label className="mb-1 block text-sm font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400">
               Preço (USD)
             </label>
             <input
@@ -132,26 +132,26 @@ export function ManualEntryForm({ entries, onAdd, onRemove, onClear }: ManualEnt
           </div>
 
           {/* Settlement date (trade only) */}
-          <div>
-            <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400">
-              {form.type === 'trade' ? 'Liquidação' : ''}
-            </label>
+          <div className="flex flex-col justify-end">
             {form.type === 'trade' ? (
-              <input
-                type="date"
-                value={form.settlementDate}
-                onChange={(e) => setForm((f) => ({ ...f, settlementDate: e.target.value }))}
-                className="w-full rounded-lg border border-surface-200 bg-surface-0 px-3 py-2 text-sm text-surface-900 transition-colors focus:border-brand-400 focus:ring-1 focus:ring-brand-400 dark:border-surface-600 dark:bg-surface-700 dark:text-surface-100"
-              />
+              <>
+                <label className="mb-1 block text-sm font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400">
+                  Liquidação
+                </label>
+                <input
+                  type="date"
+                  value={form.settlementDate}
+                  onChange={(e) => setForm((f) => ({ ...f, settlementDate: e.target.value }))}
+                  className="w-full rounded-lg border border-surface-200 bg-surface-0 px-3 py-2 text-sm text-surface-900 transition-colors focus:border-brand-400 focus:ring-1 focus:ring-brand-400 dark:border-surface-600 dark:bg-surface-700 dark:text-surface-100"
+                />
+              </>
             ) : (
-              <div className="flex h-[38px] items-center">
-                <button
-                  type="submit"
-                  className="w-full rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-700 hover:shadow-md active:scale-[0.98]"
-                >
-                  + Adicionar
-                </button>
-              </div>
+              <button
+                type="submit"
+                className="w-full rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-700 hover:shadow-md active:scale-[0.98]"
+              >
+                + Adicionar
+              </button>
             )}
           </div>
         </div>
@@ -181,7 +181,7 @@ export function ManualEntryForm({ entries, onAdd, onRemove, onClear }: ManualEnt
             </h4>
             <button
               onClick={onClear}
-              className="text-xs font-medium text-surface-400 transition-colors hover:text-rose-500"
+              className="text-sm font-medium text-surface-400 transition-colors hover:text-rose-500"
             >
               Remover todas
             </button>
@@ -194,7 +194,7 @@ export function ManualEntryForm({ entries, onAdd, onRemove, onClear }: ManualEnt
                 className="flex items-center gap-4 px-5 py-3 transition-colors hover:bg-surface-50 dark:hover:bg-surface-700/50"
               >
                 <span
-                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-sm font-semibold ${
                     entry.type === 'vesting'
                       ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400'
                       : 'bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400'

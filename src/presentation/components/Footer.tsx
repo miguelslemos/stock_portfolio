@@ -23,7 +23,7 @@ export function Footer() {
       </div>
 
       {/* Bottom */}
-      <div className="text-center text-xs text-surface-400 dark:text-surface-500">
+      <div className="text-center text-sm text-surface-400 dark:text-surface-500">
         <p>
           <span className="font-semibold text-surface-600 dark:text-surface-300">Stock Portfolio Manager</span>
           {' · '}Código aberto

@@ -31,7 +31,7 @@ export function LoadingState({ progress }: LoadingStateProps) {
           />
         </div>
         {progress && (
-          <p className="mt-2 text-xs text-surface-400">
+          <p className="mt-2 text-sm text-surface-400">
             {progress.message}
           </p>
         )}
