@@ -12,6 +12,7 @@ concurrency:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   ci:
@@ -37,6 +38,13 @@ jobs:
 
       - name: Tests
         run: npm test -- --run --coverage
+
+      - name: Coverage report comment
+        if: github.event_name == 'pull_request'
+        uses: davelosert/vitest-coverage-report-action@v2
+        with:
+          json-summary-path: coverage/coverage-summary.json
+          json-final-path: coverage/coverage-final.json
 
       - name: Upload coverage report
         if: always()
