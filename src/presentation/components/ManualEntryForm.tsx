@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { type ManualEntry } from '@/presentation/hooks/useManualEntries';
 import { useAnalytics } from '@/presentation/hooks';
+import { CurrencyInput } from './CurrencyInput';
 
 interface ManualEntryFormProps {
   entries: ManualEntry[];
@@ -127,15 +128,12 @@ export function ManualEntryForm({ entries, onAdd, onRemove, onClear }: ManualEnt
             <label htmlFor="entry-price" className="mb-1 block text-sm font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400">
               Preço (USD)
             </label>
-            <input
+            <CurrencyInput
               id="entry-price"
-              type="number"
-              min="0.01"
-              step="0.01"
-              placeholder="12.50"
+              currency="USD"
+              placeholder="12.5000"
               value={form.price}
-              onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
-              className="w-full rounded-lg border border-surface-200 bg-surface-0 px-3 py-2 text-sm text-surface-900 transition-colors focus:border-brand-400 focus:ring-1 focus:ring-brand-400 dark:border-surface-600 dark:bg-surface-700 dark:text-surface-100"
+              onChange={(v) => setForm((f) => ({ ...f, price: v }))}
             />
           </div>
 
@@ -216,7 +214,7 @@ export function ManualEntryForm({ entries, onAdd, onRemove, onClear }: ManualEnt
                   {entry.type === 'vesting' ? '+' : '-'}{entry.quantity} ações
                 </span>
                 <span className="text-sm text-surface-500">
-                  @ ${entry.price.toFixed(2)}
+                  @ ${entry.price.toFixed(4)}
                 </span>
                 <button
                   onClick={() => { analytics.trackEvent('manual_entry_removed'); onRemove(entry.id); }}

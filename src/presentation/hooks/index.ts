@@ -3,3 +3,4 @@ export { useFileUpload } from './useFileUpload';
 export { useDarkMode } from './useDarkMode';
 export { useManualEntries, type ManualEntry } from './useManualEntries';
 export { useAnalytics, AnalyticsProvider } from './useAnalytics';
+export { useInitialBalance } from './useInitialBalance';

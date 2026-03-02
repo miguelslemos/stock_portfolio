@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { useAnalytics } from './useAnalytics';
-import { PortfolioSnapshot } from '@/domain/entities';
-import { getErrorMessage } from '@/domain/errors';
+import { PortfolioPosition, PortfolioSnapshot } from '@/domain/entities';
+import { ValidationError, getErrorMessage } from '@/domain/errors';
 import {
   ProcessPortfolioUseCase,
   type ProcessPortfolioResponse,
@@ -35,6 +35,7 @@ export interface ProcessParams {
   releasePDFs: File[];
   jsonFile: File | null;
   manualEntriesJSON: string | null;
+  initialPosition?: PortfolioPosition;
   exportData?: boolean;
 }
 
@@ -68,7 +69,7 @@ export function usePortfolio(): UsePortfolioReturn {
   }, [analytics]);
 
   const processPortfolio = useCallback(async (params: ProcessParams) => {
-    const { tradePDFs, releasePDFs, jsonFile, manualEntriesJSON, exportData = false } = params;
+    const { tradePDFs, releasePDFs, jsonFile, manualEntriesJSON, initialPosition, exportData = false } = params;
 
     abortControllerRef.current?.abort();
     const controller = new AbortController();
@@ -138,6 +139,24 @@ export function usePortfolio(): UsePortfolioReturn {
       }));
 
       const operationRepository = new CompositeOperationRepository(repositories);
+
+      if (initialPosition) {
+        const cutoffDate = initialPosition.lastUpdated;
+        const allOps = await operationRepository.getAllOperations();
+        const invalidCount = allOps.filter((op) => op.getDate() <= cutoffDate).length;
+        if (invalidCount > 0) {
+          const dateStr = `${String(cutoffDate.getDate()).padStart(2, '0')}/${String(cutoffDate.getMonth() + 1).padStart(2, '0')}/${cutoffDate.getFullYear()}`;
+          throw new ValidationError(
+            `Existem ${invalidCount} operação(ões) com data anterior ou igual a ${dateStr}. ` +
+            `Ao usar saldo inicial, todas as operações devem ser posteriores a 31/12/${cutoffDate.getFullYear()}.`
+          );
+        }
+        analytics.trackEvent('initial_balance_used', {
+          year: cutoffDate.getFullYear(),
+          quantity: initialPosition.quantity.value,
+        });
+      }
+
       const exchangeRateService = new BCBExchangeRateService();
       const calculationService = new PortfolioCalculationService(exchangeRateService);
       const analyticsService = new PortfolioAnalyticsService();
@@ -151,7 +170,7 @@ export function usePortfolio(): UsePortfolioReturn {
       );
 
       const startTime = performance.now();
-      const response = await useCase.execute({ exportData });
+      const response = await useCase.execute({ initialPosition, exportData });
       const durationMs = Math.round(performance.now() - startTime);
 
       if (controller.signal.aborted) return;
