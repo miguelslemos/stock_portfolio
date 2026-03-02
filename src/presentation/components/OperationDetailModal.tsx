@@ -294,7 +294,7 @@ function PositionCard({
         />
         <MetricCard
           label="Custo Acumulado (BRL)"
-          value={BRLFormatter.format(position.totalCostBrl.amount)}
+          value={BRLFormatter.formatWithPrecision(position.totalCostBrl.amount)}
           detail="Soma de todas as aquisições"
           variant={textVariant}
         />
@@ -498,17 +498,17 @@ function FormulasSection({
           <>
             <FormulaBlock
               label="Preço Médio USD = Custo Acumulado USD ÷ Quantidade"
-              expression={`${USDFormatter.formatWithPrecision(position.averagePriceUsd.amount)} = ${USDFormatter.format(position.totalCostUsd.amount)} ÷ ${position.quantity.value}`}
+              expression={`${USDFormatter.formatWithPrecision(position.averagePriceUsd.amount)} = ${USDFormatter.formatWithPrecision(position.totalCostUsd.amount)} ÷ ${position.quantity.value}`}
             />
             <FormulaBlock
               label="Preço Médio BRL = Custo Acumulado BRL ÷ Quantidade"
-              expression={`${BRLFormatter.formatWithPrecision(position.averagePriceBrl.amount)} = ${BRLFormatter.format(position.totalCostBrl.amount)} ÷ ${position.quantity.value}`}
+              expression={`${BRLFormatter.formatWithPrecision(position.averagePriceBrl.amount)} = ${BRLFormatter.formatWithPrecision(position.totalCostBrl.amount)} ÷ ${position.quantity.value}`}
             />
           </>
         )}
         <FormulaBlock
           label="Variação Custo BRL = Custo Acumulado BRL (depois) − Custo Acumulado BRL (antes)"
-          expression={`${BRLFormatter.format(costBrlDelta)} = ${BRLFormatter.format(costBrlAfter)} − ${BRLFormatter.format(costBrlBefore)}`}
+          expression={`${BRLFormatter.formatWithPrecision(costBrlDelta)} = ${BRLFormatter.formatWithPrecision(costBrlAfter)} − ${BRLFormatter.formatWithPrecision(costBrlBefore)}`}
         />
         {isTrade && tradeFinancials && (
           <FormulaBlock

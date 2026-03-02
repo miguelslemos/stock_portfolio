@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { usePortfolio, useFileUpload, useDarkMode, useManualEntries, useAnalytics } from './hooks';
+import { usePortfolio, useFileUpload, useDarkMode, useManualEntries, useAnalytics, useInitialBalance } from './hooks';
 import {
   Header,
   Footer,
@@ -14,12 +14,14 @@ import {
   StepIndicator,
   ErrorBoundary,
   ErrorModal,
+  InitialBalanceForm,
 } from './components';
 
 export function App() {
   const portfolio = usePortfolio();
   const fileUpload = useFileUpload();
   const manualEntries = useManualEntries();
+  const initialBalance = useInitialBalance();
   const { isDark, toggle: toggleTheme } = useDarkMode();
   const analytics = useAnalytics();
   const [activeMethods, setActiveMethods] = useState<Set<InputMethod>>(new Set(['pdf']));
@@ -41,24 +43,30 @@ export function App() {
     analytics.trackEvent('input_method_toggled', { method });
   }, [analytics]);
 
-  const hasData =
+  const hasOperations =
     (activeMethods.has('manual') && manualEntries.hasEntries) ||
     (activeMethods.has('json') && fileUpload.files.jsonFile !== null) ||
     (activeMethods.has('pdf') && (fileUpload.files.tradePDFs.length > 0 || fileUpload.files.releasePDFs.length > 0));
 
+  const hasData = hasOperations && (!initialBalance.state.enabled || initialBalance.isValid);
+
   const handleProcess = useCallback(
     (exportData = false) => {
       const methods = Array.from(activeMethods).join(',');
-      analytics.trackEvent(exportData ? 'portfolio_exported_csv' : 'portfolio_processed', { methods });
+      analytics.trackEvent(exportData ? 'portfolio_exported_csv' : 'portfolio_processed', {
+        methods,
+        has_initial_balance: initialBalance.state.enabled,
+      });
       void portfolio.processPortfolio({
         tradePDFs: activeMethods.has('pdf') ? fileUpload.files.tradePDFs : [],
         releasePDFs: activeMethods.has('pdf') ? fileUpload.files.releasePDFs : [],
         jsonFile: activeMethods.has('json') ? fileUpload.files.jsonFile : null,
         manualEntriesJSON: activeMethods.has('manual') && manualEntries.hasEntries ? manualEntries.toJSON() : null,
+        initialPosition: initialBalance.toPortfolioPosition() ?? undefined,
         exportData,
       });
     },
-    [portfolio, activeMethods, fileUpload.files, manualEntries, analytics]
+    [portfolio, activeMethods, fileUpload.files, manualEntries, initialBalance, analytics]
   );
 
   const handleDemo = useCallback(() => {
@@ -92,8 +100,9 @@ export function App() {
     portfolio.reset();
     fileUpload.clearAll();
     manualEntries.clearEntries();
+    initialBalance.reset();
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [portfolio, fileUpload, manualEntries, analytics]);
+  }, [portfolio, fileUpload, manualEntries, initialBalance, analytics]);
 
   const isIdle = portfolio.state.status === 'idle';
   const isLoading = portfolio.state.status === 'loading';
@@ -120,7 +129,8 @@ export function App() {
                   Carregar Operações
                 </h2>
                 <p className="mt-1 text-sm text-surface-500 dark:text-surface-400">
-                  Selecione uma ou mais fontes de dados. Elas serão combinadas automaticamente.
+                  Para os cálculos insira <strong className="text-surface-700 dark:text-surface-300">todo o histórico</strong> de operações (vestings e trades) desde o início.
+                  Se preferir, informe o <strong className="text-surface-700 dark:text-surface-300">saldo inicial</strong> de um ano anterior e insira apenas as operações a partir desse ponto.
                 </p>
               </div>
 
@@ -136,6 +146,9 @@ export function App() {
                 Carregar com dados de demonstração
               </button>
             </div>
+
+            {/* Initial balance (optional) */}
+            <InitialBalanceForm balance={initialBalance} />
 
             {/* Method selector (multi-select) */}
             <InputMethodSelector selected={activeMethods} onToggle={toggleMethod} />
@@ -205,6 +218,7 @@ export function App() {
             <ResultsSection
               response={portfolio.state.response}
               snapshots={portfolio.state.snapshots}
+              initialPosition={initialBalance.toPortfolioPosition() ?? undefined}
               onReset={handleReset}
             />
           </ErrorBoundary>

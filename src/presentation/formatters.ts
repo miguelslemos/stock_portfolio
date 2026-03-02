@@ -13,10 +13,9 @@ export class BRLFormatter {
     maximumFractionDigits: 4,
   });
 
-  static format(value: number, decimals: number = 2): string {
+  static format(value: number, decimals: 2 | 4 = 2): string {
     const formatter = decimals === 4 ? this.formatter4 : this.formatter2;
     if (value < 0) {
-      // Intl produces "-R$ 100,00" but we want "R$ -100,00"
       const positive = formatter.format(Math.abs(value));
       return positive.replace(/^(R\$)\s*/, '$1 -');
     }
@@ -24,9 +23,7 @@ export class BRLFormatter {
   }
 
   static formatWithPrecision(value: number): string {
-    // Use 4 decimals if value has significant fractional part
-    const needsHighPrecision = Math.abs(value - Math.floor(value)) > 0.01;
-    return this.format(value, needsHighPrecision ? 4 : 2);
+    return this.format(value, 4);
   }
 }
 
@@ -45,15 +42,13 @@ export class USDFormatter {
     maximumFractionDigits: 4,
   });
 
-  static format(value: number, decimals: number = 2): string {
+  static format(value: number, decimals: 2 | 4 = 2): string {
     const formatter = decimals === 4 ? this.formatter4 : this.formatter2;
     return formatter.format(value);
   }
 
   static formatWithPrecision(value: number): string {
-    // Use 4 decimals if value has significant fractional part
-    const needsHighPrecision = Math.abs(value - Math.floor(value)) > 0.01;
-    return this.format(value, needsHighPrecision ? 4 : 2);
+    return this.format(value, 4);
   }
 }
 

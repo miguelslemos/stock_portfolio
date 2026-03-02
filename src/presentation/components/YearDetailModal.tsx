@@ -213,7 +213,7 @@ function HeroSection({
       </div>
       <div className="rounded-xl border border-surface-200 bg-surface-0 p-4 dark:border-surface-700 dark:bg-surface-800">
         <div className="text-xs text-surface-500 dark:text-surface-400">Custo Acumulado no Ano (BRL)</div>
-        <div className="text-2xl font-bold text-surface-900 dark:text-surface-100">{BRLFormatter.format(totalCostBrl)}</div>
+        <div className="text-2xl font-bold text-surface-900 dark:text-surface-100">{BRLFormatter.formatWithPrecision(totalCostBrl)}</div>
         <div className="text-xs text-surface-400">Valor para IRPF</div>
       </div>
       <div className="rounded-xl border border-surface-200 bg-surface-0 p-4 dark:border-surface-700 dark:bg-surface-800">
@@ -486,7 +486,7 @@ function TaxSummary({
       <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-xl border-2 border-brand-300 bg-brand-50/60 p-4 dark:border-brand-600 dark:bg-brand-950/30">
           <div className="text-xs font-medium text-brand-600 dark:text-brand-400">{situationLabel}</div>
-          <div className="text-xl font-bold text-surface-900 dark:text-surface-100">{BRLFormatter.format(totalCostBrl)}</div>
+          <div className="text-xl font-bold text-surface-900 dark:text-surface-100">{BRLFormatter.formatWithPrecision(totalCostBrl)}</div>
           <div className="text-xs text-brand-500 dark:text-brand-400">{situationDetail}</div>
         </div>
         <div className="rounded-xl border border-surface-200 bg-surface-0 p-4 dark:border-surface-700 dark:bg-surface-800">
@@ -519,11 +519,11 @@ function TaxSummary({
           <IrpfField label="Localização (País)" value="137 - Cayman, Ilhas" />
           <IrpfField
             label="Discriminação"
-            value={`NU - ${finalQty} Ações da empresa Nu Holdings Ltd. negociadas na Bolsa dos Estados Unidos através do código: NU, adquiridas pela corretora ETrade. Valor de custo em ${USDFormatter.format(totalCostUsd)} ou ${BRLFormatter.format(totalCostBrl)} com preço médio de ${USDFormatter.formatWithPrecision(avgPriceUsd)} ou ${BRLFormatter.formatWithPrecision(avgPriceBrl)} por ação.`}
+            value={`NU - ${finalQty} Ações da empresa Nu Holdings Ltd. negociadas na Bolsa dos Estados Unidos através do código: NU, adquiridas pela corretora ETrade. Valor de custo em ${USDFormatter.formatWithPrecision(totalCostUsd)} ou ${BRLFormatter.formatWithPrecision(totalCostBrl)} com preço médio de ${USDFormatter.formatWithPrecision(avgPriceUsd)} ou ${BRLFormatter.formatWithPrecision(avgPriceBrl)} por ação.`}
           />
           <IrpfField label="Negociado em bolsa" value="Sim" />
           <IrpfField label="Código da Negociação" value="NU" />
-          <IrpfField label={`Situação em 31/12/${year}`} value={BRLFormatter.format(totalCostBrl)} />
+          <IrpfField label={`Situação em 31/12/${year}`} value={BRLFormatter.formatWithPrecision(totalCostBrl)} />
           <IrpfField label="Lucro ou Prejuízo" value={BRLFormatter.format(totalProfitLoss)} />
         </div>
 

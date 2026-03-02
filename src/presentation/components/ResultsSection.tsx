@@ -1,5 +1,5 @@
 import { type ProcessPortfolioResponse } from '@/application/usecases';
-import { type PortfolioSnapshot } from '@/domain/entities';
+import { type PortfolioSnapshot, type PortfolioPosition } from '@/domain/entities';
 import { BRLFormatter, USDFormatter, DateFormatter } from '@/presentation/formatters';
 import { useAnalytics } from '@/presentation/hooks';
 import { useState, useMemo, useCallback, useEffect } from 'react';
@@ -9,10 +9,11 @@ import { YearDetailModal } from './YearDetailModal';
 interface ResultsSectionProps {
   response: ProcessPortfolioResponse;
   snapshots: PortfolioSnapshot[];
+  initialPosition?: PortfolioPosition;
   onReset: () => void;
 }
 
-export function ResultsSection({ response, snapshots, onReset }: ResultsSectionProps) {
+export function ResultsSection({ response, snapshots, initialPosition, onReset }: ResultsSectionProps) {
   const { finalPosition, totalOperations } = response;
   const analytics = useAnalytics();
 
@@ -68,7 +69,7 @@ export function ResultsSection({ response, snapshots, onReset }: ResultsSectionP
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard label="Total de Operações" value={String(totalOperations)} />
           <StatCard label="Posição Atual" value={`${finalPosition.quantity.value} ações`} />
-          <StatCard label="Preço Médio (USD)" value={USDFormatter.format(finalPosition.averagePriceUsd.amount)} />
+          <StatCard label="Preço Médio (USD)" value={USDFormatter.formatWithPrecision(finalPosition.averagePriceUsd.amount)} />
           <StatCard
             label="Retorno Total (BRL)"
             value={BRLFormatter.format(totalReturnAllYears)}
@@ -89,7 +90,7 @@ export function ResultsSection({ response, snapshots, onReset }: ResultsSectionP
               <tr className="border-b border-surface-200 bg-surface-50 text-left text-xs font-semibold uppercase tracking-wider text-surface-500 dark:border-surface-700 dark:bg-surface-800 dark:text-surface-400">
                 <th className="px-4 py-3">Ano</th>
                 <th className="px-4 py-3">Qtd.</th>
-                <th className="px-4 py-3">Custo Acumulado (USD)</th>
+                <th className="px-4 py-3">Acumulado no Ano (USD)</th>
                 <th className="px-4 py-3">Preço Médio (USD)</th>
                 <th className="px-4 py-3">Acumulado no Ano (BRL)</th>
                 <th className="px-4 py-3">Preço Médio (BRL)</th>
@@ -97,6 +98,20 @@ export function ResultsSection({ response, snapshots, onReset }: ResultsSectionP
               </tr>
             </thead>
             <tbody className="divide-y divide-surface-100 dark:divide-surface-800">
+              {initialPosition && (
+                <tr className="bg-blue-50/30 text-surface-500 italic dark:bg-blue-950/10 dark:text-surface-400">
+                  <td className="px-4 py-3 font-semibold not-italic text-surface-700 dark:text-surface-300">
+                    {initialPosition.lastUpdated.getFullYear()}
+                    <span className="ml-1 text-xs font-medium text-blue-600 dark:text-blue-400">†</span>
+                  </td>
+                  <td className="px-4 py-3">{initialPosition.quantity.value}</td>
+                  <td className="px-4 py-3">{USDFormatter.formatWithPrecision(initialPosition.totalCostUsd.amount)}</td>
+                  <td className="px-4 py-3">{USDFormatter.formatWithPrecision(initialPosition.averagePriceUsd.amount)}</td>
+                  <td className="px-4 py-3">{BRLFormatter.formatWithPrecision(initialPosition.totalCostBrl.amount)}</td>
+                  <td className="px-4 py-3">{BRLFormatter.formatWithPrecision(initialPosition.averagePriceBrl.amount)}</td>
+                  <td className="px-4 py-3 text-surface-400">—</td>
+                </tr>
+              )}
               {sortedYears.map((year) => {
                 const snapshot = yearlySnapshots.get(year)!;
                 const pos = snapshot.position;
@@ -122,9 +137,9 @@ export function ResultsSection({ response, snapshots, onReset }: ResultsSectionP
                       )}
                     </td>
                     <td className="px-4 py-3">{pos.quantity.value}</td>
-                    <td className="px-4 py-3">{USDFormatter.format(pos.totalCostUsd.amount)}</td>
+                    <td className="px-4 py-3">{USDFormatter.formatWithPrecision(pos.totalCostUsd.amount)}</td>
                     <td className="px-4 py-3">{USDFormatter.formatWithPrecision(pos.averagePriceUsd.amount)}</td>
-                    <td className="px-4 py-3">{BRLFormatter.format(pos.totalCostBrl.amount)}</td>
+                    <td className="px-4 py-3">{BRLFormatter.formatWithPrecision(pos.totalCostBrl.amount)}</td>
                     <td className="px-4 py-3">{BRLFormatter.formatWithPrecision(pos.averagePriceBrl.amount)}</td>
                     <td className={`px-4 py-3 font-medium ${pos.grossProfitBrl.amount >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
                       {BRLFormatter.format(pos.grossProfitBrl.amount)}
@@ -135,9 +150,14 @@ export function ResultsSection({ response, snapshots, onReset }: ResultsSectionP
             </tbody>
           </table>
         </div>
-        {sortedYears.includes(new Date().getFullYear()) && (
-          <p className="mt-1.5 text-sm text-amber-600 dark:text-amber-400">* Ano em andamento — valores parciais</p>
-        )}
+        <div className="mt-1.5 space-y-0.5">
+          {initialPosition && (
+            <p className="text-sm text-blue-600 dark:text-blue-400">† Saldo inicial informado pelo usuário</p>
+          )}
+          {sortedYears.includes(new Date().getFullYear()) && (
+            <p className="text-sm text-amber-600 dark:text-amber-400">* Ano em andamento — valores parciais</p>
+          )}
+        </div>
       </div>
 
       {/* Operations table */}
