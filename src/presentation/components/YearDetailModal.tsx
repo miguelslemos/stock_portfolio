@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { type PortfolioSnapshot } from '@/domain/entities';
+import { type YearSummary } from '@/application/services';
 import { BRLFormatter, USDFormatter, DateFormatter } from '@/presentation/formatters';
 import { useAnalytics } from '@/presentation/hooks';
 import { Modal, ModalHeader, ModalBody } from './Modal';
@@ -7,107 +8,53 @@ import { Modal, ModalHeader, ModalBody } from './Modal';
 interface YearDetailModalProps {
   year: number;
   yearSnapshots: PortfolioSnapshot[];
+  summary: YearSummary;
   onClose: () => void;
 }
 
-export function YearDetailModal({ year, yearSnapshots, onClose }: YearDetailModalProps) {
-  const firstSnapshot = yearSnapshots[0];
-  const lastSnapshot = yearSnapshots[yearSnapshots.length - 1];
-
-  if (!firstSnapshot || !lastSnapshot) return null;
-
-  const finalPosition = lastSnapshot.position;
-  const initialPosition = firstSnapshot.previousPosition;
-
-  const vestings = yearSnapshots.filter((s) => s.metadata.isVesting);
-  const trades = yearSnapshots.filter((s) => s.metadata.isTrade);
-
-  const totalVested = vestings.reduce((sum, s) => sum + s.metadata.quantity.value, 0);
-  const totalSold = trades.reduce((sum, s) => sum + s.metadata.quantity.value, 0);
-
-  const totalProfitLoss = trades.reduce(
-    (sum, s) => sum + (s.metadata.tradeFinancials?.profitLossBrl.amount ?? 0),
-    0
-  );
-
-  const totalSaleRevenue = trades.reduce(
-    (sum, t) => sum + (t.metadata.tradeFinancials?.saleRevenueBrl.amount ?? 0),
-    0
-  );
-  const totalCostBasis = trades.reduce(
-    (sum, t) => sum + (t.metadata.tradeFinancials?.costBasisBrl.amount ?? 0),
-    0
-  );
-
-  const avgPtaxAsk =
-    yearSnapshots.reduce((sum, s) => sum + s.metadata.exchangeRates.ptaxAsk, 0) /
-    yearSnapshots.length;
-
-  const initialQty = initialPosition?.quantity.value ?? 0;
-  const finalQty = finalPosition.quantity.value;
-  const netChange = finalQty - initialQty;
-
-  const currentYear = new Date().getFullYear();
-  const isCurrentYear = year === currentYear;
-  const isFutureYear = year > currentYear;
-  const yearInProgress = isCurrentYear || isFutureYear;
-
+export function YearDetailModal({ year, yearSnapshots, summary, onClose }: YearDetailModalProps) {
   return (
     <Modal onClose={onClose} large>
       <ModalHeader title={`Detalhes do Ano ${year}`} onClose={onClose} />
       <ModalBody>
         <div className="space-y-6">
           {/* Year-in-progress banner */}
-          {yearInProgress && <YearInProgressBanner isCurrentYear={isCurrentYear} />}
+          {summary.yearInProgress && <YearInProgressBanner isCurrentYear={summary.isCurrentYear} />}
 
           {/* Hero: key numbers at a glance */}
           <HeroSection
-            finalQty={finalQty}
-            totalCostBrl={finalPosition.totalCostBrl.amount}
-            totalProfitLoss={totalProfitLoss}
-            yearInProgress={yearInProgress}
-            isCurrentYear={isCurrentYear}
+            finalQty={summary.finalQty}
+            totalCostBrl={summary.totalCostBrl}
+            totalProfitLoss={summary.totalProfitLoss}
+            yearInProgress={summary.yearInProgress}
+            isCurrentYear={summary.isCurrentYear}
             year={year}
           />
 
           {/* Activity breakdown */}
-          <ActivitySection
-            snapshots={yearSnapshots}
-            vestings={vestings}
-            trades={trades}
-            totalVested={totalVested}
-            totalSold={totalSold}
-            initialQty={initialQty}
-            finalQty={finalQty}
-            netChange={netChange}
-          />
+          <ActivitySection summary={summary} />
 
           {/* Financial summary (only if trades exist) */}
-          {trades.length > 0 && (
+          {summary.tradeCount > 0 && (
             <FinancialSection
-              totalSaleRevenue={totalSaleRevenue}
-              totalCostBasis={totalCostBasis}
-              totalProfitLoss={totalProfitLoss}
+              totalSaleRevenue={summary.totalSaleRevenue}
+              totalCostBasis={summary.totalCostBasis}
+              totalProfitLoss={summary.totalProfitLoss}
             />
           )}
 
           {/* Position & pricing */}
           <PositionSection
-            finalPosition={finalPosition}
-            avgPtaxAsk={avgPtaxAsk}
+            finalAvgPriceUsd={summary.finalAvgPriceUsd}
+            finalAvgPriceBrl={summary.finalAvgPriceBrl}
+            avgPtaxAsk={summary.avgPtaxAsk}
           />
 
           {/* Operations table */}
           <OperationsTable snapshots={yearSnapshots} />
 
           {/* Tax summary */}
-          <TaxSummary
-            year={year}
-            yearSnapshots={yearSnapshots}
-            totalProfitLoss={totalProfitLoss}
-            yearInProgress={yearInProgress}
-            isCurrentYear={isCurrentYear}
-          />
+          <TaxSummary summary={summary} year={year} />
         </div>
       </ModalBody>
     </Modal>
@@ -231,51 +178,33 @@ function HeroSection({
    Activity Section — operations overview
    ================================================================ */
 
-function ActivitySection({
-  snapshots,
-  vestings,
-  trades,
-  totalVested,
-  totalSold,
-  initialQty,
-  finalQty,
-  netChange,
-}: {
-  snapshots: PortfolioSnapshot[];
-  vestings: PortfolioSnapshot[];
-  trades: PortfolioSnapshot[];
-  totalVested: number;
-  totalSold: number;
-  initialQty: number;
-  finalQty: number;
-  netChange: number;
-}) {
+function ActivitySection({ summary }: { summary: YearSummary }) {
   return (
     <div>
       <SectionLabel>Atividade do Ano</SectionLabel>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           label="Total de Operações"
-          value={String(snapshots.length)}
-          detail={`${vestings.length} vestings · ${trades.length} vendas`}
+          value={String(summary.totalOperations)}
+          detail={`${summary.vestingCount} vestings · ${summary.tradeCount} vendas`}
         />
         <StatCard
           label="Ações Recebidas (Vesting)"
-          value={`+${totalVested}`}
-          detail={`${vestings.length} operações`}
+          value={`+${summary.totalVested}`}
+          detail={`${summary.vestingCount} operações`}
           variant="positive"
         />
         <StatCard
           label="Ações Vendidas"
-          value={totalSold > 0 ? `-${totalSold}` : '0'}
-          detail={`${trades.length} operações`}
-          variant={totalSold > 0 ? 'negative' : 'neutral'}
+          value={summary.totalSold > 0 ? `-${summary.totalSold}` : '0'}
+          detail={`${summary.tradeCount} operações`}
+          variant={summary.totalSold > 0 ? 'negative' : 'neutral'}
         />
         <StatCard
           label="Variação Líquida"
-          value={`${netChange >= 0 ? '+' : ''}${netChange}`}
-          detail={`${initialQty} → ${finalQty} ações`}
-          variant={netChange >= 0 ? 'positive' : 'negative'}
+          value={`${summary.netChange >= 0 ? '+' : ''}${summary.netChange}`}
+          detail={`${summary.initialQty} → ${summary.finalQty} ações`}
+          variant={summary.netChange >= 0 ? 'positive' : 'negative'}
         />
       </div>
     </div>
@@ -333,10 +262,12 @@ function FinancialSection({
    ================================================================ */
 
 function PositionSection({
-  finalPosition,
+  finalAvgPriceUsd,
+  finalAvgPriceBrl,
   avgPtaxAsk,
 }: {
-  finalPosition: PortfolioSnapshot['position'];
+  finalAvgPriceUsd: number;
+  finalAvgPriceBrl: number;
   avgPtaxAsk: number;
 }) {
   return (
@@ -345,12 +276,12 @@ function PositionSection({
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           label="Preço Médio Final (USD)"
-          value={USDFormatter.formatWithPrecision(finalPosition.averagePriceUsd.amount)}
+          value={USDFormatter.formatWithPrecision(finalAvgPriceUsd)}
           detail="Por ação"
         />
         <StatCard
           label="Preço Médio Final (BRL)"
-          value={BRLFormatter.formatWithPrecision(finalPosition.averagePriceBrl.amount)}
+          value={BRLFormatter.formatWithPrecision(finalAvgPriceBrl)}
           detail="Por ação"
         />
         <StatCard
@@ -450,61 +381,41 @@ function OperationsTable({ snapshots }: { snapshots: PortfolioSnapshot[] }) {
    Tax Summary — IRPF
    ================================================================ */
 
-function TaxSummary({
-  year,
-  yearSnapshots,
-  totalProfitLoss,
-  yearInProgress,
-  isCurrentYear,
-}: {
-  year: number;
-  yearSnapshots: PortfolioSnapshot[];
-  totalProfitLoss: number;
-  yearInProgress: boolean;
-  isCurrentYear: boolean;
-}) {
-  const lastSnapshot = yearSnapshots[yearSnapshots.length - 1];
-  const finalPosition = lastSnapshot?.position;
-  const totalCostBrl = finalPosition?.totalCostBrl.amount ?? 0;
-  const totalCostUsd = finalPosition?.totalCostUsd.amount ?? 0;
-  const finalQty = finalPosition?.quantity.value ?? 0;
-  const avgPriceBrl = finalPosition ? finalPosition.averagePriceBrl.amount : 0;
-  const avgPriceUsd = finalPosition ? finalPosition.averagePriceUsd.amount : 0;
-
-  const situationLabel = yearInProgress
-    ? `Situação Atual ${isCurrentYear ? '*' : '**'}`
+function TaxSummary({ summary, year }: { summary: YearSummary; year: number }) {
+  const situationLabel = summary.yearInProgress
+    ? `Situação Atual ${summary.isCurrentYear ? '*' : '**'}`
     : `Situação 31/12/${year}`;
-  const situationDetail = yearInProgress
-    ? isCurrentYear ? '* Ano em andamento' : '** Ano futuro'
+  const situationDetail = summary.yearInProgress
+    ? summary.isCurrentYear ? '* Ano em andamento' : '** Ano futuro'
     : 'Valor para declarar';
 
   return (
     <div>
-      <SectionLabel>Resumo para Imposto de Renda {year+1}</SectionLabel>
+      <SectionLabel>Resumo para Imposto de Renda {year + 1}</SectionLabel>
 
       {/* Key IRPF metrics */}
       <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-xl border-2 border-brand-300 bg-brand-50/60 p-4 dark:border-brand-600 dark:bg-brand-950/30">
           <div className="text-xs font-medium text-brand-600 dark:text-brand-400">{situationLabel}</div>
-          <div className="text-xl font-bold text-surface-900 dark:text-surface-100">{BRLFormatter.formatWithPrecision(totalCostBrl)}</div>
+          <div className="text-xl font-bold text-surface-900 dark:text-surface-100">{BRLFormatter.format(summary.totalCostBrl)}</div>
           <div className="text-xs text-brand-500 dark:text-brand-400">{situationDetail}</div>
         </div>
         <div className="rounded-xl border border-surface-200 bg-surface-0 p-4 dark:border-surface-700 dark:bg-surface-800">
           <div className="text-xs text-surface-500 dark:text-surface-400">Ganho/Perda Total (BRL)</div>
-          <div className={`text-xl font-bold ${totalProfitLoss >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
-            {BRLFormatter.format(totalProfitLoss)}
+          <div className={`text-xl font-bold ${summary.totalProfitLoss >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+            {BRLFormatter.format(summary.totalProfitLoss)}
           </div>
           <div className="text-xs text-surface-400">Resultado das vendas</div>
         </div>
         <div className="rounded-xl border border-surface-200 bg-surface-0 p-4 dark:border-surface-700 dark:bg-surface-800">
           <div className="text-xs text-surface-500 dark:text-surface-400">Ações em Carteira</div>
-          <div className="text-2xl font-bold text-surface-900 dark:text-surface-100">{finalQty}</div>
+          <div className="text-2xl font-bold text-surface-900 dark:text-surface-100">{summary.finalQty}</div>
           <div className="text-xs text-surface-400">Fim do período</div>
         </div>
         <div className="rounded-xl border border-surface-200 bg-surface-0 p-4 dark:border-surface-700 dark:bg-surface-800">
           <div className="text-xs text-surface-500 dark:text-surface-400">Preço Médio (BRL)</div>
           <div className="text-xl font-bold text-surface-900 dark:text-surface-100">
-            {BRLFormatter.formatWithPrecision(avgPriceBrl)}
+            {BRLFormatter.formatWithPrecision(summary.finalAvgPriceBrl)}
           </div>
           <div className="text-xs text-surface-400">Por ação</div>
         </div>
@@ -515,16 +426,13 @@ function TaxSummary({
         <h4 className="mb-4 font-semibold text-surface-900 dark:text-surface-100">Como Declarar no IRPF</h4>
 
         <div className="space-y-3 text-surface-700 dark:text-surface-300">
-          <IrpfField label="Bens e Direitos" value="Grupo 03 - Participações em sociedades, Código 01 - Ações (inclusive as listadas em bolsa)" />
-          <IrpfField label="Localização (País)" value="137 - Cayman, Ilhas" />
-          <IrpfField
-            label="Discriminação"
-            value={`NU - ${finalQty} Ações da empresa Nu Holdings Ltd. negociadas na Bolsa dos Estados Unidos através do código: NU, adquiridas pela corretora ETrade. Valor de custo em ${USDFormatter.formatWithPrecision(totalCostUsd)} ou ${BRLFormatter.formatWithPrecision(totalCostBrl)} com preço médio de ${USDFormatter.formatWithPrecision(avgPriceUsd)} ou ${BRLFormatter.formatWithPrecision(avgPriceBrl)} por ação.`}
-          />
-          <IrpfField label="Negociado em bolsa" value="Sim" />
-          <IrpfField label="Código da Negociação" value="NU" />
-          <IrpfField label={`Situação em 31/12/${year}`} value={BRLFormatter.formatWithPrecision(totalCostBrl)} />
-          <IrpfField label="Lucro ou Prejuízo" value={BRLFormatter.format(totalProfitLoss)} />
+          <IrpfField label="Bens e Direitos" value={summary.irpfBensEDireitos} />
+          <IrpfField label="Localização (País)" value={summary.irpfLocalizacao} />
+          <IrpfField label="Discriminação" value={summary.irpfDiscriminacao} />
+          <IrpfField label="Negociado em bolsa" value={summary.irpfNegociadoEmBolsa} />
+          <IrpfField label="Código da Negociação" value={summary.irpfCodigoNegociacao} />
+          <IrpfField label={`Situação em 31/12/${year}`} value={summary.irpfSituacao3112} />
+          <IrpfField label="Lucro ou Prejuízo" value={summary.irpfLucroOuPrejuizo} />
         </div>
 
         <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50/60 px-4 py-2.5 text-xs text-amber-700 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300">
