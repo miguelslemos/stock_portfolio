@@ -70,14 +70,14 @@ export class CSVExportService implements IDataExportService {
       'Lucro ou Prejuízo',
     ];
 
-    const rows = Array.from(yearlySnapshots.entries())
+    const rows: string[][] = Array.from(yearlySnapshots.entries())
       .sort(([a], [b]) => a - b)
-      .map(([year, lastSnapshot]) => {
+      .map(([year, lastSnapshot]): string[] => {
         const yearSnapshotsList = snapshotsByYear.get(year) ?? [lastSnapshot];
         const summary = computeYearSummary(year, yearSnapshotsList);
 
         const position = lastSnapshot.position;
-        const baseRow = [
+        const baseRow: string[] = [
           year.toString(),
           position.quantity.value.toString(),
           position.totalCostUsd.amount.toFixed(4),
@@ -88,7 +88,7 @@ export class CSVExportService implements IDataExportService {
         ];
 
         if (!summary) {
-          const emptyCells = new Array(headers.length - baseRow.length).fill('');
+          const emptyCells: string[] = new Array<string>(headers.length - baseRow.length).fill('');
           return [...baseRow, ...emptyCells];
         }
 
