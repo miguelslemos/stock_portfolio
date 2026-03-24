@@ -17,7 +17,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['pdfjs-dist'],
+          vendor: ['pdfjs-dist/legacy/build/pdf.mjs'],
           react: ['react', 'react-dom'],
         },
       },
