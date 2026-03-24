@@ -2,7 +2,7 @@ import { Money, StockQuantity } from '../../domain/entities';
 import { PortfolioOperation, VestingOperation, TradeOperation } from '../../domain/operations';
 import { IOperationRepository } from '../../application/interfaces';
 import { DateParser } from '../utils/DateParser';
-import * as pdfjsLib from 'pdfjs-dist';
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
 
 // Define minimal interface for PDF text items
 interface TextItem {
@@ -10,7 +10,7 @@ interface TextItem {
 }
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.mjs',
+  'pdfjs-dist/legacy/build/pdf.worker.min.mjs',
   import.meta.url
 ).toString();
 
