@@ -15,11 +15,21 @@ permissions:
   pull-requests: write
 
 jobs:
-  ci:
+  test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - branch: main
+            artifact: main
+          - branch: ${{ github.head_ref }}
+            artifact: pull-request
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+        with:
+          ref: ${{ matrix.branch }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
 
       - name: Setup Node
         uses: actions/setup-node@v6
@@ -39,20 +49,29 @@ jobs:
       - name: Tests
         run: npm test -- --run --coverage
 
-      - name: Coverage report comment
-        if: github.event_name == 'pull_request'
-        uses: davelosert/vitest-coverage-report-action@v2
+      - name: Upload Coverage
+        uses: actions/upload-artifact@v5
         with:
-          json-summary-path: coverage/coverage-summary.json
-          json-final-path: coverage/coverage-final.json
-
-      - name: Upload coverage report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: coverage/
-          retention-days: 14
+          name: coverage-${{ matrix.artifact }}
+          path: coverage
 
       - name: Build
         run: npm run build
+  report-coverage:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: "Download Coverage Artifacts"
+        uses: actions/download-artifact@v6
+        with:
+          name: coverage-pull-request
+          path: coverage
+      - uses: actions/download-artifact@v6
+        with:
+          name: coverage-main
+          path: coverage-main
+      - name: "Report Coverage"
+        uses: davelosert/vitest-coverage-report-action@v2
+        with:
+          json-summary-compare-path: coverage-main/coverage-summary.json

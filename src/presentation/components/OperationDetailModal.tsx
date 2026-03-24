@@ -16,7 +16,7 @@ export function OperationDetailModal({ snapshot, onClose }: OperationDetailModal
   const prev = previousPosition ?? position;
 
   return (
-    <Modal onClose={onClose}>
+    <Modal onClose={onClose} large>
       <ModalHeader title="Detalhes da Operação" onClose={onClose} />
       <ModalBody>
         <div className="space-y-5">
@@ -82,8 +82,8 @@ function MetricCard({
 
   return (
     <div>
-      <div className="text-xs text-surface-400">{label}</div>
-      <div className={`font-semibold ${valueColor} ${large ? 'text-lg' : 'text-sm'}`}>
+      <div className="text-xs text-surface-500 dark:text-surface-400">{label}</div>
+      <div className={`font-bold ${valueColor} ${large ? 'text-2xl' : 'text-lg'}`}>
         {value}
       </div>
       {detail && <div className="text-xs text-surface-400">{detail}</div>}
@@ -93,9 +93,9 @@ function MetricCard({
 
 function FormulaBlock({ label, expression }: { label: string; expression: string }) {
   return (
-    <div className="rounded-lg bg-surface-50 px-4 py-2.5 text-xs dark:bg-surface-800">
-      <div className="mb-0.5 font-medium text-surface-500 dark:text-surface-400">{label}</div>
-      <div className="font-mono text-surface-600 dark:text-surface-300">{expression}</div>
+    <div className="rounded-lg bg-surface-50 px-4 py-3 dark:bg-surface-800">
+      <div className="mb-0.5 text-xs font-medium text-surface-500 dark:text-surface-400">{label}</div>
+      <div className="text-sm font-mono text-surface-600 dark:text-surface-300">{expression}</div>
     </div>
   );
 }
@@ -118,7 +118,7 @@ function OperationHero({
       {/* Left: badge + dates */}
       <div className="space-y-1">
         <span
-          className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${
+          className={`inline-block rounded-full px-3 py-1 text-sm font-semibold ${
             isVesting
               ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400'
               : 'bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400'
@@ -126,7 +126,7 @@ function OperationHero({
         >
           {isVesting ? 'Vesting' : 'Trade (Venda)'}
         </span>
-        <div className="text-xs text-surface-400">
+        <div className="text-sm text-surface-400">
           {DateFormatter.formatLong(metadata.operationDate)}
           {metadata.settlementDate.getTime() !== metadata.operationDate.getTime() && (
             <span> &middot; Liquidação {DateFormatter.format(metadata.settlementDate)}</span>
@@ -137,7 +137,7 @@ function OperationHero({
       {/* Right: quantity + price */}
       <div className="flex items-baseline gap-3">
         <span
-          className={`text-2xl font-bold ${
+          className={`text-3xl font-bold ${
             isVesting
               ? 'text-emerald-600 dark:text-emerald-400'
               : 'text-rose-600 dark:text-rose-400'
@@ -269,13 +269,13 @@ function PositionCard({
   const textVariant = dimmed ? 'muted' as const : 'neutral' as const;
 
   return (
-    <div className={`rounded-xl border p-3 sm:p-4 ${borderClass} ${bgClass}`}>
+    <div className={`rounded-xl border p-4 sm:p-5 ${borderClass} ${bgClass}`}>
       <div className={`mb-3 text-xs font-semibold uppercase tracking-widest ${
         dimmed ? 'text-surface-400' : 'text-brand-600 dark:text-brand-400'
       }`}>
         {label}
       </div>
-      <div className="space-y-2.5">
+      <div className="space-y-3">
         <MetricCard
           label="Ações"
           value={position.quantity.value}
