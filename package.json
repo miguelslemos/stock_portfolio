@@ -17,6 +17,8 @@
     "deploy:build": "NODE_ENV=production npm run build"
   },
   "dependencies": {
+    "@sentry/react": "^10.45.0",
+    "@sentry/vite-plugin": "^5.1.1",
     "pdfjs-dist": "^5.4.624",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"

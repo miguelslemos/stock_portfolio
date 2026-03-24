@@ -1,6 +1,15 @@
-import { createContext, useContext, useEffect, useMemo, createElement, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  createElement,
+  type ReactNode,
+} from 'react';
 import { type IAnalyticsService } from '@/application/interfaces';
 import { GoogleAnalyticsService } from '@/infrastructure/services/GoogleAnalyticsService';
+import { SentryService } from '@/infrastructure/services/SentryService';
+import { CompositeAnalyticsService } from '@/infrastructure/services/CompositeAnalyticsService';
 import { NoOpAnalyticsService } from '@/infrastructure/services/NoOpAnalyticsService';
 
 const AnalyticsContext = createContext<IAnalyticsService | null>(null);
@@ -9,14 +18,26 @@ interface AnalyticsProviderProps {
   children: ReactNode;
 }
 
+function createAnalyticsService(): IAnalyticsService {
+  const services: IAnalyticsService[] = [];
+
+  const gaMeasurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
+  if (gaMeasurementId) {
+    services.push(new GoogleAnalyticsService(gaMeasurementId));
+  }
+
+  const sentryDsn = import.meta.env.VITE_SENTRY_DSN;
+  if (sentryDsn) {
+    services.push(new SentryService(sentryDsn));
+  }
+
+  if (services.length === 0) return new NoOpAnalyticsService();
+  if (services.length === 1) return services[0]!;
+  return new CompositeAnalyticsService(services);
+}
+
 export function AnalyticsProvider({ children }: AnalyticsProviderProps) {
-  const service = useMemo<IAnalyticsService>(() => {
-    const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
-    if (measurementId) {
-      return new GoogleAnalyticsService(measurementId);
-    }
-    return new NoOpAnalyticsService();
-  }, []);
+  const service = useMemo<IAnalyticsService>(createAnalyticsService, []);
 
   useEffect(() => {
     service.initialize();
@@ -27,8 +48,7 @@ export function AnalyticsProvider({ children }: AnalyticsProviderProps) {
     };
 
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      const error =
-        event.reason instanceof Error ? event.reason : new Error(String(event.reason));
+      const error = event.reason instanceof Error ? event.reason : new Error(String(event.reason));
       service.trackException(error, 'unhandledrejection');
     };
 
