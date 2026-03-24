@@ -7,8 +7,8 @@ interface InitialBalanceFormProps {
   balance: UseInitialBalanceReturn;
 }
 
-const currentYear = new Date().getFullYear();
-const years = Array.from({ length: currentYear - 2017 }, (_, i) => currentYear - i);
+const lastYear = new Date().getFullYear() - 1;
+const years = Array.from({ length: lastYear - 2017 }, (_, i) => lastYear - i);
 
 export function InitialBalanceForm({ balance }: InitialBalanceFormProps) {
   const { state, accumulatedUsd, setEnabled, setField } = balance;
@@ -85,7 +85,7 @@ export function InitialBalanceForm({ balance }: InitialBalanceFormProps) {
               {/* Year */}
               <div>
                 <label htmlFor="ib-year" className="mb-1 block text-sm font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400">
-                  Ano de referência
+                  Ano
                 </label>
                 <select
                   id="ib-year"
