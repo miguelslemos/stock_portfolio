@@ -17,6 +17,7 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    name: test-${{ matrix.artifact }}
     strategy:
       matrix:
         include:
@@ -50,7 +51,7 @@ jobs:
         run: npm test -- --run --coverage
 
       - name: Upload Coverage
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: coverage-${{ matrix.artifact }}
           path: coverage
