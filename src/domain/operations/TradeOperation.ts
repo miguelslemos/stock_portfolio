@@ -24,13 +24,10 @@ import { PortfolioOperation } from './PortfolioOperation';
  * - Average prices remain constant (proportional cost method)
  */
 export class TradeOperation implements PortfolioOperation {
-  private readonly _settlementDate: Date | null;
-
   constructor(
     public readonly date: Date,
     public readonly quantity: StockQuantity,
     public readonly pricePerShareUsd: Money,
-    settlementDate: Date | null = null
   ) {
     if (pricePerShareUsd.currency !== 'USD') {
       throw new Error('Trade price must be in USD');
@@ -38,11 +35,6 @@ export class TradeOperation implements PortfolioOperation {
     if (quantity.value <= 0) {
       throw new Error('Trade quantity must be positive');
     }
-    this._settlementDate = settlementDate;
-  }
-
-  get settlementDate(): Date {
-    return this._settlementDate ?? this.date;
   }
 
   /**
@@ -149,7 +141,6 @@ export class TradeOperation implements PortfolioOperation {
     const metadata = new OperationMetadata(
       'trade',
       this.date,
-      this.settlementDate,
       this.quantity,
       this.pricePerShareUsd,
       { ptaxBid: bidRate, ptaxAsk: askRate },
@@ -161,10 +152,6 @@ export class TradeOperation implements PortfolioOperation {
 
   getDate(): Date {
     return this.date;
-  }
-
-  getSettlementDate(): Date {
-    return this.settlementDate;
   }
 
   getDescription(): string {

@@ -4,7 +4,7 @@ import { renderHook, act } from '@testing-library/react';
 import { useManualEntries } from '../useManualEntries';
 
 const VESTING = { type: 'vesting' as const, date: '01/15/2023', quantity: 100, price: 10 };
-const TRADE = { type: 'trade' as const, date: '06/10/2023', quantity: 50, price: 15, settlementDate: '06/12/2023' };
+const TRADE = { type: 'trade' as const, date: '06/10/2023', quantity: 50, price: 15 };
 
 describe('useManualEntries', () => {
   it('starts with empty entries', () => {
@@ -58,21 +58,11 @@ describe('useManualEntries', () => {
       expect(parsed[0]).toMatchObject({ type: 'vesting', quantity: 100, price: 10 });
     });
 
-    it('serializes trade with settlement_date (snake_case)', () => {
+    it('serializes trade correctly', () => {
       const { result } = renderHook(() => useManualEntries());
       act(() => result.current.addEntry(TRADE));
       const parsed = JSON.parse(result.current.toJSON()) as unknown[];
-      expect(parsed[0]).toMatchObject({
-        type: 'trade',
-        settlement_date: '06/12/2023',
-      });
-    });
-
-    it('omits settlement_date for vesting', () => {
-      const { result } = renderHook(() => useManualEntries());
-      act(() => result.current.addEntry(VESTING));
-      const parsed = JSON.parse(result.current.toJSON()) as Record<string, unknown>[];
-      expect(parsed[0]).not.toHaveProperty('settlement_date');
+      expect(parsed[0]).toMatchObject({ type: 'trade', quantity: 50, price: 15 });
     });
 
     it('returns empty array JSON for no entries', () => {

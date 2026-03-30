@@ -43,7 +43,6 @@ export const PortfolioSnapshotSerializer = {
       operation: {
         type: metadata.operationType,
         date: metadata.operationDate.toISOString(),
-        settlementDate: metadata.settlementDate.toISOString(),
         quantity: metadata.quantity.value,
         pricePerShare: metadata.pricePerShareUsd.amount,
       },

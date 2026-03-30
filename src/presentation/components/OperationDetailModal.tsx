@@ -128,9 +128,6 @@ function OperationHero({
         </span>
         <div className="text-sm text-surface-400">
           {DateFormatter.formatLong(metadata.operationDate)}
-          {metadata.settlementDate.getTime() !== metadata.operationDate.getTime() && (
-            <span> &middot; Liquidação {DateFormatter.format(metadata.settlementDate)}</span>
-          )}
         </div>
       </div>
 
@@ -179,7 +176,7 @@ function OperationCost({
         <MetricCard
           label="PTAX Venda"
           value={BRLFormatter.format(ptaxBid)}
-          detail={DateFormatter.format(metadata.settlementDate)}
+          detail={DateFormatter.format(metadata.operationDate)}
         />
         <MetricCard
           label={`Total USD (${qty} ações)`}

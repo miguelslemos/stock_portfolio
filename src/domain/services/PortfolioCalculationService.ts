@@ -63,7 +63,7 @@ export class PortfolioCalculationService {
         currentPosition = currentPosition.resetGrossProfitForNewYear();
       }
 
-      // Get exchange rate for settlement date
+      // Get exchange rate for operation date
       const exchangeRate = await this.getExchangeRateForOperation(operation);
       
       // Execute operation
@@ -78,15 +78,14 @@ export class PortfolioCalculationService {
   }
 
   /**
-   * Get exchange rate for an operation's settlement date
-   * Implements fallback logic (tries up to 7 days back)
+   * Get exchange rate for an operation's date.
+   * Implements fallback logic (tries up to 7 days back for weekends/holidays).
    */
   private async getExchangeRateForOperation(operation: PortfolioOperation): Promise<ExchangeRate> {
-    const settlementDate = operation.getSettlementDate();
+    const operationDate = operation.getDate();
 
-    // Try to get rate for settlement date, with fallback
     for (let daysBack = 0; daysBack <= 7; daysBack++) {
-      const tryDate = new Date(settlementDate);
+      const tryDate = new Date(operationDate);
       tryDate.setDate(tryDate.getDate() - daysBack);
 
       const rate = await this.exchangeRateService.getRate('USD', 'BRL', tryDate);
@@ -96,7 +95,7 @@ export class PortfolioCalculationService {
     }
 
     throw new ExchangeRateError(
-      `Cotação PTAX USD/BRL não encontrada para ${settlementDate.toLocaleDateString('pt-BR')} (buscado até 7 dias anteriores)`
+      `Cotação PTAX USD/BRL não encontrada para ${operationDate.toLocaleDateString('pt-BR')} (buscado até 7 dias anteriores)`
     );
   }
 }

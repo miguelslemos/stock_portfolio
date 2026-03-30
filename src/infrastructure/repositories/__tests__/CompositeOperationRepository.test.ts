@@ -7,7 +7,6 @@ function makeOp(dateStr: string): PortfolioOperation {
   const date = new Date(dateStr);
   return {
     getDate: () => date,
-    getSettlementDate: () => date,
     getDescription: () => `op-${dateStr}`,
     execute: vi.fn(),
   };

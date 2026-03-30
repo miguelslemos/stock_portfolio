@@ -149,7 +149,6 @@ Create a JSON file with your operations:
 - `date`: Date in `MM/DD/YYYY` format
 - `quantity`: Number of shares (integer)
 - `price`: Price per share in USD (float)
-- `settlement_date` (optional): Settlement date in `MM/DD/YYYY` format
 
 ### 2. Process Portfolio
 

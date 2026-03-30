@@ -8,7 +8,6 @@ interface JSONOperation {
   date: string;
   quantity: number;
   price: number;
-  settlement_date?: string;
 }
 
 export class JSONOperationRepository implements IOperationRepository {
@@ -28,12 +27,11 @@ export class JSONOperationRepository implements IOperationRepository {
     const quantity = new StockQuantity(Math.floor(data.quantity));
     const price = new Money(data.price, 'USD');
     const date = DateParser.parse(data.date);
-    const settlementDate = data.settlement_date ? DateParser.parse(data.settlement_date) : null;
 
     if (operationType === 'vesting') {
-      return new VestingOperation(date, quantity, price, settlementDate);
+      return new VestingOperation(date, quantity, price);
     } else if (operationType === 'trade') {
-      return new TradeOperation(date, quantity, price, settlementDate);
+      return new TradeOperation(date, quantity, price);
     } else {
       throw new Error(`Unsupported operation type: ${operationType}`);
     }
