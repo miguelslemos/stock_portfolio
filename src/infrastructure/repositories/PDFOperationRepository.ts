@@ -102,17 +102,14 @@ export class PDFOperationRepository implements IOperationRepository {
 
     if (match) {
       const dateStr = match[1]!.trim();
-      const settlementDateStr = match[2]!.trim();
       const quantityStr = match[3]!.trim().replace(/,/g, '');
       const priceStr = match[4]!.replace(/[$,]/g, '').trim();
 
-
       const date = DateParser.parse(dateStr);
-      const settlementDate = DateParser.parse(settlementDateStr);
       const quantity = new StockQuantity(Math.floor(parseFloat(quantityStr)));
       const price = new Money(parseFloat(priceStr), 'USD');
 
-      return new TradeOperation(date, quantity, price, settlementDate);
+      return new TradeOperation(date, quantity, price);
     }
 
     console.warn(`Could not extract trade operation from file: ${file.name}`);

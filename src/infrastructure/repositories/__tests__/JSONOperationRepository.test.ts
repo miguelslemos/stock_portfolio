@@ -15,7 +15,7 @@ describe('JSONOperationRepository', () => {
 
   it('should parse valid trade operations', async () => {
     const json = JSON.stringify([
-      { type: 'trade', date: '05/21/2024', settlement_date: '05/21/2024', quantity: 41, price: 11.79 },
+      { type: 'trade', date: '05/21/2024', quantity: 41, price: 11.79 },
     ]);
     const repo = new JSONOperationRepository(json);
     const ops = await repo.getAllOperations();

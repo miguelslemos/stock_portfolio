@@ -33,7 +33,6 @@ describe('Average Price BRL — accumulated cost method', () => {
     new Date('2023-02-15'),
     new StockQuantity(100),
     new Money(6.5, 'USD'),
-    new Date('2023-02-15'),
   );
   const ptax1 = new ExchangeRate('USD', 'BRL', new Date('2023-02-15'), 5.2237, 5.2237);
 
@@ -44,7 +43,6 @@ describe('Average Price BRL — accumulated cost method', () => {
     new Date('2023-06-20'),
     new StockQuantity(100),
     new Money(4.431929, 'USD'),
-    new Date('2023-06-20'),
   );
   const ptax2 = new ExchangeRate('USD', 'BRL', new Date('2023-06-20'), 4.7924, 4.7924);
 
@@ -55,7 +53,6 @@ describe('Average Price BRL — accumulated cost method', () => {
     new Date('2023-10-10'),
     new StockQuantity(122),
     new Money(9.646779, 'USD'),
-    new Date('2023-10-10'),
   );
   const ptax3 = new ExchangeRate('USD', 'BRL', new Date('2023-10-10'), 5.0856, 5.0856);
 

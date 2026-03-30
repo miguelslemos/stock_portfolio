@@ -23,7 +23,6 @@ function makeVestingMetadata(): OperationMetadata {
   return new OperationMetadata(
     'vesting',
     new Date('2023-06-01'),
-    new Date('2023-06-01'),
     new StockQuantity(100),
     new Money(10, 'USD'),
     { ptaxBid: rate.bidRate!, ptaxAsk: rate.askRate! }
@@ -35,7 +34,6 @@ function makeTradeMetadata(): OperationMetadata {
   return new OperationMetadata(
     'trade',
     new Date('2023-09-01'),
-    new Date('2023-09-03'),
     new StockQuantity(50),
     new Money(12, 'USD'),
     { ptaxBid: rate.bidRate!, ptaxAsk: rate.askRate! },

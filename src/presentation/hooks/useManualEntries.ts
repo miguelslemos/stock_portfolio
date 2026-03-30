@@ -6,7 +6,6 @@ export interface ManualEntry {
   date: string;
   quantity: number;
   price: number;
-  settlementDate?: string;
 }
 
 interface UseManualEntriesReturn {
@@ -41,7 +40,6 @@ export function useManualEntries(): UseManualEntriesReturn {
         date: e.date,
         quantity: e.quantity,
         price: e.price,
-        ...(e.type === 'trade' && e.settlementDate ? { settlement_date: e.settlementDate } : {}),
       }))
     );
   }, [entries]);

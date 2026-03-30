@@ -15,7 +15,6 @@ interface FormState {
   date: string;
   quantity: string;
   price: string;
-  settlementDate: string;
 }
 
 const emptyForm: FormState = {
@@ -23,7 +22,6 @@ const emptyForm: FormState = {
   date: '',
   quantity: '',
   price: '',
-  settlementDate: '',
 };
 
 export function ManualEntryForm({ entries, onAdd, onRemove, onClear }: ManualEntryFormProps) {
@@ -45,7 +43,6 @@ export function ManualEntryForm({ entries, onAdd, onRemove, onClear }: ManualEnt
         date: form.date,
         quantity: Math.floor(Number(form.quantity)),
         price: Number(form.price),
-        ...(form.type === 'trade' && form.settlementDate ? { settlementDate: form.settlementDate } : {}),
       });
 
       analytics.trackEvent('manual_entry_added', { type: form.type });
@@ -137,42 +134,16 @@ export function ManualEntryForm({ entries, onAdd, onRemove, onClear }: ManualEnt
             />
           </div>
 
-          {/* Settlement date (trade only) */}
+          {/* Submit */}
           <div className="flex flex-col justify-end">
-            {form.type === 'trade' ? (
-              <>
-                <label htmlFor="entry-settlement" className="mb-1 block text-sm font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400">
-                  Liquidação
-                </label>
-                <input
-                  id="entry-settlement"
-                  type="date"
-                  value={form.settlementDate}
-                  onChange={(e) => setForm((f) => ({ ...f, settlementDate: e.target.value }))}
-                  className="w-full rounded-lg border border-surface-200 bg-surface-0 px-3 py-2 text-sm text-surface-900 transition-colors focus:border-brand-400 focus:ring-1 focus:ring-brand-400 dark:border-surface-600 dark:bg-surface-700 dark:text-surface-100"
-                />
-              </>
-            ) : (
-              <button
-                type="submit"
-                className="w-full rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-700 hover:shadow-md active:scale-[0.98]"
-              >
-                + Adicionar
-              </button>
-            )}
-          </div>
-        </div>
-
-        {form.type === 'trade' && (
-          <div className="flex justify-end">
             <button
               type="submit"
-              className="rounded-lg bg-brand-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-700 hover:shadow-md active:scale-[0.98]"
+              className="w-full rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-700 hover:shadow-md active:scale-[0.98]"
             >
-              + Adicionar operação
+              + Adicionar
             </button>
           </div>
-        )}
+        </div>
 
         {error && (
           <p className="mt-3 text-sm font-medium text-rose-500">{error}</p>

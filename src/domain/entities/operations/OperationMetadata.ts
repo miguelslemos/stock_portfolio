@@ -32,7 +32,6 @@ export class OperationMetadata {
   constructor(
     public readonly operationType: OperationType,
     public readonly operationDate: Date,
-    public readonly settlementDate: Date,
     public readonly quantity: StockQuantity,
     public readonly pricePerShareUsd: Money,
     public readonly exchangeRates: ExchangeRates,

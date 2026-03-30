@@ -176,7 +176,6 @@ function getJSONSchema(): string {
             properties: {
               type: { const: 'trade' },
               date: { type: 'string', pattern: '^\\d{2}/\\d{2}/\\d{4}$', description: 'MM/DD/YYYY' },
-              settlement_date: { type: 'string', pattern: '^\\d{2}/\\d{2}/\\d{4}$', description: 'MM/DD/YYYY' },
               quantity: { type: 'integer', minimum: 1 },
               price: { type: 'number', minimum: 0 },
             },
@@ -194,9 +193,9 @@ function getJSONExample(): string {
     [
       { type: 'vesting', date: '01/15/2023', quantity: 100, price: 8.5 },
       { type: 'vesting', date: '04/15/2023', quantity: 100, price: 9.2 },
-      { type: 'trade', date: '06/10/2023', settlement_date: '06/12/2023', quantity: 50, price: 10.75 },
+      { type: 'trade', date: '06/10/2023', quantity: 50, price: 10.75 },
       { type: 'vesting', date: '07/15/2023', quantity: 100, price: 11.0 },
-      { type: 'trade', date: '12/20/2023', settlement_date: '12/22/2023', quantity: 150, price: 12.5 },
+      { type: 'trade', date: '12/20/2023', quantity: 150, price: 12.5 },
     ],
     null,
     2
