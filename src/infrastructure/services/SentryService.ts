@@ -24,6 +24,10 @@ export class SentryService implements IAnalyticsService {
           blockAllMedia: true,
         }),
       ],
+
+      tracesSampleRate: 1.0,
+      replaysSessionSampleRate: 0.1,
+      replaysOnErrorSampleRate: 1.0,
     });
 
     this.initialized = true;
