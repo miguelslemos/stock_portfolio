@@ -43,13 +43,11 @@ export class SentryService implements IAnalyticsService {
 
   trackPageView(pageName: string): void {
     if (!this.initialized) return;
-    console.log('trackPageView', pageName);
     Sentry.logger.info(Sentry.logger.fmt`Page view: ${pageName}`);
   }
 
   trackEvent(eventName: string, params?: Record<string, string | number | boolean>): void {
     if (!this.initialized) return;
-    console.log('trackEvent', eventName, params);
     Sentry.logger.info(eventName, params);
   }
 
