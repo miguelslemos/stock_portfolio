@@ -67,7 +67,8 @@ export class CSVExportService implements IDataExportService {
       'Negociado em bolsa',
       'Código da Negociação',
       'Situação em 31/12',
-      'Lucro ou Prejuízo',
+      'Aplicação Financeira - Rendimento ou Perda',
+      'Aplicação Financeira - Imposto pago no Exterior',
     ];
 
     const rows: string[][] = Array.from(yearlySnapshots.entries())
@@ -111,7 +112,8 @@ export class CSVExportService implements IDataExportService {
           summary.irpfNegociadoEmBolsa,
           summary.irpfCodigoNegociacao,
           summary.irpfSituacao3112,
-          summary.irpfLucroOuPrejuizo,
+          summary.irpfRendimentoOuPerda,
+          summary.irpfImpostoPagoNoExterior,
         ];
       });
 

@@ -31,7 +31,8 @@ export interface YearSummary {
   readonly irpfNegociadoEmBolsa: string;
   readonly irpfCodigoNegociacao: string;
   readonly irpfSituacao3112: string;
-  readonly irpfLucroOuPrejuizo: string;
+  readonly irpfRendimentoOuPerda: string;
+  readonly irpfImpostoPagoNoExterior: string;
 }
 
 function formatBrl(value: number): string {
@@ -133,7 +134,8 @@ export function computeYearSummary(
   const irpfNegociadoEmBolsa = 'Sim';
   const irpfCodigoNegociacao = 'NU';
   const irpfSituacao3112 = formatBrl(totalCostBrl);
-  const irpfLucroOuPrejuizo = formatBrl(totalProfitLoss);
+  const irpfRendimentoOuPerda = formatBrl(totalProfitLoss);
+  const irpfImpostoPagoNoExterior = formatBrl(0);
 
   return {
     year,
@@ -161,6 +163,7 @@ export function computeYearSummary(
     irpfNegociadoEmBolsa,
     irpfCodigoNegociacao,
     irpfSituacao3112,
-    irpfLucroOuPrejuizo,
+    irpfRendimentoOuPerda,
+    irpfImpostoPagoNoExterior,
   };
 }
