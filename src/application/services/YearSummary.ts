@@ -1,4 +1,5 @@
 import type { PortfolioSnapshot } from '../../domain/entities';
+import { BRLFormatter, USDFormatter } from '../../infrastructure/utils/formatters';
 
 /**
  * Summary of portfolio activity and IRPF data for a single year.
@@ -33,44 +34,6 @@ export interface YearSummary {
   readonly irpfSituacao3112: string;
   readonly irpfRendimentoOuPerda: string;
   readonly irpfImpostoPagoNoExterior: string;
-}
-
-function formatBrl(value: number): string {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value);
-}
-
-function formatBrlPrecision(value: number): string {
-  const needsPrecision = Math.abs(value - Math.floor(value)) > 0.01;
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-    minimumFractionDigits: needsPrecision ? 4 : 2,
-    maximumFractionDigits: needsPrecision ? 4 : 2,
-  }).format(value);
-}
-
-function formatUsd(value: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value);
-}
-
-function formatUsdPrecision(value: number): string {
-  const needsPrecision = Math.abs(value - Math.floor(value)) > 0.01;
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: needsPrecision ? 4 : 2,
-    maximumFractionDigits: needsPrecision ? 4 : 2,
-  }).format(value);
 }
 
 /**
@@ -130,12 +93,12 @@ export function computeYearSummary(
   const irpfBensEDireitos =
     'Grupo 03 - Participações em sociedades, Código 01 - Ações (inclusive as listadas em bolsa)';
   const irpfLocalizacao = '137 - Cayman, Ilhas';
-  const irpfDiscriminacao = `NU - ${finalQty} Ações da empresa Nu Holdings Ltd. negociadas na Bolsa dos Estados Unidos através do código: NU, adquiridas pela corretora ETrade. Valor de custo em ${formatUsd(totalCostUsd)} ou ${formatBrl(totalCostBrl)} com preço médio de ${formatUsdPrecision(finalAvgPriceUsd)} ou ${formatBrlPrecision(finalAvgPriceBrl)} por ação.`;
+  const irpfDiscriminacao = `NU - ${finalQty} Ações da empresa Nu Holdings Ltd. negociadas na Bolsa dos Estados Unidos através do código: NU, adquiridas pela corretora ETrade. Valor de custo em ${USDFormatter.format(totalCostUsd)} ou ${BRLFormatter.format(totalCostBrl)} com preço médio de ${USDFormatter.format(finalAvgPriceUsd)} ou ${BRLFormatter.format(finalAvgPriceBrl)} por ação.`;
   const irpfNegociadoEmBolsa = 'Sim';
   const irpfCodigoNegociacao = 'NU';
-  const irpfSituacao3112 = formatBrl(totalCostBrl);
-  const irpfRendimentoOuPerda = formatBrl(totalProfitLoss);
-  const irpfImpostoPagoNoExterior = formatBrl(0);
+  const irpfSituacao3112 = BRLFormatter.format(totalCostBrl).replace('R$', '');
+  const irpfRendimentoOuPerda = BRLFormatter.format(totalProfitLoss).replace('R$', '');
+  const irpfImpostoPagoNoExterior = BRLFormatter.format(0).replace('R$', '');
 
   return {
     year,

@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { type PortfolioSnapshot } from '@/domain/entities';
 import { type YearSummary } from '@/application/services';
-import { BRLFormatter, USDFormatter, DateFormatter } from '@/presentation/formatters';
+import { BRLFormatter, USDFormatter, DateFormatter } from '@/infrastructure/utils/formatters';
 import { useAnalytics } from '@/presentation/hooks';
 import { Modal, ModalHeader, ModalBody } from './Modal';
 
