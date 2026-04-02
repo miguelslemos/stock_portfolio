@@ -18,18 +18,6 @@ export class SentryService implements IAnalyticsService {
       sendDefaultPii: false,
       enableLogs: true,
 
-      integrations: [
-        Sentry.browserTracingIntegration(),
-        Sentry.replayIntegration({
-          maskAllText: true,
-          blockAllMedia: true,
-        }),
-      ],
-
-      tracesSampleRate: import.meta.env.PROD ? 0.2 : 1.0,
-      replaysSessionSampleRate: 0.1,
-      replaysOnErrorSampleRate: 1.0,
-
       beforeSendLog: (log) => {
         if (import.meta.env.PROD && (log.level === 'debug' || log.level === 'trace')) {
           return null;

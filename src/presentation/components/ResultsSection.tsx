@@ -1,7 +1,7 @@
 import { type ProcessPortfolioResponse } from '@/application/usecases';
 import { computeYearSummary } from '@/application/services';
 import { type PortfolioSnapshot, type PortfolioPosition } from '@/domain/entities';
-import { BRLFormatter, USDFormatter, DateFormatter } from '@/presentation/formatters';
+import { BRLFormatter, USDFormatter, DateFormatter } from '@/infrastructure/utils/formatters';
 import { useAnalytics } from '@/presentation/hooks';
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { OperationDetailModal } from './OperationDetailModal';

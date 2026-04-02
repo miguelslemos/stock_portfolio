@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { type PortfolioSnapshot } from '@/domain/entities';
 import { type YearSummary } from '@/application/services';
-import { BRLFormatter, USDFormatter, DateFormatter } from '@/presentation/formatters';
+import { BRLFormatter, USDFormatter, DateFormatter } from '@/infrastructure/utils/formatters';
 import { useAnalytics } from '@/presentation/hooks';
 import { Modal, ModalHeader, ModalBody } from './Modal';
 
@@ -432,7 +432,8 @@ function TaxSummary({ summary, year }: { summary: YearSummary; year: number }) {
           <IrpfField label="Negociado em bolsa" value={summary.irpfNegociadoEmBolsa} />
           <IrpfField label="Código da Negociação" value={summary.irpfCodigoNegociacao} />
           <IrpfField label={`Situação em 31/12/${year}`} value={summary.irpfSituacao3112} />
-          <IrpfField label="Lucro ou Prejuízo" value={summary.irpfLucroOuPrejuizo} />
+          <IrpfField label="Aplicação Financeira - Rendimento ou Perda" value={summary.irpfRendimentoOuPerda} />
+          <IrpfField label="Aplicação Financeira - Imposto pago no Exterior" value={summary.irpfImpostoPagoNoExterior} />
         </div>
 
         <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50/60 px-4 py-2.5 text-xs text-amber-700 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300">
