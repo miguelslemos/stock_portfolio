@@ -6,7 +6,7 @@ import globals from 'globals';
 
 export default defineConfig(
   {
-    ignores: ['**/*.config.ts', '*.config.js', 'dist/', 'node_modules/'],
+    ignores: ['**/*.config.ts', '*.config.js', 'dist/', 'node_modules/', 'coverage/'],
   },
   js.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
