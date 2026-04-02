@@ -3,7 +3,7 @@ import { PortfolioPosition, Money, StockQuantity, ProfitLoss } from '@/domain/en
 
 export interface InitialBalanceState {
   enabled: boolean;
-  year: string;
+  exerciseYear: string;
   quantity: string;
   avgPriceBrl: string;
   avgPriceUsd: string;
@@ -22,7 +22,7 @@ export interface UseInitialBalanceReturn {
 
 const INITIAL_STATE: InitialBalanceState = {
   enabled: false,
-  year: '',
+  exerciseYear: '',
   quantity: '',
   avgPriceBrl: '',
   avgPriceUsd: '',
@@ -56,7 +56,7 @@ export function useInitialBalance(): UseInitialBalanceReturn {
 
   const isValid = useMemo(() => {
     if (!state.enabled) return true;
-    const year = Number(state.year);
+    const year = Number(state.exerciseYear);
     const qty = Number(state.quantity);
     const avgBrl = Number(state.avgPriceBrl);
     const avgUsd = Number(state.avgPriceUsd);
@@ -73,7 +73,7 @@ export function useInitialBalance(): UseInitialBalanceReturn {
   const toPortfolioPosition = useCallback((): PortfolioPosition | null => {
     if (!state.enabled) return null;
 
-    const year = Number(state.year);
+    const calendarYear = Number(state.exerciseYear) - 1;
     const qty = Number(state.quantity);
     const avgUsd = Number(state.avgPriceUsd);
     const accBrl = Number(state.accumulatedBrl);
@@ -86,7 +86,7 @@ export function useInitialBalance(): UseInitialBalanceReturn {
       new Money(accBrl, 'BRL'),
       new Money(avgUsd, 'USD'),
       new ProfitLoss(0, 'BRL'),
-      new Date(year, 11, 31)
+      new Date(calendarYear, 11, 31)
     );
   }, [state, isValid]);
 

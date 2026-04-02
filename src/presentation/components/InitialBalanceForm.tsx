@@ -8,7 +8,7 @@ interface InitialBalanceFormProps {
 }
 
 const lastYear = new Date().getFullYear() - 1;
-const years = Array.from({ length: lastYear - 2017 }, (_, i) => lastYear - i);
+const exercisibleYears = Array.from({ length: lastYear - 2019 }, (_, i) => lastYear - i);
 
 export function InitialBalanceForm({ balance }: InitialBalanceFormProps) {
   const { state, accumulatedUsd, setEnabled, setField } = balance;
@@ -75,7 +75,7 @@ export function InitialBalanceForm({ balance }: InitialBalanceFormProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
               </svg>
               <p className="text-sm text-brand-700 dark:text-brand-300">
-                Informe a situação do seu portfólio em <strong>31/12/{state.year || '____'}</strong>.
+                Informe a situação do seu portfólio em <strong>31/12/{state.exerciseYear ? Number(state.exerciseYear) - 1 : '____'}</strong>.
                 As operações inseridas no sistema devem ser <strong>posteriores</strong> a essa data.
               </p>
             </div>
@@ -84,17 +84,26 @@ export function InitialBalanceForm({ balance }: InitialBalanceFormProps) {
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {/* Year */}
               <div>
-                <label htmlFor="ib-year" className="mb-1 block text-sm font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400">
-                  Ano
+                <label htmlFor="ib-year" className="mb-1 flex items-center gap-1.5 text-sm font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400">
+                  Ano-Exercício
+                  <span className="group relative cursor-help">
+                    <svg className="h-3.5 w-3.5 text-surface-400 transition-colors group-hover:text-brand-500 dark:text-surface-500 dark:group-hover:text-brand-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+                    </svg>
+                    <span className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-56 -translate-x-1/2 rounded-lg bg-surface-800 px-3 py-2 text-xs font-normal normal-case tracking-normal text-surface-100 opacity-0 shadow-lg transition-opacity group-hover:opacity-100 dark:bg-surface-700">
+                      O ano em que a declaração é feita.
+                      <span className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-surface-800 dark:border-t-surface-700" />
+                    </span>
+                  </span>
                 </label>
                 <select
                   id="ib-year"
-                  value={state.year}
-                  onChange={(e) => setField('year', e.target.value)}
+                  value={state.exerciseYear}
+                  onChange={(e) => setField('exerciseYear', e.target.value)}
                   className="w-full rounded-lg border border-surface-200 bg-surface-0 px-3 py-2 text-sm text-surface-900 transition-colors focus:border-brand-400 focus:ring-1 focus:ring-brand-400 dark:border-surface-600 dark:bg-surface-700 dark:text-surface-100"
                 >
                   <option value="">Selecione o ano</option>
-                  {years.map((y) => (
+                  {exercisibleYears.map((y) => (
                     <option key={y} value={y}>{y}</option>
                   ))}
                 </select>
