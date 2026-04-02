@@ -14,7 +14,7 @@ import {
   CompositeOperationRepository,
 } from '@/infrastructure/repositories';
 import { type IOperationRepository } from '@/application/interfaces';
-import { DateFormatter } from '../formatters';
+import { DateFormatter } from '@/infrastructure/utils/formatters';
 
 export interface PortfolioState {
   status: 'idle' | 'loading' | 'success' | 'error';
@@ -147,8 +147,9 @@ export function usePortfolio(): UsePortfolioReturn {
         const invalidCount = allOps.filter((op) => op.getDate() <= cutoffDate).length;
         if (invalidCount > 0) {
           throw new ValidationError(
-            `Existem ${invalidCount} operação(ões) com data anterior ou igual a ${DateFormatter.format(cutoffDate)}. ` +
-            `Ao usar saldo inicial, todas as operações devem ser posteriores a ${DateFormatter.format(cutoffDate)}.`
+            `Foram encontradas ${invalidCount} operação(ões) com data anterior ou igual a ${DateFormatter.format(cutoffDate)}.\n\n` +
+            `Quando um saldo inicial é informado, todas as operações carregadas devem ter data posterior a ${DateFormatter.format(cutoffDate)}.\n\n` +
+            `Por favor, remova essas operações antes de prosseguir ou ajuste o saldo inicial.`
           );
         }
         analytics.trackEvent('initial_balance_used', {
