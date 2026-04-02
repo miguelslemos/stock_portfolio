@@ -1,5 +1,5 @@
 import { type PortfolioSnapshot, type PortfolioPosition, type OperationMetadata } from '@/domain/entities';
-import { BRLFormatter, USDFormatter, DateFormatter } from '@/presentation/formatters';
+import { BRLFormatter, USDFormatter, DateFormatter } from '@/infrastructure/utils/formatters';
 import { Modal, ModalHeader, ModalBody } from './Modal';
 
 interface OperationDetailModalProps {
